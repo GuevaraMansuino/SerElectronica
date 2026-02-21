@@ -1,0 +1,154 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PromotionController;
+use App\Http\Controllers\Api\AuthController;
+
+// ============================================================
+// 🌐 RUTAS PÚBLICAS (Sin autenticación)
+// ============================================================
+
+// Página principal
+Route::get('/', function () {
+    $categorias = \App\Models\Category::all();
+    $productosDestacados = \App\Models\Product::where('destacado', true)->take(8)->get();
+    $promociones = \App\Models\Promotion::active()->take(5)->get();
+    return view('home', compact('categorias', 'productosDestacados', 'promociones'));
+})->name('home');
+
+// Catálogo público
+Route::get('/catalogo', function () {
+    return view('catalogo.index');
+})->name('catalogo.index');
+
+// Ver producto por slug (público)
+Route::get('/producto/{slug}', function ($slug) {
+    return view('catalogo.show', compact('slug'));
+})->name('catalogo.show');
+
+// Promociones públicas
+Route::get('/promociones', function () {
+    return view('public.promotions.index');
+})->name('promociones.index');
+
+// ============================================================
+// 🔓 RUTAS DE AUTENTICACIÓN (API - Sanctum)
+// ============================================================
+
+// Login - Usa el endpoint API existente
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+// Logout - Usa el endpoint API existente
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// ============================================================
+// 🔓 RUTAS PÚBLICAS - GET (Lectura sin auth para Admin)
+// ============================================================
+
+// Dashboard
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard');
+})->name('admin.dashboard');
+
+// Categorías - Listar
+Route::get('/admin/categorias', [CategoryController::class, 'index'])
+    ->name('admin.categorias.index');
+
+// Categoría - Ver detalle
+Route::get('/admin/categorias/{id}', [CategoryController::class, 'show'])
+    ->name('admin.categorias.show');
+
+// Productos - Listar
+Route::get('/admin/productos', [ProductController::class, 'index'])
+    ->name('admin.productos.index');
+
+// Producto - Ver detalle
+Route::get('/admin/productos/{id}', [ProductController::class, 'show'])
+    ->name('admin.productos.show');
+
+// Promociones - Listar
+Route::get('/admin/promociones', [PromotionController::class, 'index'])
+    ->name('admin.promociones.index');
+
+// Promoción - Ver detalle
+Route::get('/admin/promociones/{id}', [PromotionController::class, 'show'])
+    ->name('admin.promociones.show');
+
+// ============================================================
+// 🔒 RUTAS PROTEGIDAS - CRUD (Solo admin)
+// ============================================================
+
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+
+    // ---------- CATEGORÍAS (CRUD) ----------
+    // Create - Formulario
+    Route::get('/admin/categorias/create', [CategoryController::class, 'create'])
+        ->name('admin.categorias.create');
+    
+    // Create - Guardar
+    Route::post('/admin/categorias', [CategoryController::class, 'store'])
+        ->name('admin.categorias.store');
+    
+    // Edit - Formulario
+    Route::get('/admin/categorias/{id}/edit', [CategoryController::class, 'edit'])
+        ->name('admin.categorias.edit');
+    
+    // Edit - Actualizar
+    Route::put('/admin/categorias/{id}', [CategoryController::class, 'update'])
+        ->name('admin.categorias.update');
+    
+    // Delete
+    Route::delete('/admin/categorias/{id}', [CategoryController::class, 'destroy'])
+        ->name('admin.categorias.destroy');
+
+    // ---------- PRODUCTOS (CRUD) ----------
+    // Create - Formulario
+    Route::get('/admin/productos/create', [ProductController::class, 'create'])
+        ->name('admin.productos.create');
+    
+    // Create - Guardar
+    Route::post('/admin/productos', [ProductController::class, 'store'])
+        ->name('admin.productos.store');
+    
+    // Edit - Formulario
+    Route::get('/admin/productos/{id}/edit', [ProductController::class, 'edit'])
+        ->name('admin.productos.edit');
+    
+    // Edit - Actualizar
+    Route::put('/admin/productos/{id}', [ProductController::class, 'update'])
+        ->name('admin.productos.update');
+    
+    // Delete
+    Route::delete('/admin/productos/{id}', [ProductController::class, 'destroy'])
+        ->name('admin.productos.destroy');
+
+    // ---------- PROMOCIONES (CRUD) ----------
+    // Create - Formulario
+    Route::get('/admin/promociones/create', [PromotionController::class, 'create'])
+        ->name('admin.promociones.create');
+    
+    // Create - Guardar
+    Route::post('/admin/promociones', [PromotionController::class, 'store'])
+        ->name('admin.promociones.store');
+    
+    // Edit - Formulario
+    Route::get('/admin/promociones/{id}/edit', [PromotionController::class, 'edit'])
+        ->name('admin.promociones.edit');
+    
+    // Edit - Actualizar
+    Route::put('/admin/promociones/{id}', [PromotionController::class, 'update'])
+        ->name('admin.promociones.update');
+    
+    // Delete
+    Route::delete('/admin/promociones/{id}', [PromotionController::class, 'destroy'])
+        ->name('admin.promociones.destroy');
+
+    // ---------- IMPORTACIÓN ----------
+    Route::post('/import/products', [\App\Http\Controllers\Api\ImportController::class, 'importProducts'])
+        ->name('import.products');
+    
+    Route::post('/import/categories', [\App\Http\Controllers\Api\ImportController::class, 'importCategories'])
+        ->name('import.categories');
+});

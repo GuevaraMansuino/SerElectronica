@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <circle cx="250" cy="240" r="180" fill="none" stroke="#808080" stroke-width="14"/>
+  
+  <path d="M 340 160 
+           A 120 120 0 1 0 370 250 
+           H 250 
+           V 160 
+           L 180 250 
+           L 180 330" 
+        fill="none" stroke="#808080" stroke-width="22" stroke-linejoin="round" stroke-linecap="round"/>
+  
+  <path d="M 250 240 V 350 M 310 250 V 340" 
+        fill="none" stroke="#808080" stroke-width="22" stroke-linecap="round"/>
+
+  <polygon points="370,250 335,225 335,275" fill="#808080"/>
+  
+  <text x="250" y="470" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#808080" text-anchor="middle" letter-spacing="10">GGM</text>
+</svg>
