@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 
 // ============================================================
 // 🌐 RUTAS PÚBLICAS (Sin autenticación)
@@ -26,7 +27,7 @@ Route::get('/catalogo', function () {
 // Ver producto por slug (público)
 Route::get('/producto/{slug}', function ($slug) {
     return view('catalogo.show', compact('slug'));
-})->name('catalogo.show');
+})->name('producto.show');
 
 // Promociones públicas
 Route::get('/promociones', function () {
@@ -37,7 +38,15 @@ Route::get('/promociones', function () {
 // 🔓 RUTAS DE AUTENTICACIÓN (API - Sanctum)
 // ============================================================
 
-// Login - Usa el endpoint API existente
+// Login - GET (mostrar formulario)
+Route::get('/login', function () {
+    if (auth()->check()) {
+        return redirect()->route('admin.dashboard');
+    }
+    return view('auth.login');
+})->name('login');
+
+// Login - POST (procesar login)
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 // Logout - Usa el endpoint API existente
@@ -49,7 +58,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Dashboard
 Route::get('/admin/dashboard', function () {
-    return view('admin.dashboard');
+    $stats = [
+        'productos' => \App\Models\Product::count(),
+        'categorias' => \App\Models\Category::count(),
+        'promociones' => \App\Models\Promotion::where('is_active', true)->count(),
+        'sin_imagen' => \App\Models\Product::whereNull('image')->orWhere('image', '')->count(),
+    ];
+    
+    $ultimosProductos = \App\Models\Product::with('category')->orderBy('created_at', 'desc')->take(5)->get();
+    $promocionesActivas = \App\Models\Promotion::where('is_active', true)->orderBy('end_date', 'asc')->take(5)->get();
+    
+    return view('admin.dashboard', compact('stats', 'ultimosProductos', 'promocionesActivas'));
 })->name('admin.dashboard');
 
 // Categorías - Listar
@@ -68,7 +87,7 @@ Route::get('/admin/productos', [ProductController::class, 'index'])
 Route::get('/admin/productos/{id}', [ProductController::class, 'show'])
     ->name('admin.productos.show');
 
-// Promociones - Listar
+
 Route::get('/admin/promociones', [PromotionController::class, 'index'])
     ->name('admin.promociones.index');
 
@@ -104,25 +123,33 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
         ->name('admin.categorias.destroy');
 
     // ---------- PRODUCTOS (CRUD) ----------
+    // Listar
+    Route::get('/admin/productos', [AdminProductController::class, 'index'])
+        ->name('admin.productos.index');
+    
     // Create - Formulario
-    Route::get('/admin/productos/create', [ProductController::class, 'create'])
+    Route::get('/admin/productos/create', [AdminProductController::class, 'create'])
         ->name('admin.productos.create');
     
     // Create - Guardar
-    Route::post('/admin/productos', [ProductController::class, 'store'])
+    Route::post('/admin/productos', [AdminProductController::class, 'store'])
         ->name('admin.productos.store');
     
     // Edit - Formulario
-    Route::get('/admin/productos/{id}/edit', [ProductController::class, 'edit'])
+    Route::get('/admin/productos/{id}/edit', [AdminProductController::class, 'edit'])
         ->name('admin.productos.edit');
     
     // Edit - Actualizar
-    Route::put('/admin/productos/{id}', [ProductController::class, 'update'])
+    Route::put('/admin/productos/{id}', [AdminProductController::class, 'update'])
         ->name('admin.productos.update');
     
     // Delete
-    Route::delete('/admin/productos/{id}', [ProductController::class, 'destroy'])
+    Route::delete('/admin/productos/{id}', [AdminProductController::class, 'destroy'])
         ->name('admin.productos.destroy');
+    
+    // Toggle activo
+    Route::patch('/admin/productos/{id}/toggle', [AdminProductController::class, 'toggle'])
+        ->name('admin.productos.toggle');
 
     // ---------- PROMOCIONES (CRUD) ----------
     // Create - Formulario

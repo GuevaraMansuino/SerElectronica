@@ -35,6 +35,13 @@ class ProductController extends Controller
         return Product::withRelations()->findOrFail($id);
     }
 
+    public function edit(string $id)
+    {
+        $producto = Product::withRelations()->findOrFail($id);
+        $categorias = \App\Models\Category::all();
+        return view('admin.productos.edit', compact('producto', 'categorias'));
+    }
+
     public function showBySlug(string $slug)
     {
         $product = Product::withRelations()->where('slug', $slug)->firstOrFail();
