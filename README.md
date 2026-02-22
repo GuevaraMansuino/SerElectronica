@@ -1,59 +1,117 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# ⚡ Catálogo Digital - SER Electrónica
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este proyecto es una aplicación web desarrollada en **Laravel** para la gestión y visualización del catálogo de productos de **SER Electrónica**, una empresa ubicada en Mendoza dedicada a la venta de electrónica, audio y componentes.
 
-## About Laravel
+El sistema funciona como un **catálogo digital** (no e-commerce transaccional), diseñado para que los clientes exploren productos y finalicen la consulta o compra a través de **WhatsApp**.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Características Principales
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🛒 Parte Pública (Catálogo)
+*   **Buscador y Filtros:** Búsqueda por nombre, filtrado por categorías y rangos de precio.
+*   **Scroll Infinito:** Carga dinámica de productos para una navegación fluida.
+*   **Detalle de Producto:**
+    *   Galería de imágenes con miniaturas.
+    *   Visualización de precios y descuentos.
+    *   Especificaciones técnicas (Marca, Modelo).
+    *   Productos relacionados.
+*   **Integración con WhatsApp:** Botón directo que genera un mensaje predefinido con el nombre del producto de interés.
+*   **Promociones:** Visualización de ofertas activas con fechas de vigencia automática.
 
-## Learning Laravel
+### 🛡️ Panel de Administración (Backoffice)
+*   **Dashboard:** Estadísticas rápidas de productos, categorías y promociones activas.
+*   **Gestión de Productos:**
+    *   CRUD completo (Crear, Leer, Actualizar, Eliminar).
+    *   Carga de múltiples imágenes (Galería) con *Drag & Drop*.
+    *   Control de stock/visibilidad (Activo/Oculto/Destacado).
+*   **Gestión de Categorías:** Organización de productos con soporte para iconos/emojis.
+*   **Sistema de Promociones:**
+    *   Creación de descuentos por porcentaje (%) o monto fijo ($).
+    *   Programación de fechas de inicio y fin.
+    *   Aplicación masiva a productos o categorías enteras.
+*   **Importación Masiva:** Carga de productos y categorías desde archivos Excel/CSV.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🛠️ Tecnologías Utilizadas
 
-## Laravel Sponsors
+*   **Backend:** PHP 8.x, Laravel 10/11.
+*   **Frontend:** Blade Templates, Vanilla JavaScript, CSS personalizado (Variables CSS).
+*   **Base de Datos:** MySQL.
+*   **Autenticación:** Laravel Sanctum (para API y Web).
+*   **Librerías Clave:**
+    *   `maatwebsite/excel`: Para importación de datos.
+    *   `intervention/image` (implícito en el manejo de imágenes).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## ⚙️ Instalación y Configuración
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Sigue estos pasos para levantar el proyecto en un entorno local:
 
-## Contributing
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone <url-del-repositorio>
+    cd catalogo-electronica
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+2.  **Instalar dependencias de PHP:**
+    ```bash
+    composer install
+    ```
 
-## Code of Conduct
+3.  **Configurar entorno:**
+    *   Duplica el archivo `.env.example` y renómbralo a `.env`.
+    *   Configura las credenciales de tu base de datos en el `.env`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+4.  **Generar clave de aplicación:**
+    ```bash
+    php artisan key:generate
+    ```
 
-## Security Vulnerabilities
+5.  **Ejecutar migraciones:**
+    ```bash
+    php artisan migrate
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+6.  **Vincular el almacenamiento (Importante para las imágenes):**
+    ```bash
+    php artisan storage:link
+    ```
 
-## License
+7.  **Iniciar el servidor:**
+    ```bash
+    php artisan serve
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 👤 Usuarios y Roles
+
+El sistema cuenta con roles de usuario (Admin y User). Para acceder al panel de administración:
+
+1.  Regístrate en `/login` o crea un usuario mediante *tinker*.
+2.  Asegúrate de que el campo `is_admin` en la tabla `users` esté en `1` (true).
+
+**Rutas de acceso:**
+*   **Catálogo:** `/` o `/catalogo`
+*   **Login:** `/login`
+*   **Admin Dashboard:** `/admin/dashboard`
+
+---
+
+## 🏢 Información de la Empresa
+
+Datos configurados en las vistas del proyecto:
+
+*   **Empresa:** SER Electrónica
+*   **Dirección:** Lavalle 299, Mendoza, Argentina.
+*   **Teléfono:** 0261 337-2353
+*   **Contacto:** Vía WhatsApp integrado en cada producto.
+
+---
+
+## 📄 Licencia
+
+Este proyecto es software propietario desarrollado para SER Electrónica.

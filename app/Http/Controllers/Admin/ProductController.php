@@ -59,10 +59,39 @@ class ProductController extends Controller
             'is_active' => 'sometimes|boolean',
         ])->validate();
 
-        // Guardar imagen
+        // Guardar imagen principal
         $validated['image'] = $this->saveImage($request, 'image');
 
         $product = Product::create($validated);
+
+        // Guardar imágenes de la galería (siempre es un INSERT, no UPDATE)
+        $galleryFiles = $request->file('gallery_images');
+        
+        if ($galleryFiles) {
+            $fileCount = is_array($galleryFiles) ? count($galleryFiles) : 1;
+            
+            // También verificar si viene como array
+            if (is_array($galleryFiles)) {
+                foreach ($galleryFiles as $file) {
+                    if ($file && $file->isValid()) {
+                        $path = $file->store('products/gallery', 'public');
+                        $product->images()->create([
+                            'image_path' => $path,
+                            'order' => $galleryOrder++,
+                            'is_primary' => false,
+                        ]);
+                    }
+                }
+            } elseif ($galleryFiles->isValid()) {
+                // Es un solo archivo
+                $path = $galleryFiles->store('products/gallery', 'public');
+                $product->images()->create([
+                    'image_path' => $path,
+                    'order' => 0,
+                    'is_primary' => false,
+                ]);
+            }
+        }
 
         // Asignar promociones
         if ($request->has('promociones')) {
@@ -74,7 +103,7 @@ class ProductController extends Controller
 
     public function edit(string $id)
     {
-        $producto = Product::with('promotions')->findOrFail($id);
+        $producto = Product::with('images', 'promotions')->findOrFail($id);
         $categorias = Category::all();
         $promociones = Promotion::where('is_active', true)->get();
         return view('admin.productos.edit', compact('producto', 'categorias', 'promociones'));
@@ -120,6 +149,45 @@ class ProductController extends Controller
         }
 
         $product->update($validated);
+
+        // Eliminar imágenes marcadas para borrar
+        $deleteIds = $request->input('delete_images', []);
+        $deleteIds = array_filter($deleteIds); // Remove empty values
+        if (!empty($deleteIds)) {
+            $imagesToDelete = $product->images()->whereIn('id', $deleteIds)->get();
+            foreach ($imagesToDelete as $img) {
+                $this->deleteImage($img->image_path);
+            }
+            $product->images()->whereIn('id', $deleteIds)->delete();
+        }
+
+        // Agregar nuevas imágenes a la galería (siempre es un INSERT)
+        $galleryFiles = $request->file('gallery_images');
+        if ($galleryFiles) {
+            $currentMaxOrder = $product->images()->max('order') ?? 0;
+            $galleryOrder = $currentMaxOrder + 1;
+            
+            if (is_array($galleryFiles)) {
+                foreach ($galleryFiles as $file) {
+                    if ($file && $file->isValid()) {
+                        $path = $file->store('products/gallery', 'public');
+                        $product->images()->create([
+                            'image_path' => $path,
+                            'order' => $galleryOrder++,
+                            'is_primary' => false,
+                        ]);
+                    }
+                }
+            } elseif ($galleryFiles->isValid()) {
+                // Es un solo archivo
+                $path = $galleryFiles->store('products/gallery', 'public');
+                $product->images()->create([
+                    'image_path' => $path,
+                    'order' => $galleryOrder,
+                    'is_primary' => false,
+                ]);
+            }
+        }
 
         // Sincronizar promociones
         if ($request->has('promociones')) {

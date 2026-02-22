@@ -130,9 +130,10 @@
 
             {{-- Tab: Imagen --}}
             <div class="tab-panel" id="tab-imagen">
-                <div class="acard">
+                {{-- Imagen principal --}}
+                <div class="acard" style="margin-bottom:1.5rem;">
                     <div class="acard-header">
-                        <span class="acard-title">Imagen del producto</span>
+                        <span class="acard-title">📷 Imagen principal</span>
                     </div>
                     <div class="acard-body">
                         {{-- Dropzone styled area --}}
@@ -162,6 +163,60 @@
                         </div>
                         @else
                         <div id="producto-img-preview"></div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Galería de imágenes --}}
+                <div class="acard">
+                    <div class="acard-header">
+                        <span class="acard-title">🖼️ Galería de imágenes</span>
+                        <span style="font-size:0.72rem;color:var(--text-3);font-weight:normal;">(máx. 10 fotos)</span>
+                    </div>
+                    <div class="acard-body">
+                        {{-- Dropzone para galería --}}
+                        <div class="img-dropzone img-dropzone--gallery"
+                             id="gallery-dz"
+                             onclick="document.getElementById('gallery-img-input').click()"
+                             ondragover="event.preventDefault();this.style.borderColor='var(--lime)'"
+                             ondragleave="this.style.borderColor='var(--border-solid)'"
+                             ondrop="handleGalleryDrop(event)">
+                            <input type="file"
+                                   name="gallery_images[]"
+                                   id="gallery-img-input"
+                                   accept="image/jpeg,image/png,image/webp"
+                                   multiple
+                                   style="display:none"
+                                   onchange="handleGalleryFiles(this)">
+                            <div style="font-size:1.5rem;margin-bottom:0.4rem;">➕</div>
+                            <p style="font-size:0.84rem;color:var(--text-2);">Agregar más fotos a la galería</p>
+                            <p style="font-size:0.72rem;color:var(--text-3);margin-top:0.2rem;">Podés seleccionar varias a la vez</p>
+                        </div>
+
+                        {{-- Previsualización de nuevas imágenes --}}
+                        <div id="gallery-preview" class="gallery-preview"></div>
+
+                        {{-- Imágenes existentes (solo en modo edición) --}}
+                        @if($isEdit && $producto->images && $producto->images->count() > 0)
+                        <div class="existing-images">
+                            <p style="font-size:0.78rem;color:var(--text-2);margin-bottom:0.6rem;margin-top:1rem;">
+                                Imágenes actuales de la galería:
+                            </p>
+                            <div class="gallery-grid">
+                                @foreach($producto->images as $img)
+                                <div class="gallery-item" data-id="{{ $img->id }}">
+                                    <img src="{{ asset('storage/' . $img->image_path) }}" alt="Galería">
+                                    <button type="button" 
+                                            class="gallery-item__delete" 
+                                            onclick="deleteGalleryImage({{ $img->id }}, this)"
+                                            title="Eliminar imagen">
+                                        ✕
+                                    </button>
+                                    <input type="hidden" name="delete_images[]" value="" id="delete-img-{{ $img->id }}">
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -195,7 +250,7 @@
         </div>
 
         {{-- COLUMNA LATERAL --}}
-        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        <div class="sidebar-sticky">
             <div class="acard">
                 <div class="acard-header">
                     <span class="acard-title">Publicar</span>
@@ -245,6 +300,137 @@
 .img-dropzone:hover {
     border-color: var(--lime);
 }
+
+/* Gallery dropzone */
+.img-dropzone--gallery {
+    padding: 1.2rem;
+    border-style: dashed;
+    background: var(--surface);
+}
+
+/* Gallery preview grid */
+.gallery-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.gallery-preview__item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-solid);
+}
+
+.gallery-preview__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-preview__item button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--t);
+}
+
+.gallery-preview__item button:hover {
+    background: var(--danger);
+    transform: scale(1.1);
+}
+
+/* Existing images grid */
+.existing-images {
+    margin-top: 1.2rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--border-solid);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.75rem;
+}
+
+.gallery-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border-solid);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gallery-item__delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(220, 38, 38, 0.9);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--t);
+    opacity: 0;
+}
+
+.gallery-item:hover .gallery-item__delete {
+    opacity: 1;
+}
+
+.gallery-item__delete:hover {
+    background: var(--danger);
+    transform: scale(1.1);
+}
+
+.gallery-item.deleting {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Sidebar sticky - permanece visible mientras scrollea */
+.sidebar-sticky {
+    position: sticky;
+    top: 80px; /* Ajustado para no pasar bajo el navbar */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+}
+
+/* En móviles no es sticky */
+@media (max-width: 960px) {
+    .sidebar-sticky {
+        position: static;
+        max-height: none;
+    }
+}
 </style>
 
 @push('scripts')
@@ -259,7 +445,7 @@ document.querySelectorAll('.form-tab').forEach(tab => {
     });
 });
 
-/* ── Imagen dropzone ──────────────────────────────────── */
+/* ── Imagen principal dropzone ─────────────────────────── */
 function handleProductoFile(input) {
     if (!input.files || !input.files[0]) return;
     const reader = new FileReader();
@@ -282,6 +468,70 @@ function handleProductoDrop(e) {
     dt.items.add(file);
     input.files = dt.files;
     handleProductoFile(input);
+}
+
+/* ── Galería de imágenes ───────────────────────────────── */
+function handleGalleryFiles(input) {
+    if (!input.files || input.files.length === 0) return;
+    
+    const files = Array.from(input.files);
+    const previewContainer = document.getElementById('gallery-preview');
+    
+    // Clear previous previews
+    previewContainer.innerHTML = '';
+    
+    // Show previews for all files currently in the input
+    Array.from(input.files).forEach((file, index) => {
+        if (!file.type.startsWith('image/')) return;
+        
+        const reader = new FileReader();
+        reader.onload = e => {
+            const div = document.createElement('div');
+            div.className = 'gallery-preview__item';
+            div.dataset.index = index;
+            div.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+            `;
+            previewContainer.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function handleGalleryDrop(e) {
+    e.preventDefault();
+    document.getElementById('gallery-dz').style.borderColor = 'var(--border-solid)';
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if (files.length === 0) return;
+    
+    const input = document.getElementById('gallery-img-input');
+    const dt = new DataTransfer();
+    
+    // Add existing files + new dropped files
+    Array.from(input.files).forEach(f => dt.items.add(f));
+    files.forEach(f => {
+        if (dt.items.length < 10) dt.items.add(f);
+    });
+    
+    input.files = dt.files;
+    handleGalleryFiles(input);
+}
+
+/* ── Eliminar imagen existente ───────────────────────── */
+function deleteGalleryImage(imageId, button) {
+    if (!confirm('¿Eliminar esta imagen de la galería?')) return;
+    
+    const item = button.parentElement;
+    item.classList.add('deleting');
+    
+    // Mark for deletion in form data
+    document.getElementById('delete-img-' + imageId).value = imageId;
+    
+    // Visual feedback
+    setTimeout(() => {
+        item.style.opacity = '0.3';
+        item.style.pointerEvents = 'none';
+    }, 300);
 }
 </script>
 @endpush

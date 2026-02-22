@@ -83,6 +83,11 @@ class Product extends Model
         return $this->belongsToMany(Promotion::class, 'product_promotion');
     }
 
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('order');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | MÉTODO CENTRAL: OBTENER PROMOCIÓN (CON CACHÉ - solo 1 ejecución por producto)

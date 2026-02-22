@@ -59,7 +59,36 @@
 .gallery__main img {
     width: 100%; height: 100%;
     object-fit: cover;
+    transition: opacity 0.2s ease;
 }
+
+/* Navigation arrows */
+.gallery__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--border-solid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--t);
+    color: var(--text-2);
+    z-index: 10;
+}
+
+.gallery__nav:hover {
+    background: var(--lime);
+    color: var(--bg);
+    border-color: var(--lime);
+}
+
+.gallery__nav--prev { left: 12px; }
+.gallery__nav--next { right: 12px; }
 
 /* Placeholder sin imagen */
 .gallery__placeholder {
@@ -100,6 +129,41 @@
 .gallery__corner--tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
 .gallery__corner--bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
 .gallery__corner--br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+/* Thumbnails */
+.gallery__thumbnails {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 4px;
+}
+
+.gallery__thumb {
+    flex-shrink: 0;
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all var(--t);
+    background: var(--surface);
+}
+
+.gallery__thumb:hover {
+    border-color: var(--text-3);
+}
+
+.gallery__thumb.active {
+    border-color: var(--lime);
+}
+
+.gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 /* ================================================================
    PRODUCT INFO
@@ -351,9 +415,29 @@
     {{-- GALLERY --}}
     <div class="gallery">
         <div class="gallery__main">
-            @if($producto->image)
-                <img src="{{ asset('storage/' . $producto->image) }}"
+            @php
+                // Combinar imagen principal + gallery images
+                $allImages = collect();
+                if($producto->image) {
+                    $allImages->push(['path' => $producto->image, 'is_primary' => true]);
+                }
+                foreach($producto->images as $img) {
+                    $allImages->push(['path' => $img->image_path, 'is_primary' => false]);
+                }
+            @endphp
+            
+            @if($allImages->count() > 0)
+                <img src="{{ asset('storage/' . $allImages[0]['path']) }}"
                      alt="{{ $producto->name }}" id="main-img">
+                
+                @if($allImages->count() > 1)
+                <button class="gallery__nav gallery__nav--prev" onclick="changeImage(-1)" aria-label="Imagen anterior">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button class="gallery__nav gallery__nav--next" onclick="changeImage(1)" aria-label="Siguiente imagen">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+                @endif
             @else
                 <div class="gallery__placeholder">📦</div>
             @endif
@@ -369,6 +453,19 @@
                 <span class="gallery__corner gallery__corner--br"></span>
             </div>
         </div>
+
+        {{-- Thumbnails --}}
+        @if($allImages->count() > 1)
+        <div class="gallery__thumbnails">
+            @foreach($allImages as $index => $img)
+            <button class="gallery__thumb {{ $index === 0 ? 'active' : '' }}" 
+                    onclick="selectImage({{ $index }})" 
+                    aria-label="Ver imagen {{ $index + 1 }}">
+                <img src="{{ asset('storage/' . $img['path']) }}" alt="Miniatura {{ $index + 1 }}">
+            </button>
+            @endforeach
+        </div>
+        @endif
     </div>
 
     {{-- INFO --}}
@@ -381,7 +478,7 @@
                 <span class="price-block__label">Precio</span>
                 <span class="price-block__value">${{ number_format($producto->price, 0, ',', '.') }}</span>
             </div>
-            <p class="price-block__note">Consultá disponibilidad por WhatsApp</p>
+            <p class="price-block__note">Para consultas escríbanos por WhatsApp</p>
         </div>
 
         <p class="product-info__desc">{{ $producto->description }}</p>
@@ -479,3 +576,54 @@
 @endif
 
 @endsection
+
+@push('scripts')
+<script>
+// Image gallery data
+const imageUrls = [
+    @foreach($allImages as $img)
+    '{{ asset('storage/' . $img['path']) }}',
+    @endforeach
+];
+
+let currentImageIndex = 0;
+
+// Change image by direction (prev/next buttons)
+function changeImage(direction) {
+    currentImageIndex += direction;
+    
+    // Wrap around
+    if (currentImageIndex < 0) {
+        currentImageIndex = imageUrls.length - 1;
+    } else if (currentImageIndex >= imageUrls.length) {
+        currentImageIndex = 0;
+    }
+    
+    updateMainImage();
+}
+
+// Select specific image by index (thumbnail click)
+function selectImage(index) {
+    currentImageIndex = index;
+    updateMainImage();
+}
+
+// Update main image and thumbnail active state
+function updateMainImage() {
+    const mainImg = document.getElementById('main-img');
+    if (mainImg && imageUrls[currentImageIndex]) {
+        mainImg.src = imageUrls[currentImageIndex];
+    }
+    
+    // Update thumbnail active state
+    const thumbs = document.querySelectorAll('.gallery__thumb');
+    thumbs.forEach((thumb, index) => {
+        if (index === currentImageIndex) {
+            thumb.classList.add('active');
+        } else {
+            thumb.classList.remove('active');
+        }
+    });
+}
+</script>
+@endpush

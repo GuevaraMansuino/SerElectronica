@@ -134,6 +134,74 @@
                     @enderror
                 </div>
 
+                {{-- Descuentos: porcentaje o monto --}}
+                <div class="fgroup" style="margin-bottom:1.3rem;">
+                    <label class="flabel">Tipo de descuento</label>
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;background:var(--bg);border:1px solid var(--border-solid);border-radius:var(--radius);padding:8px 12px;flex:1;transition:all var(--t);"
+                               id="discount-percentage-label">
+                            <input type="radio"
+                                   name="discount_type"
+                                   id="discount_percentage"
+                                   value="percentage"
+                                   checked
+                                   onchange="toggleDiscountFields()"
+                                   style="accent-color:var(--lime);">
+                            <span style="font-size:0.86rem;">% Porcentaje</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;background:var(--bg);border:1px solid var(--border-solid);border-radius:var(--radius);padding:8px 12px;flex:1;transition:all var(--t);"
+                               id="discount-amount-label">
+                            <input type="radio"
+                                   name="discount_type"
+                                   id="discount_amount"
+                                   value="amount"
+                                   onchange="toggleDiscountFields()"
+                                   style="accent-color:var(--lime);">
+                            <span style="font-size:0.86rem;">$ Monto fijo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-bottom:1.3rem;">
+                    <div class="fgroup" id="percentage-field">
+                        <label class="flabel" for="discount_percentage_value">
+                            Descuento (%)
+                        </label>
+                        <div style="position:relative;">
+                            <input type="number"
+                                   name="discount_percentage"
+                                   id="discount_percentage_value"
+                                   class="finput"
+                                   value="{{ old('discount_percentage', $promo->discount_percentage ?? '') }}"
+                                   placeholder="0"
+                                   min="0"
+                                   max="100"
+                                   step="1">
+                            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-weight:600;" class="discount-symbol">%</span>
+                        </div>
+                        <span class="fhint">Ej: 20 para 20% OFF</span>
+                    </div>
+
+                    <div class="fgroup" id="amount-field" style="display:none;">
+                        <label class="flabel" for="discount_amount_value">
+                            Descuento ($)
+                        </label>
+                        <div style="position:relative;">
+                            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-weight:600;">$</span>
+                            <input type="number"
+                                   name="discount_amount"
+                                   id="discount_amount_value"
+                                   class="finput"
+                                   value="{{ old('discount_amount', $promo->discount_amount ?? '') }}"
+                                   placeholder="0"
+                                   min="0"
+                                   step="100"
+                                   style="padding-left:26px;">
+                        </div>
+                        <span class="fhint">Monto fijo a descontar</span>
+                    </div>
+                </div>
+
                 {{-- Fila: fecha de inicio + fecha de vencimiento + estado --}}
                 <div class="form-grid" style="margin-bottom:1.3rem;">
                     <div class="fgroup">
@@ -228,6 +296,30 @@
                     const scope = document.getElementById('product_scope').value;
                     document.getElementById('specific-products').style.display = (scope === 'specific') ? 'block' : 'none';
                 }
+
+                function toggleDiscountFields() {
+                    const isPercentage = document.getElementById('discount_percentage').checked;
+                    document.getElementById('percentage-field').style.display = isPercentage ? 'block' : 'none';
+                    document.getElementById('amount-field').style.display = isPercentage ? 'none' : 'block';
+                    
+                    // Update border colors
+                    document.getElementById('discount-percentage-label').style.borderColor = isPercentage ? 'var(--lime)' : 'var(--border-solid)';
+                    document.getElementById('discount-amount-label').style.borderColor = isPercentage ? 'var(--border-solid)' : 'var(--lime)';
+                }
+
+                // Initialize discount fields on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    toggleDiscountFields();
+                    
+                    // Set initial state based on existing values
+                    @if($isEdit && $promo->discount_percentage)
+                        document.getElementById('discount_percentage').checked = true;
+                        toggleDiscountFields();
+                    @elseif($isEdit && $promo->discount_amount)
+                        document.getElementById('discount_amount').checked = true;
+                        toggleDiscountFields();
+                    @endif
+                });
                 </script>
             </div>
         </div>

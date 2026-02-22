@@ -44,7 +44,7 @@ class ProductController extends Controller
 
     public function showBySlug(string $slug)
     {
-        $product = Product::withRelations()->where('slug', $slug)->firstOrFail();
+        $product = Product::withRelations()->where('is_active', true)->where('slug', $slug)->firstOrFail();
         return response()->json($product);
     }
 

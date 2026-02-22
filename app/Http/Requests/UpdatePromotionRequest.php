@@ -57,6 +57,26 @@ class UpdatePromotionRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // Map Spanish field names to English before validation
+        $map = [
+            'titulo' => 'title',
+            'descripcion' => 'description',
+            'fecha_inicio' => 'start_date',
+            'fecha_fin' => 'end_date',
+            'activa' => 'is_active',
+        ];
+        
+        $data = [];
+        foreach ($map as $es => $en) {
+            if ($this->has($es)) {
+                $data[$en] = $this->$es;
+            }
+        }
+        
+        if (!empty($data)) {
+            $this->merge($data);
+        }
+        
         if ($this->discount_percentage !== null && $this->discount_percentage !== '') {
             $this->merge([
                 'discount_percentage' => round(floatval($this->discount_percentage), 2)
