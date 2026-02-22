@@ -124,9 +124,17 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/admin/promociones/{id}', [AdminPromotionController::class, 'destroy'])
         ->name('admin.promociones.destroy');
 
-    // Toggle active/inactive
-    Route::patch('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'toggle'])
-        ->name('admin.promociones.toggle');
+    // Toggle active/inactive - using signed URL for reliability
+    Route::get('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'toggle'])
+        ->name('admin.promociones.toggle')
+        ->middleware('signed');
+    
+    // Also support POST/PATCH for backwards compatibility with cached forms
+    Route::post('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'togglePost'])
+        ->name('admin.promociones.toggle.post');
+    
+    Route::patch('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'togglePost'])
+        ->name('admin.promociones.toggle.patch');
 
     // ---------- CATEGORÍAS (CRUD) ----------
     // Create - Formulario

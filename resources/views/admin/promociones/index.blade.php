@@ -116,28 +116,23 @@
 
                         <td>
                             <div class="td-actions" style="justify-content:flex-end;">
-                                {{-- Toggle activa/inactiva --}}
-                                <form action="{{ route('admin.promociones.toggle', $promo) }}"
-                                      method="POST"
-                                      style="display:contents">
-                                    @csrf @method('PATCH')
-                                    <button type="submit"
-                                            class="action-btn"
-                                            title="{{ $promo->activa ? 'Desactivar' : 'Activar' }}"
-                                            style="{{ $promo->activa ? '' : 'color:var(--lime)' }}">
-                                        @if($promo->activa)
-                                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                            <path d="M18.36 6.64a9 9 0 11-12.73 0"/>
-                                            <line x1="12" y1="2" x2="12" y2="12"/>
-                                        </svg>
-                                        @else
-                                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                            <polyline points="9 11 12 14 22 4"/>
-                                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-                                        </svg>
-                                        @endif
-                                    </button>
-                                </form>
+                                {{-- Toggle activa/inactiva - using signed URL --}}
+                                <a href="{{ URL::signedRoute('admin.promociones.toggle', ['id' => $promo->id]) }}"
+                                   class="action-btn"
+                                   title="{{ $promo->activa ? 'Desactivar' : 'Activar' }}"
+                                   style="{{ $promo->activa ? '' : 'color:var(--lime)' }}">
+                                    @if($promo->activa)
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M18.36 6.64a9 9 0 11-12.73 0"/>
+                                        <line x1="12" y1="2" x2="12" y2="12"/>
+                                    </svg>
+                                    @else
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <polyline points="9 11 12 14 22 4"/>
+                                        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+                                    </svg>
+                                    @endif
+                                </a>
 
                                 {{-- Editar --}}
                                 <a href="{{ route('admin.promociones.edit', $promo) }}"

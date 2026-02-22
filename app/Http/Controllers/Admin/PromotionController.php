@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Promotion;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class PromotionController extends Controller
 {
@@ -156,6 +157,15 @@ class PromotionController extends Controller
     }
 
     public function toggle(Request $request, string $id)
+    {
+        $promotion = Promotion::findOrFail($id);
+        $promotion->is_active = !$promotion->is_active;
+        $promotion->save();
+
+        return back()->with('success', 'Estado actualizado');
+    }
+
+    public function togglePost(Request $request, string $id)
     {
         $promotion = Promotion::findOrFail($id);
         $promotion->is_active = !$promotion->is_active;

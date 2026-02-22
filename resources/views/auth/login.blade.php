@@ -345,6 +345,13 @@
         </div>
         @endif
 
+        @if(request()->get('expired'))
+        <div class="login-alert" role="alert" style="border-color:var(--lime);background:rgba(182,255,59,0.1);">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            Tu sesión expiró. Por favor, iniciá sesión nuevamente.
+        </div>
+        @endif
+
         <form action="{{ route('login') }}" method="POST" novalidate>
             @csrf
 

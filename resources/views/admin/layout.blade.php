@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin') — SER Electrónica</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     {{-- Favicon --}}
     <link rel="icon" type="image/svg+xml" href="/LogoPagina.svg">
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -947,6 +948,54 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Handle 419 Page Expired - redirect to login
+document.addEventListener('ajaxError', function(event) {
+    if (event.detail && event.detail.status === 419) {
+        window.location.href = '/login?expired=1';
+    }
+});
+
+// Global fetch error handler for 419
+const originalFetch = window.fetch;
+window.fetch = function(...args) {
+    return originalFetch.apply(this, args).then(response => {
+        if (response.status === 419) {
+            window.location.href = '/login?expired=1';
+        }
+        return response;
+    });
+};
+
+// Intercept all form submissions to add CSRF token and handle 419
+document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (form.method && form.method.toLowerCase() === 'post') {
+        // Check if form has CSRF token
+        const csrfInput = form.querySelector('input[name="_token"]');
+        const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+        
+        if (!csrfInput && csrfMeta) {
+            // Add CSRF token if missing
+            const token = document.createElement('input');
+            token.type = 'hidden';
+            token.name = '_token';
+            token.value = csrfMeta.content;
+            form.insertBefore(token, form.firstChild);
+        }
+    }
+});
+
+// Also intercept XMLHttpRequest for AJAX
+const originalXHROpen = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open = function(method, url) {
+    this.addEventListener('load', function() {
+        if (this.status === 419) {
+            window.location.href = '/login?expired=1';
+        }
+    });
+    return originalXHROpen.apply(this, arguments);
+};
 </script>
 
 @stack('scripts')
