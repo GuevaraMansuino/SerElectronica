@@ -111,15 +111,11 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
                 {{-- Slug personalizado (solo edit) --}}
                 @if($isEdit)
                 <div class="fgroup" style="margin-bottom:1.4rem;">
-                    <label class="flabel" for="slug">Slug URL</label>
-                    <input type="text"
-                           name="slug"
-                           id="slug"
-                           class="finput"
-                           value="{{ old('slug', $categoria->slug ?? '') }}"
-                           placeholder="altavoces-activos"
-                           style="font-family:var(--font-mono);font-size:0.85rem;">
-                    <span class="fhint">⚠️ Cambiar el slug rompe los links existentes. Modificar con cuidado.</span>
+                    <label class="flabel">Slug URL (No editable)</label>
+                    <div style="background:var(--surface-2);padding:10px 14px;border-radius:var(--radius);border:1px solid var(--border-solid);color:var(--text-3);font-family:var(--font-mono);font-size:0.85rem;">
+                        /{{ $categoria->slug }}
+                    </div>
+                    <span class="fhint">El slug no se puede modificar para evitar romper enlaces existentes.</span>
                 </div>
                 @endif
 
@@ -179,9 +175,14 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
                 </p>
                 <form action="{{ route('admin.categorias.destroy', $categoria) }}"
                       method="POST"
-                      onsubmit="return confirm('¿Eliminar la categoría «{{ addslashes($categoria->nombre) }}» permanentemente?')">
+                      id="delete-form-{{ $categoria->id }}"
+                      style="width:100%;justify-content:center;">
                     @csrf @method('DELETE')
-                    <button type="submit" class="abtn abtn-danger" style="width:100%;justify-content:center;">
+                    <button type="button" 
+                            class="abtn abtn-danger" 
+                            style="width:100%;justify-content:center;"
+                            data-confirm="¿Eliminar la categoría «{{ addslashes($categoria->nombre) }}» permanentemente?"
+                            onclick="confirmDelete(this)">
                         Eliminar categoría
                     </button>
                 </form>

@@ -89,9 +89,13 @@
                             @if($cat->productos_count === 0)
                             <form action="{{ route('admin.categorias.destroy', $cat) }}"
                                   method="POST"
-                                  onsubmit="return confirm('¿Eliminar la categoría «{{ addslashes($cat->nombre) }}»?')">
+                                  id="delete-form-{{ $cat->id }}">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="action-btn del" title="Eliminar categoría">
+                                <button type="button" 
+                                        class="action-btn del" 
+                                        title="Eliminar categoría"
+                                        data-confirm="¿Eliminar la categoría «{{ addslashes($cat->nombre) }}»?"
+                                        onclick="confirmDelete(this)">
                                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <polyline points="3 6 5 6 21 6"/>
                                         <path d="M19 6l-1 14H6L5 6"/>

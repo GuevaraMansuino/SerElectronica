@@ -384,9 +384,14 @@
         {{-- Eliminar --}}
         <form action="{{ route('admin.promociones.destroy', $promo) }}"
               method="POST"
-              onsubmit="return confirm('¿Eliminar esta promoción permanentemente?')">
+              id="delete-form-{{ $promo->id }}"
+              style="margin-bottom:0.5rem;">
             @csrf @method('DELETE')
-            <button type="submit" class="abtn abtn-danger" style="width:100%;justify-content:center;">
+            <button type="button" 
+                    class="abtn abtn-danger" 
+                    style="width:100%;justify-content:center;"
+                    data-confirm="¿Eliminar esta promoción permanentemente?"
+                    onclick="confirmDelete(this)">
                 Eliminar
             </button>
         </form>

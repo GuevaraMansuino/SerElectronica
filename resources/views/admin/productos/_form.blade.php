@@ -274,12 +274,18 @@
                     <p style="font-size:0.8rem;color:var(--text-2);margin-bottom:0.8rem;">
                         Eliminar este producto permanentemente.
                     </p>
-                    <button type="button"
-                            class="abtn abtn-danger"
-                            style="width:100%;justify-content:center;"
-                            onclick="if(confirm('¿Eliminar este producto permanentemente?')) { fetch('{{ route('admin.productos.destroy', $producto) }}', { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } }).then(() => window.location = '{{ route('admin.productos.index') }}'); }">
-                        Eliminar producto
-                    </button>
+                    <form action="{{ route('admin.productos.destroy', $producto) }}"
+                          method="POST"
+                          id="delete-form-{{ $producto->id }}">
+                        @csrf @method('DELETE')
+                        <button type="button"
+                                class="abtn abtn-danger"
+                                style="width:100%;justify-content:center;"
+                                data-confirm="¿Eliminar este producto permanentemente?"
+                                onclick="confirmDelete(this)">
+                            Eliminar producto
+                        </button>
+                    </form>
                 </div>
             </div>
             @endif
@@ -519,7 +525,51 @@ function handleGalleryDrop(e) {
 
 /* ── Eliminar imagen existente ───────────────────────── */
 function deleteGalleryImage(imageId, button) {
-    if (!confirm('¿Eliminar esta imagen de la galería?')) return;
+    const message = '¿Eliminar esta imagen de la galería?';
+    
+    const modal = document.getElementById('confirmModal');
+    const titleEl = document.getElementById('confirmModalTitle');
+    const messageEl = document.getElementById('confirmModalMessage');
+    const confirmBtn = document.getElementById('confirmModalConfirm');
+    const cancelBtn = document.getElementById('confirmModalCancel');
+    
+    titleEl.textContent = 'Eliminar imagen';
+    messageEl.textContent = message;
+    
+    modal.classList.add('active');
+    
+    // Clean up previous event listeners
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    
+    newConfirmBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        // Delete logic here
+        fetch(`/admin/productos/gallery/${imageId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.closest('.gallery-item').remove();
+                showToast('Imagen eliminada', 'success');
+            }
+        })
+        .catch(error => {
+            showToast('Error al eliminar imagen', 'error');
+        });
+    });
+    
+    newCancelBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+}
     
     const item = button.parentElement;
     item.classList.add('deleting');

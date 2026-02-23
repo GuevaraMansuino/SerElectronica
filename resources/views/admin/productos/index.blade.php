@@ -232,10 +232,14 @@
                         {{-- Eliminar --}}
                         <form action="{{ route('admin.productos.destroy', $producto) }}"
                               method="POST"
-                              onsubmit="return confirm('¿Eliminar «{{ addslashes($producto->nombre) }}»?\nEsta acción no se puede deshacer.')"
+                              id="delete-form-{{ $producto->id }}"
                               style="display:contents">
                             @csrf @method('DELETE')
-                            <button type="submit" class="action-btn del" title="Eliminar producto">
+                            <button type="button" 
+                                    class="action-btn del" 
+                                    title="Eliminar producto"
+                                    data-confirm="¿Eliminar «{{ addslashes($producto->nombre) }}»?\nEsta acción no se puede deshacer."
+                                    onclick="confirmDelete(this)">
                                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <polyline points="3 6 5 6 21 6"/>
                                     <path d="M19 6l-1 14H6L5 6"/>

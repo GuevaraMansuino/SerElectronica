@@ -784,6 +784,90 @@
     gap: 10px;
 }
 
+/* Confirm Modal Styles */
+.confirm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+}
+
+.confirm-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.confirm-modal {
+    background: var(--surface, #0E1E30);
+    border: 1px solid var(--border, #1A3050);
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.95);
+    transition: transform 0.2s;
+}
+
+.confirm-modal-overlay.active .confirm-modal {
+    transform: scale(1);
+}
+
+.confirm-modal__title {
+    font-family: var(--font-d, 'Barlow Condensed', sans-serif);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text, #F1F5F9);
+    margin-bottom: 0.5rem;
+}
+
+.confirm-modal__message {
+    color: var(--text-2, #94A3B8);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.confirm-modal__actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.confirm-modal__btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-family: var(--font-b, 'Barlow', sans-serif);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.confirm-modal__btn--cancel {
+    background: var(--surface-2, #132436);
+    color: var(--text, #F1F5F9);
+    border: 1px solid var(--border, #1A3050);
+}
+
+.confirm-modal__btn--cancel:hover {
+    background: var(--border, #1A3050);
+}
+
+.confirm-modal__btn--danger {
+    background: #DC2626;
+    color: white;
+}
+
+.confirm-modal__btn--danger:hover {
+    background: #B91C1C;
+}
+
 .toast {
     display: flex;
     align-items: center;
@@ -939,6 +1023,143 @@ function dismissToast(toast) {
     }, 300);
 }
 
+// Custom confirm function
+function confirmDelete(button) {
+    const message = button.dataset.confirm;
+    const form = button.closest('form');
+    
+    const modal = document.getElementById('confirmModal');
+    const titleEl = document.getElementById('confirmModalTitle');
+    const messageEl = document.getElementById('confirmModalMessage');
+    const confirmBtn = document.getElementById('confirmModalConfirm');
+    const cancelBtn = document.getElementById('confirmModalCancel');
+    
+    titleEl.textContent = 'Confirmar eliminación';
+    messageEl.textContent = message;
+    
+    modal.classList.add('active');
+    
+    // Clean up previous event listeners
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    
+    newConfirmBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        form.submit();
+    });
+    
+    newCancelBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+}
+
+// Confirm Modal Functions
+let confirmCallback = null;
+
+function confirmAction(title, message, onConfirm) {
+    const modal = document.getElementById('confirmModal');
+    const titleEl = document.getElementById('confirmModalTitle');
+    const messageEl = document.getElementById('confirmModalMessage');
+    const confirmBtn = document.getElementById('confirmModalConfirm');
+    const cancelBtn = document.getElementById('confirmModalCancel');
+    
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+    confirmCallback = onConfirm;
+    
+    modal.classList.add('active');
+    
+    // Handle button clicks
+    const handleConfirm = () => {
+        modal.classList.remove('active');
+        if (confirmCallback) {
+            confirmCallback();
+            confirmCallback = null;
+        }
+        cleanup();
+    };
+    
+    const handleCancel = () => {
+        modal.classList.remove('active');
+        confirmCallback = null;
+        cleanup();
+    };
+    
+    const cleanup = () => {
+        confirmBtn.removeEventListener('click', handleConfirm);
+        cancelBtn.removeEventListener('click', handleCancel);
+        document.removeEventListener('keydown', handleEscape);
+    };
+    
+    const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+            handleCancel();
+        }
+    };
+    
+    confirmBtn.addEventListener('click', handleConfirm);
+    cancelBtn.addEventListener('click', handleCancel);
+    document.addEventListener('keydown', handleEscape);
+}
+
+// Override confirm for forms
+document.addEventListener('submit', function(e) {
+    const form = e.target;
+    const confirmMsg = form.dataset.confirm || form.getAttribute('data-confirm');
+    if (confirmMsg) {
+        e.preventDefault();
+        const title = form.dataset.confirmTitle || 'Confirmar acción';
+        const message = confirmMsg;
+        confirmAction(title, message, () => {
+            // Submit the form normally
+            const methodInput = form.querySelector('input[name="_method"]');
+            if (methodInput) {
+                // Use method spoofing
+                const tempForm = document.createElement('form');
+                tempForm.action = form.action;
+                tempForm.method = 'POST';
+                
+                // Copy all inputs from original form
+                Array.from(form.querySelectorAll('input, select, textarea')).forEach(input => {
+                    const clone = input.cloneNode(true);
+                    tempForm.appendChild(clone);
+                });
+                
+                document.body.appendChild(tempForm);
+                tempForm.submit();
+            } else {
+                form.submit();
+            }
+        });
+    }
+});
+
+// Handle onclick confirm for links and buttons (only for elements without onclick handler)
+document.addEventListener('click', function(e) {
+    const target = e.target.closest('[data-confirm]');
+    // Skip if element has its own onclick handler - let it handle confirmation itself
+    if (target && !target.hasAttribute('data-confirm-processed') && !target.onclick) {
+        e.preventDefault();
+        target.setAttribute('data-confirm-processed', 'true');
+        
+        const title = target.dataset.confirmTitle || 'Confirmar acción';
+        const message = target.dataset.confirm;
+        
+        confirmAction(title, message, () => {
+            // If it's a link, navigate
+            if (target.tagName === 'A') {
+                window.location.href = target.href;
+            } else if (target.onclick) {
+                target.onclick();
+            } else if (target.type === 'submit') {
+                target.form.submit();
+            }
+        });
+    }
+});
+
 // Add shrink animation
 const style = document.createElement('style');
 style.textContent = `
@@ -997,6 +1218,18 @@ XMLHttpRequest.prototype.open = function(method, url) {
     return originalXHROpen.apply(this, arguments);
 };
 </script>
+
+{{-- Confirm Modal --}}
+<div class="confirm-modal-overlay" id="confirmModal">
+    <div class="confirm-modal">
+        <h3 class="confirm-modal__title" id="confirmModalTitle">Confirmar acción</h3>
+        <p class="confirm-modal__message" id="confirmModalMessage">¿Estás seguro de que deseas continuar?</p>
+        <div class="confirm-modal__actions">
+            <button type="button" class="confirm-modal__btn confirm-modal__btn--cancel" id="confirmModalCancel">Cancelar</button>
+            <button type="button" class="confirm-modal__btn confirm-modal__btn--danger" id="confirmModalConfirm">Eliminar</button>
+        </div>
+    </div>
+</div>
 
 @stack('scripts')
 </body>

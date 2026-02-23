@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 // ============================================================
 // 🌐 RUTAS PÚBLICAS (Sin autenticación)
@@ -37,7 +37,35 @@ Route::get('/producto/{slug}', function ($slug) {
 
 // Promociones públicas
 Route::get('/promociones', function () {
-    return view('public.promotions.index');
+    $promociones = \App\Models\Promotion::where('is_active', true)
+        ->where(function($query) {
+            $query->whereDate('start_date', '<=', now())
+                  ->orWhereNull('start_date');
+        })
+        ->where(function($query) {
+            $query->whereDate('end_date', '>=', now())
+                  ->orWhereNull('end_date');
+        })
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // Productos que tienen promociones activas
+    $productosEnPromo = \App\Models\Product::where('is_active', true)
+        ->whereHas('promotions', function($query) {
+            $query->where('is_active', true)
+                ->where(function($q) {
+                    $q->whereDate('start_date', '<=', now())
+                      ->orWhereNull('start_date');
+                })
+                ->where(function($q) {
+                    $q->whereDate('end_date', '>=', now())
+                      ->orWhereNull('end_date');
+                });
+        })
+        ->with('category', 'promotions', 'images')
+        ->get();
+
+    return view('public.promotions.index', compact('promociones', 'productosEnPromo'));
 })->name('promociones.index');
 
 // ============================================================
@@ -78,12 +106,13 @@ Route::get('/admin/dashboard', function () {
 })->name('admin.dashboard');
 
 // Categorías - Listar
-Route::get('/admin/categorias', [CategoryController::class, 'index'])
+Route::get('/admin/categorias', [AdminCategoryController::class, 'index'])
     ->name('admin.categorias.index');
 
 // Categoría - Ver detalle
-Route::get('/admin/categorias/{id}', [CategoryController::class, 'show'])
-    ->name('admin.categorias.show');
+Route::get('/admin/categorias/{id}', [AdminCategoryController::class, 'show'])
+    ->name('admin.categorias.show')
+    ->where('id', '[0-9]+');
 
 // Productos - Listar
 Route::get('/admin/productos', [ProductController::class, 'index'])
@@ -91,7 +120,8 @@ Route::get('/admin/productos', [ProductController::class, 'index'])
 
 // Producto - Ver detalle
 Route::get('/admin/productos/{id}', [ProductController::class, 'show'])
-    ->name('admin.productos.show');
+    ->name('admin.productos.show')
+    ->where('id', '[0-9]+');
 
 
 Route::get('/admin/promociones', [AdminPromotionController::class, 'index'])
@@ -138,23 +168,23 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     // ---------- CATEGORÍAS (CRUD) ----------
     // Create - Formulario
-    Route::get('/admin/categorias/create', [CategoryController::class, 'create'])
+    Route::get('/admin/categorias/create', [AdminCategoryController::class, 'create'])
         ->name('admin.categorias.create');
     
     // Create - Guardar
-    Route::post('/admin/categorias', [CategoryController::class, 'store'])
+    Route::post('/admin/categorias', [AdminCategoryController::class, 'store'])
         ->name('admin.categorias.store');
     
     // Edit - Formulario
-    Route::get('/admin/categorias/{id}/edit', [CategoryController::class, 'edit'])
+    Route::get('/admin/categorias/{id}/edit', [AdminCategoryController::class, 'edit'])
         ->name('admin.categorias.edit');
     
     // Edit - Actualizar
-    Route::put('/admin/categorias/{id}', [CategoryController::class, 'update'])
+    Route::put('/admin/categorias/{id}', [AdminCategoryController::class, 'update'])
         ->name('admin.categorias.update');
     
     // Delete
-    Route::delete('/admin/categorias/{id}', [CategoryController::class, 'destroy'])
+    Route::delete('/admin/categorias/{id}', [AdminCategoryController::class, 'destroy'])
         ->name('admin.categorias.destroy');
 
     // ---------- PRODUCTOS (CRUD) ----------

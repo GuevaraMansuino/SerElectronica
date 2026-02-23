@@ -11,6 +11,12 @@ class Promotion extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'is_active' => 'boolean',
+    ];
+
     protected $fillable = [
     'title',
     'description',
