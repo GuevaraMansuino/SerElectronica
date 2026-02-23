@@ -1136,11 +1136,10 @@ document.addEventListener('submit', function(e) {
     }
 });
 
-// Handle onclick confirm for links and buttons (only for elements without onclick handler)
+// Handle onclick confirm for links and buttons
 document.addEventListener('click', function(e) {
     const target = e.target.closest('[data-confirm]');
-    // Skip if element has its own onclick handler - let it handle confirmation itself
-    if (target && !target.hasAttribute('data-confirm-processed') && !target.onclick) {
+    if (target && !target.hasAttribute('data-confirm-processed')) {
         e.preventDefault();
         target.setAttribute('data-confirm-processed', 'true');
         

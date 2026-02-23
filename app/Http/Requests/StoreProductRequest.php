@@ -19,7 +19,14 @@ class StoreProductRequest extends FormRequest
             'slug' => 'required|string|max:255|unique:products,slug|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|string|max:5000',
             'price' => 'required|numeric|min:0|max:999999999',
-            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048'
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'marca' => 'nullable|string|max:255',
+            'modelo' => 'nullable|string|max:255',
+            'is_new' => 'boolean',
+            'destacado' => 'boolean',
+            'is_active' => 'boolean',
+            'gallery_images' => 'nullable|array',
+            'gallery_images.*' => 'image|mimes:jpg,jpeg,png,gif,webp|max:2048'
         ];
     }
 
@@ -35,6 +42,13 @@ class StoreProductRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // Generar slug automáticamente desde el nombre si no existe
+        if (!$this->slug && $this->name) {
+            $this->merge([
+                'slug' => \Illuminate\Support\Str::slug($this->name)
+            ]);
+        }
+
         if ($this->slug) {
             $this->merge([
                 'slug' => strtolower(trim($this->slug))
@@ -46,5 +60,12 @@ class StoreProductRequest extends FormRequest
                 'price' => round(floatval($this->price), 2)
             ]);
         }
+
+        // Manejar checkboxes: si no vienen, son false
+        $this->merge([
+            'is_new' => $this->has('is_new'),
+            'destacado' => $this->has('destacado'),
+            'is_active' => $this->has('is_active'),
+        ]);
     }
 }

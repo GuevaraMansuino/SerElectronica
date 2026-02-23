@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Http\Traits\ImageTrait;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Promotion;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    use ImageTrait;
 
     public function index()
     {
@@ -31,65 +31,32 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
-        // Map Spanish field names to English
-        $data = $request->all();
-        $map = [
-            'nombre' => 'name',
-            'categoria_id' => 'category_id',
-            'precio' => 'price',
-            'descripcion' => 'description',
-        ];
-        foreach ($map as $es => $en) {
-            if (isset($data[$es])) {
-                $data[$en] = $data[$es];
-                unset($data[$es]);
-            }
-        }
-        
-        // Validate with mapped data
-        $validated = validator($data, [
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'slug' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'marca' => 'sometimes|string',
-            'modelo' => 'sometimes|string',
-            'destacado' => 'sometimes|boolean',
-            'is_active' => 'sometimes|boolean',
-        ])->validate();
+        $validated = $request->validated();
 
         // Guardar imagen principal
-        $validated['image'] = $this->saveImage($request, 'image');
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        } else {
+            $validated['image'] = null;
+        }
+
+        // Quitar gallery_images del array antes de crear (no es columna de la tabla products)
+        unset($validated['gallery_images']);
 
         $product = Product::create($validated);
 
         // Guardar imágenes de la galería (siempre es un INSERT, no UPDATE)
-        $galleryFiles = $request->file('gallery_images');
-        
-        if ($galleryFiles) {
-            $fileCount = is_array($galleryFiles) ? count($galleryFiles) : 1;
-            
-            // También verificar si viene como array
-            if (is_array($galleryFiles)) {
-                foreach ($galleryFiles as $file) {
-                    if ($file && $file->isValid()) {
-                        $path = $file->store('products/gallery', 'public');
-                        $product->images()->create([
-                            'image_path' => $path,
-                            'order' => $galleryOrder++,
-                            'is_primary' => false,
-                        ]);
-                    }
+        if ($request->hasFile('gallery_images')) {
+            $galleryOrder = 1;
+            foreach ($request->file('gallery_images') as $file) {
+                if ($file->isValid()) {
+                    $path = $file->store('products/gallery', 'public');
+                    $product->images()->create([
+                        'image_path' => $path,
+                        'order' => $galleryOrder++,
+                        'is_primary' => false,
+                    ]);
                 }
-            } elseif ($galleryFiles->isValid()) {
-                // Es un solo archivo
-                $path = $galleryFiles->store('products/gallery', 'public');
-                $product->images()->create([
-                    'image_path' => $path,
-                    'order' => 0,
-                    'is_primary' => false,
-                ]);
             }
         }
 
@@ -109,44 +76,28 @@ class ProductController extends Controller
         return view('admin.productos.edit', compact('producto', 'categorias', 'promociones'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateProductRequest $request, string $id)
     {
-        // Map Spanish field names to English
-        $data = $request->all();
-        $map = [
-            'nombre' => 'name',
-            'categoria_id' => 'category_id',
-            'precio' => 'price',
-            'descripcion' => 'description',
-        ];
-        foreach ($map as $es => $en) {
-            if (isset($data[$es])) {
-                $data[$en] = $data[$es];
-                unset($data[$es]);
-            }
-        }
-        
-        // Validate with mapped data
-        $validated = validator($data, [
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'price' => 'required|numeric|min:0',
-            'slug' => 'sometimes|string|max:255',
-            'description' => 'nullable|string',
-            'destacado' => 'sometimes|boolean',
-            'is_active' => 'sometimes|boolean',
-        ])->validate();
+        $validated = $request->validated();
 
         $product = Product::findOrFail($id);
 
         // Si hay nueva imagen, eliminar la anterior
         if ($request->hasFile('image')) {
-            $this->deleteImage($product->image);
-            $validated['image'] = $this->saveImage($request, 'image');
-        } elseif ($request->has('image') && $request->image !== $product->image) {
-            $this->deleteImage($product->image);
-            $validated['image'] = $request->image;
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $validated['image'] = $request->file('image')->store('products', 'public');
+        } elseif ($request->has('eliminar_imagen') && $request->eliminar_imagen == '1') {
+            // Eliminar imagen existente si se marcó para eliminar
+            if ($product->image) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $validated['image'] = null;
         }
+
+        // Quitar gallery_images del array antes de actualizar
+        unset($validated['gallery_images']);
 
         $product->update($validated);
 
@@ -156,36 +107,27 @@ class ProductController extends Controller
         if (!empty($deleteIds)) {
             $imagesToDelete = $product->images()->whereIn('id', $deleteIds)->get();
             foreach ($imagesToDelete as $img) {
-                $this->deleteImage($img->image_path);
+                if ($img->image_path) {
+                    Storage::disk('public')->delete($img->image_path);
+                }
             }
             $product->images()->whereIn('id', $deleteIds)->delete();
         }
 
         // Agregar nuevas imágenes a la galería (siempre es un INSERT)
-        $galleryFiles = $request->file('gallery_images');
-        if ($galleryFiles) {
+        if ($request->hasFile('gallery_images')) {
             $currentMaxOrder = $product->images()->max('order') ?? 0;
             $galleryOrder = $currentMaxOrder + 1;
             
-            if (is_array($galleryFiles)) {
-                foreach ($galleryFiles as $file) {
-                    if ($file && $file->isValid()) {
-                        $path = $file->store('products/gallery', 'public');
-                        $product->images()->create([
-                            'image_path' => $path,
-                            'order' => $galleryOrder++,
-                            'is_primary' => false,
-                        ]);
-                    }
+            foreach ($request->file('gallery_images') as $file) {
+                if ($file->isValid()) {
+                    $path = $file->store('products/gallery', 'public');
+                    $product->images()->create([
+                        'image_path' => $path,
+                        'order' => $galleryOrder++,
+                        'is_primary' => false,
+                    ]);
                 }
-            } elseif ($galleryFiles->isValid()) {
-                // Es un solo archivo
-                $path = $galleryFiles->store('products/gallery', 'public');
-                $product->images()->create([
-                    'image_path' => $path,
-                    'order' => $galleryOrder,
-                    'is_primary' => false,
-                ]);
             }
         }
 
@@ -204,7 +146,9 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         
         // Eliminar imagen
-        $this->deleteImage($product->image);
+        if ($product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
         
         $product->delete();
 
@@ -218,5 +162,19 @@ class ProductController extends Controller
         $product->save();
 
         return back()->with('success', 'Estado actualizado');
+    }
+    
+    /**
+     * Eliminar imagen de la galería
+     */
+    public function deleteGalleryImage(string $imageId)
+    {
+        $image = ProductImage::findOrFail($imageId);
+        if ($image->image_path) {
+            Storage::disk('public')->delete($image->image_path);
+        }
+        $image->delete();
+        
+        return response()->json(['success' => true]);
     }
 }

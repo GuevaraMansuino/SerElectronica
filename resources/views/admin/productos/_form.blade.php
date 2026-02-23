@@ -11,14 +11,14 @@
     $method = $isEdit ? 'PUT' : 'POST';
 @endphp
 
-<form action="{{ $action }}" method="POST" enctype="multipart/form-data" id="producto-form">
-    @csrf
-    @method($method)
-
     <div style="display:grid;grid-template-columns:1fr 340px;gap:1.8rem;align-items:start;">
 
         {{-- COLUMNA PRINCIPAL --}}
         <div>
+            <form action="{{ $action }}" method="POST" enctype="multipart/form-data" id="producto-form">
+            @csrf
+            @method($method)
+
             {{-- Tabs --}}
             <div class="form-tabs">
                 <button type="button" class="form-tab active" data-tab="info">Información</button>
@@ -42,10 +42,10 @@
                             <div class="fgroup form-full">
                                 <label class="flabel" for="nombre">Nombre del producto <em>*</em></label>
                                 <input type="text"
-                                       name="nombre"
+                                       name="name"
                                        id="nombre"
                                        class="finput"
-                                       value="{{ old('nombre', $producto->nombre ?? '') }}"
+                                       value="{{ old('name', $producto->name ?? '') }}"
                                        placeholder='Ej: Parlante Activo 15" JBL PRX715'
                                        required
                                        maxlength="200">
@@ -54,7 +54,7 @@
                             {{-- Categoría --}}
                             <div class="fgroup">
                                 <label class="flabel" for="categoria_id">Categoría <em>*</em></label>
-                                <select name="categoria_id"
+                                <select name="category_id"
                                         id="categoria_id"
                                         class="fselect"
                                         required>
@@ -76,10 +76,10 @@
                                 <div style="position:relative;">
                                     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-family:var(--font-display);font-size:1rem;">$</span>
                                     <input type="number"
-                                           name="precio"
+                                           name="price"
                                            id="precio"
                                            class="finput"
-                                           value="{{ old('precio', $producto->precio ?? '') }}"
+                                           value="{{ old('price', $producto->price ?? '') }}"
                                            placeholder="0"
                                            min="0"
                                            step="100"
@@ -115,12 +115,12 @@
                                 <label class="flabel" for="descripcion">
                                     Descripción <em>*</em>
                                 </label>
-                                <textarea name="descripcion"
+                                <textarea name="description"
                                           id="descripcion"
                                           class="ftextarea"
                                           rows="6"
                                           placeholder="Describí el producto: características técnicas, uso recomendado, potencia, conectividad..."
-                                          required>{{ old('descripcion', $producto->descripcion ?? '') }}</textarea>
+                                          required>{{ old('description', $producto->description ?? '') }}</textarea>
                             </div>
 
                         </div>
@@ -144,7 +144,7 @@
                              ondragleave="this.style.borderColor='var(--border-solid)'"
                              ondrop="handleProductoDrop(event)">
                             <input type="file"
-                                   name="imagen"
+                                   name="image"
                                    id="producto-img-input"
                                    accept="image/jpeg,image/png,image/webp"
                                    style="display:none"
@@ -155,12 +155,19 @@
                         </div>
 
                         {{-- Preview --}}
-                        @if($isEdit && $producto->imagen)
-                        <div id="producto-img-preview" style="margin-top:0.8rem;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-solid);">
-                            <img src="{{ asset('storage/' . $producto->imagen) }}"
+                        @if($isEdit && $producto->image)
+                        <div id="producto-img-preview" style="margin-top:0.8rem;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-solid);position:relative;">
+                            <img src="{{ asset('storage/' . $producto->image) }}"
                                  alt="Imagen actual"
                                  style="width:100%;max-height:200px;object-fit:cover;display:block;">
+                            <button type="button"
+                                    onclick="eliminarImagenPrincipal()"
+                                    style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;"
+                                    title="Eliminar imagen">
+                                ✕
+                            </button>
                         </div>
+                        <input type="hidden" name="eliminar_imagen" id="eliminar-imagen" value="0">
                         @else
                         <div id="producto-img-preview"></div>
                         @endif
@@ -247,6 +254,7 @@
                     </div>
                 </div>
             </div>
+            </form>
         </div>
 
         {{-- COLUMNA LATERAL --}}
@@ -256,7 +264,7 @@
                     <span class="acard-title">Publicar</span>
                 </div>
                 <div class="acard-body" style="display:flex;flex-direction:column;gap:0.7rem;">
-                    <button type="submit" class="abtn abtn-lime" style="justify-content:center;width:100%;padding:11px;">
+                    <button type="submit" form="producto-form" class="abtn abtn-lime" style="justify-content:center;width:100%;padding:11px;">
                         {{ $isEdit ? '💾 Guardar cambios' : '+ Crear producto' }}
                     </button>
                     <a href="{{ route('admin.productos.index') }}" class="abtn abtn-outline" style="justify-content:center;">
@@ -291,7 +299,6 @@
             @endif
         </div>
     </div>
-</form>
 
 <style>
 .img-dropzone {
@@ -386,7 +393,7 @@
     object-fit: cover;
 }
 
-.gallery-item__delete {
+.gallery-preview__item button {
     position: absolute;
     top: 4px;
     right: 4px;
@@ -401,17 +408,49 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all var(--t);
-    opacity: 0;
+    z-index: 10;
 }
 
-.gallery-item:hover .gallery-item__delete {
-    opacity: 1;
+.gallery-preview__delete {
+    width: 28px !important;
+    height: 28px !important;
+    background: #dc2626 !important;
+    border: 2px solid white !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+}
+
+.gallery-preview__item button:hover {
+    background: var(--danger);
+    transform: scale(1.1);
+}
+
+/* Gallery item delete button - siempre visible */
+.gallery-item__delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #dc2626 !important;
+    color: white !important;
+    border: 2px solid white !important;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 1 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
 .gallery-item__delete:hover {
     background: var(--danger);
     transform: scale(1.1);
+    opacity: 1;
 }
 
 .gallery-item.deleting {
@@ -457,11 +496,34 @@ function handleProductoFile(input) {
     const reader = new FileReader();
     reader.onload = e => {
         document.getElementById('producto-img-preview').innerHTML = `
-            <div style="border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-solid);margin-top:0.8rem;">
+            <div style="border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-solid);margin-top:0.8rem;position:relative;">
                 <img src="${e.target.result}" style="width:100%;max-height:200px;object-fit:cover;display:block;">
+                <button type=\"button\"
+                        onclick=\"limpiarImagenPrincipal()\"
+                        style=\"position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;\"
+                        title=\"Eliminar imagen\">
+                    ✕
+                </button>
             </div>`;
     };
     reader.readAsDataURL(input.files[0]);
+}
+
+function eliminarImagenPrincipal() {
+    // Marcar la imagen para eliminación
+    document.getElementById('eliminar-imagen').value = '1';
+    // Ocultar la imagen
+    document.getElementById('producto-img-preview').innerHTML = '';
+    // Mostrar el dropzone
+    document.getElementById('producto-dz').style.display = 'block';
+}
+
+function limpiarImagenPrincipal() {
+    // Limpiar el input de archivo
+    const input = document.getElementById('producto-img-input');
+    input.value = '';
+    // Limpiar el preview
+    document.getElementById('producto-img-preview').innerHTML = '';
 }
 
 function handleProductoDrop(e) {
@@ -477,50 +539,74 @@ function handleProductoDrop(e) {
 }
 
 /* ── Galería de imágenes ───────────────────────────────── */
+// Usamos DataTransfer para acumular archivos (simula el comportamiento de un input file acumulativo)
+let galleryDT = new DataTransfer();
+
 function handleGalleryFiles(input) {
     if (!input.files || input.files.length === 0) return;
     
-    const files = Array.from(input.files);
-    const previewContainer = document.getElementById('gallery-preview');
-    
-    // Clear previous previews
-    previewContainer.innerHTML = '';
-    
-    // Show previews for all files currently in the input
-    Array.from(input.files).forEach((file, index) => {
-        if (!file.type.startsWith('image/')) return;
-        
-        const reader = new FileReader();
-        reader.onload = e => {
-            const div = document.createElement('div');
-            div.className = 'gallery-preview__item';
-            div.dataset.index = index;
-            div.innerHTML = `
-                <img src="${e.target.result}" alt="Preview">
-            `;
-            previewContainer.appendChild(div);
-        };
-        reader.readAsDataURL(file);
+    // Agregar nuevos archivos al DataTransfer global (máximo 10 total)
+    Array.from(input.files).forEach(file => {
+        if (file.type.startsWith('image/') && galleryDT.items.length < 10) {
+            galleryDT.items.add(file);
+        }
     });
+
+    // Actualizar el input real con los archivos acumulados
+    input.files = galleryDT.files;
+    
+    renderGalleryPreview();
 }
 
 function handleGalleryDrop(e) {
     e.preventDefault();
     document.getElementById('gallery-dz').style.borderColor = 'var(--border-solid)';
+    
     const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
     if (files.length === 0) return;
     
     const input = document.getElementById('gallery-img-input');
-    const dt = new DataTransfer();
     
-    // Add existing files + new dropped files
-    Array.from(input.files).forEach(f => dt.items.add(f));
-    files.forEach(f => {
-        if (dt.items.length < 10) dt.items.add(f);
+    files.forEach(file => {
+        if (galleryDT.items.length < 10) {
+            galleryDT.items.add(file);
+        }
     });
     
-    input.files = dt.files;
-    handleGalleryFiles(input);
+    input.files = galleryDT.files;
+    renderGalleryPreview();
+}
+
+function removeNewGalleryImage(index) {
+    const dt = new DataTransfer();
+    const files = galleryDT.files;
+    
+    for (let i = 0; i < files.length; i++) {
+        if (i !== index) dt.items.add(files[i]);
+    }
+    
+    galleryDT = dt;
+    document.getElementById('gallery-img-input').files = galleryDT.files;
+    renderGalleryPreview();
+}
+
+function renderGalleryPreview() {
+    const container = document.getElementById('gallery-preview');
+    container.innerHTML = '';
+    
+    Array.from(galleryDT.files).forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const div = document.createElement('div');
+            div.className = 'gallery-preview__item';
+            div.innerHTML = `
+                <img src="${e.target.result}" alt="Preview">
+                <button type="button" onclick="removeNewGalleryImage(${index})" title="Quitar">✕</button>
+            `;
+            container.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
 /* ── Eliminar imagen existente ───────────────────────── */
@@ -569,19 +655,6 @@ function deleteGalleryImage(imageId, button) {
     newCancelBtn.addEventListener('click', () => {
         modal.classList.remove('active');
     });
-}
-    
-    const item = button.parentElement;
-    item.classList.add('deleting');
-    
-    // Mark for deletion in form data
-    document.getElementById('delete-img-' + imageId).value = imageId;
-    
-    // Visual feedback
-    setTimeout(() => {
-        item.style.opacity = '0.3';
-        item.style.pointerEvents = 'none';
-    }, 300);
 }
 </script>
 @endpush

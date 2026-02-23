@@ -212,6 +212,10 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/admin/productos/{id}', [AdminProductController::class, 'destroy'])
         ->name('admin.productos.destroy');
     
+    // Delete gallery image
+    Route::delete('/admin/productos/gallery/{imageId}', [AdminProductController::class, 'deleteGalleryImage'])
+        ->name('admin.productos.gallery.destroy');
+    
     // Toggle activo
     Route::patch('/admin/productos/{id}/toggle', [AdminProductController::class, 'toggle'])
         ->name('admin.productos.toggle');
