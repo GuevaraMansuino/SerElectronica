@@ -7,6 +7,7 @@ use App\Models\Promotion;
 use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PromotionController extends Controller
 {
@@ -48,7 +49,7 @@ class PromotionController extends Controller
             }
         }
 
-        $validated = \Validator::make($data, [
+        $validated = Validator::make($data, [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
@@ -114,7 +115,7 @@ class PromotionController extends Controller
             }
         }
 
-        $validated = \Validator::make($data, [
+        $validated = Validator::make($data, [
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',

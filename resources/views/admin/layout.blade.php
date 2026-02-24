@@ -761,11 +761,11 @@
 
         {{-- Flash Messages as Toasts --}}
         @if(session('success'))
-            <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session('success') }}', 'success'); });</script>
+            <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("success") }}', 'success'); });</script>
         @endif
 
         @if(session('error'))
-            <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session('error') }}', 'error'); });</script>
+            <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session("error") }}', 'error'); });</script>
         @endif
 
         @yield('content')

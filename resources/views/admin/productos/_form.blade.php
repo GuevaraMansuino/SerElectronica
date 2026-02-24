@@ -215,7 +215,7 @@
                                     <img src="{{ asset('storage/' . $img->image_path) }}" alt="Galería">
                                     <button type="button" 
                                             class="gallery-item__delete" 
-                                            onclick="deleteGalleryImage({{ $img->id }}, this)"
+                                            onclick="deleteGalleryImage('{{ $img->id }}', this)"
                                             title="Eliminar imagen">
                                         ✕
                                     </button>

@@ -77,6 +77,14 @@
     border-radius: 3px;
     border: 1px solid var(--border-solid);
 }
+.btn-toggle-off {
+    border-color: rgba(239,68,68,0.3) !important;
+    color: #fca5a5 !important;
+}
+.btn-toggle-on {
+    border-color: rgba(34,197,94,0.3) !important;
+    color: #86efac !important;
+}
 </style>
 @endpush
 
@@ -312,13 +320,13 @@
                     toggleDiscountFields();
                     
                     // Set initial state based on existing values
-                    @if($isEdit && $promo->discount_percentage)
+                    if ("{{ ($isEdit && $promo->discount_percentage) ? '1' : '0' }}" === "1") {
                         document.getElementById('discount_percentage').checked = true;
                         toggleDiscountFields();
-                    @elseif($isEdit && $promo->discount_amount)
+                    } else if ("{{ ($isEdit && $promo->discount_amount) ? '1' : '0' }}" === "1") {
                         document.getElementById('discount_amount').checked = true;
                         toggleDiscountFields();
-                    @endif
+                    }
                 });
                 </script>
             </div>
@@ -372,11 +380,11 @@
         {{-- Toggle rápido --}}
         <form action="{{ route('admin.promociones.toggle', $promo) }}"
               method="POST"
-              style="margin-bottom:0.5rem;">
-            @csrf @method('PATCH')
+              style="margin-bottom:0.5rem; display:block;">
+            @csrf @method('POST')
             <button type="submit"
-                    class="abtn abtn-outline"
-                    style="width:100%;justify-content:center;{{ $promo->activa ? 'border-color:rgba(239,68,68,0.3);color:#fca5a5;' : 'border-color:rgba(34,197,94,0.3);color:#86efac;' }}">
+                    class="abtn abtn-outline {{ $promo->activa ? 'btn-toggle-off' : 'btn-toggle-on' }}"
+                    style="width:100%;justify-content:center;">
                 {{ $promo->activa ? '⏸ Desactivar' : '▶ Activar' }}
             </button>
         </form>
@@ -401,7 +409,7 @@
 
 @push('scripts')
 <script>
-/* ── Live preview ─────────────────────────────────────── */
+// Live preview
 function updatePreview() {
     const titulo = document.getElementById('titulo').value || 'Título de la promoción';
     const desc   = document.getElementById('descripcion').value || 'La descripción aparecerá aquí...';
@@ -410,11 +418,13 @@ function updatePreview() {
     document.getElementById('preview-desc').textContent   = desc.length > 80 ? desc.slice(0, 80) + '...' : desc;
 }
 
-/* ── Checkbox color inicial ───────────────────────────── */
-const activaCheck = document.getElementById('activa');
-const activaLabel = document.getElementById('activa-label');
-if (activaCheck && activaCheck.checked) {
-    activaLabel.style.borderColor = 'var(--lime)';
-}
+// Checkbox color inicial
+document.addEventListener('DOMContentLoaded', function() {
+    const activaCheck = document.getElementById('activa');
+    const activaLabel = document.getElementById('activa-label');
+    if (activaCheck && activaCheck.checked) {
+        activaLabel.style.borderColor = 'var(--lime)';
+    }
+});
 </script>
 @endpush

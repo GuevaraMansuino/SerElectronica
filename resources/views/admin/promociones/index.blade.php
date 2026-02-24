@@ -12,6 +12,12 @@
 </a>
 @endsection
 
+@push('styles')
+<style>
+.action-btn-lime { color: var(--lime) !important; }
+</style>
+@endpush
+
 @section('content')
 
 <div style="display:grid;grid-template-columns:1fr 280px;gap:1.5rem;align-items:start;">
@@ -118,9 +124,8 @@
                             <div class="td-actions" style="justify-content:flex-end;">
                                 {{-- Toggle activa/inactiva - using signed URL --}}
                                 <a href="{{ URL::signedRoute('admin.promociones.toggle', ['id' => $promo->id]) }}"
-                                   class="action-btn"
-                                   title="{{ $promo->activa ? 'Desactivar' : 'Activar' }}"
-                                   style="{{ $promo->activa ? '' : 'color:var(--lime)' }}">
+                                   class="action-btn {{ !$promo->activa ? 'action-btn-lime' : '' }}"
+                                   title="{{ $promo->activa ? 'Desactivar' : 'Activar' }}">
                                     @if($promo->activa)
                                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path d="M18.36 6.64a9 9 0 11-12.73 0"/>

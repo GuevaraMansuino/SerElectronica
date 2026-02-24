@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\AuthController;
@@ -74,7 +75,7 @@ Route::get('/promociones', function () {
 
 // Login - GET (mostrar formulario)
 Route::get('/login', function () {
-    if (auth()->check()) {
+    if (Auth::check()) {
         return redirect()->route('admin.dashboard');
     }
     return view('auth.login');
