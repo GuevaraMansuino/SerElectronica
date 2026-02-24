@@ -1,3 +1,7 @@
+nuevos colores 
+Beige: #DCD0BA
+Verde Bosque: #2A4941
+
 # ⚡ Catálogo Digital - SER Electrónica
 
 Este proyecto es una aplicación web desarrollada en **Laravel** para la gestión y visualización del catálogo de productos de **SER Electrónica**, una empresa ubicada en Mendoza dedicada a la venta de electrónica, audio y componentes.

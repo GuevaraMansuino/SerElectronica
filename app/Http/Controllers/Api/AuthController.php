@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
 
 class AuthController extends Controller
 {
@@ -52,7 +54,8 @@ class AuthController extends Controller
             }
 
             // Iniciar sesión
-            auth()->login($user);
+            // Capturamos el valor del checkbox 'remember' (true/false)
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
             
             return redirect()->intended(route('admin.dashboard'));
@@ -77,7 +80,7 @@ class AuthController extends Controller
         // Verificar si es una solicitud web (session-based)
         if (!$request->expectsJson()) {
             // Logout web - invalidate session
-            auth()->logout();
+            Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             
