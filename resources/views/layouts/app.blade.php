@@ -20,32 +20,32 @@
        Circuit Navy #0C1A2B  ·  Solar Lime #B6FF3B
     ================================================================ */
     :root {
-        /* 60% — Fondo principal */
-        --bg:           #0C1A2B;
-        /* 20% — Superficies / Cards */
-        --surface:      #162C46;
-        --surface-2:    #1A3454;
-        --surface-3:    #1F3D62;
+        /* 60% — Fondo principal (Verde Bosque) */
+        --bg:           #2A4941;
+        /* 20% — Superficies / Cards (Verde ligeramente más claro) */
+        --surface:      #33524A;
+        --surface-2:    #3C5F56;
+        --surface-3:    #1E3630;
 
         /* Bordes */
-        --border:       rgba(182, 255, 59, 0.1);
-        --border-solid: #1E3A56;
+        --border:       rgba(220, 208, 186, 0.15);
+        --border-solid: #DCD0BA;
 
-        /* 10% — Texto */
-        --text:         #F1F5F9;
-        --text-2:       #94A3B8;
-        --text-3:       #4A6380;
+        /* 10% — Texto (Beige Claro para leer sobre verde) */
+        --text:         #F0EAD6;
+        --text-2:       #DCD0BA; /* Beige Original */
+        --text-3:       #A89F8E;
 
-        /* 10% — Acento Solar Lime */
-        --lime:         #B6FF3B;
-        --lime-dim:     rgba(182, 255, 59, 0.12);
-        --lime-glow:    rgba(182, 255, 59, 0.25);
-        --lime-dark:    #8BCC1A;
+        /* 10% — Acento (Beige) */
+        --lime:         #DCD0BA;
+        --lime-dim:     rgba(220, 208, 186, 0.1);
+        --lime-glow:    rgba(220, 208, 186, 0.25);
+        --lime-dark:    #C4B8A0;
 
         /* Estados */
-        --danger:       #FF4D4D;
-        --success:      #22C55E;
-        --warning:      #F59E0B;
+        --danger:       #DC2626;
+        --success:      #16A34A;
+        --warning:      #D97706;
 
         /* Tipografía */
         --font-display: 'Barlow Condensed', sans-serif;
@@ -58,7 +58,7 @@
         --radius-xl:    20px;
         --t:            0.22s cubic-bezier(0.4, 0, 0.2, 1);
         --shadow:       0 4px 24px rgba(0,0,0,0.4);
-        --shadow-lime:  0 0 32px rgba(182, 255, 59, 0.2);
+        --shadow-lime:  0 0 32px rgba(220, 208, 186, 0.15);
     }
 
     /* ================================================================
@@ -81,8 +81,8 @@
         position: fixed;
         inset: 0;
         background-image:
-            linear-gradient(rgba(182,255,59,0.025) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(182,255,59,0.025) 1px, transparent 1px);
+            linear-gradient(rgba(220,208,186,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(220,208,186,0.05) 1px, transparent 1px);
         background-size: 48px 48px;
         pointer-events: none;
         z-index: 0;
@@ -99,7 +99,7 @@
         position: sticky;
         top: 0;
         z-index: 200;
-        background: rgba(12, 26, 43, 0.92);
+        background: rgba(42, 73, 65, 0.95);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid var(--border);
@@ -133,7 +133,6 @@
     .logo-mark__hex {
         width: 38px;
         height: 38px;
-        background: var(--lime);
         clip-path: polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%);
         display: grid;
         place-items: center;
@@ -421,7 +420,7 @@
     .footer__brand-name em { color: var(--lime); font-style: normal; }
 
     .footer__desc {
-        font-size: 0.88rem;
+        font-size: 0.98rem;
         color: var(--text-2);
         line-height: 1.75;
         max-width: 270px;
@@ -444,7 +443,7 @@
 
     .footer__col-title {
         font-family: var(--font-mono);
-        font-size: 0.65rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.2em;
         color: var(--lime);
@@ -452,7 +451,7 @@
         display: block;
     }
 
-    .footer__nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+    .footer__nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
 
     .footer__nav-list a {
         font-size: 0.88rem;
@@ -631,16 +630,16 @@
         background: var(--lime);
         color: var(--bg);
         font-family: var(--font-mono);
-        font-size: 0.6rem;
+        font-size: 0.7rem;
         font-weight: 500;
         letter-spacing: 0.15em;
         text-transform: uppercase;
-        padding: 3px 9px;
-        border-radius: 3px;
+        padding: 4px 12px;
+        border-radius: 4px;
     }
 
     .product-card__body {
-        padding: 0.8rem;
+        padding: 1rem;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -648,29 +647,29 @@
 
     .product-card__cat {
         font-family: var(--font-mono);
-        font-size: 0.55rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.15em;
         color: var(--lime);
-        margin-bottom: 0.2rem;
+        margin-bottom: 0.3rem;
     }
 
     .product-card__name {
         font-family: var(--font-display);
-        font-size: 0.9rem;
+        font-size: 1.1rem;
         font-weight: 700;
         letter-spacing: 0.02em;
         color: var(--text);
-        margin-bottom: 0.3rem;
+        margin-bottom: 0.4rem;
         line-height: 1.25;
     }
 
     .product-card__desc {
-        font-size: 0.7rem;
+        font-size: 0.85rem;
         color: var(--text-2);
         line-height: 1.4;
         flex: 1;
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.7rem;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -681,13 +680,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-top: 0.6rem;
+        padding-top: 0.7rem;
         border-top: 1px solid var(--border-solid);
     }
 
     .product-card__price {
         font-family: var(--font-display);
-        font-size: 1.1rem;
+        font-size: 1.35rem;
         font-weight: 700;
         color: var(--lime);
         letter-spacing: 0.02em;
@@ -697,22 +696,22 @@
     .product-card__price small {
         display: block;
         font-family: var(--font-body);
-        font-size: 0.6rem;
+        font-size: 0.75rem;
         font-weight: 400;
         color: var(--text-3);
         letter-spacing: 0.05em;
         text-transform: uppercase;
-        margin-bottom: 1px;
+        margin-bottom: 2px;
     }
 
     .product-card__cta {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 5px 10px;
+        gap: 5px;
+        padding: 7px 14px;
         border: 1px solid var(--border-solid);
         border-radius: var(--radius);
-        font-size: 0.65rem;
+        font-size: 0.8rem;
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
@@ -729,19 +728,19 @@
     /* Mobile: Product cards en 2 columnas */
     @media (max-width: 768px) {
         .product-card__body {
-            padding: 0.8rem;
+            padding: 0.9rem;
         }
         
         .product-card__cat {
-            font-size: 0.55rem;
+            font-size: 0.65rem;
         }
         
         .product-card__name {
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
         
         .product-card__desc {
-            font-size: 0.7rem;
+            font-size: 0.8rem;
             margin-bottom: 0.6rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -757,18 +756,18 @@
         }
         
         .product-card__price {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
         }
         
         .product-card__price small {
-            font-size: 0.6rem;
+            font-size: 0.7rem;
         }
         
         .product-card__cta {
             width: 100%;
             justify-content: center;
-            padding: 6px 10px;
-            font-size: 0.7rem;
+            padding: 8px 12px;
+            font-size: 0.75rem;
         }
     }
 
@@ -826,7 +825,12 @@
         <a href="{{ route('home') }}" class="navbar__logo" aria-label="SER Electrónica — Inicio">
             <div class="logo-mark">
                 <div class="logo-mark__hex">
-                    <img src="{{ asset('LogoPagina.svg') }}" alt="SER" style="width:100%;height:100%;object-fit:contain;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="width:100%;height:100%;">
+                        <polygon points="100,20 170,60 170,140 100,180 30,140 30,60" fill="var(--lime)"/>
+                        <g transform="translate(100, 100) scale(0.25) translate(-275, -255)" fill="none" stroke="var(--bg)" stroke-width="55" stroke-linejoin="round" stroke-linecap="round">
+                            <path d="M 375 155 L 175 155 L 375 355 L 175 355" />
+                        </g>
+                    </svg>
                 </div>
             </div>
             <span class="navbar__brand">SER <em>ELECTRÓNICA</em></span>
@@ -836,6 +840,7 @@
             <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Inicio</a></li>
             <li><a href="{{ route('catalogo.index') }}" class="{{ request()->routeIs('catalogo.*') ? 'active' : '' }}">Productos</a></li>
             <li><a href="{{ route('promociones.index') }}" class="{{ request()->routeIs('promociones.*') ? 'active' : '' }}">Promociones</a></li>
+            <li><a href="{{ route('soporte') }}">Soporte Técnico</a></li>
             <li><a href="#contacto">Contacto</a></li>
             <li>
                 <a href="https://wa.me/5492613372353?text=Hola!+Quiero+consultar+sobre+un+producto"
@@ -1033,7 +1038,14 @@ function dismissToast(toast) {
         <div class="footer__brand-block">
             <div class="footer__logo">
                 <div class="logo-mark">
-                    <div class="logo-mark__hex"><img src="{{ asset('LogoPagina.svg') }}" alt="SER" style="width:100%;height:100%;object-fit:contain;"></div>
+                    <div class="logo-mark__hex">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" style="width:100%;height:100%;">
+                            <polygon points="100,20 170,60 170,140 100,180 30,140 30,60" fill="var(--lime)"/>
+                            <g transform="translate(100, 100) scale(0.25) translate(-275, -255)" fill="none" stroke="var(--bg)" stroke-width="55" stroke-linejoin="round" stroke-linecap="round">
+                                <path d="M 375 155 L 175 155 L 375 355 L 175 355" />
+                            </g>
+                        </svg>
+                    </div>
                 </div>
                 <span class="footer__brand-name">SER <em>ELECTRÓNICA</em></span>
             </div>
@@ -1062,6 +1074,7 @@ function dismissToast(toast) {
                 <li><a href="{{ route('home') }}">Inicio</a></li>
                 <li><a href="{{ route('catalogo.index') }}">Todos los Productos</a></li>
                 <li><a href="{{ route('promociones.index') }}">Promociones</a></li>
+                <li><a href="{{ route('soporte') }}">Soporte Técnico</a></li>
                 <li><a href="#contacto">Contacto</a></li>
             </ul>
         </div>

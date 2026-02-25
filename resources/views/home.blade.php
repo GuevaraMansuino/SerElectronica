@@ -108,7 +108,7 @@
 }
 
 .hero__subtitle {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
     color: var(--text-2);
     line-height: 1.75;
     max-width: 440px;
@@ -1174,7 +1174,7 @@
 
             <div class="hero__img-main">
                 {{-- Reemplazar con foto real de la tienda --}}
-                <img src="{{ asset('images/SerElectronicaFuera.png') }}"
+                <img src="{{ asset('images/ImagenLocalFuera2.png') }}"
                      alt="Interior de SER Electrónica – Mendoza"
                      loading="eager">
             </div>
@@ -1270,10 +1270,19 @@
                 <p class="product-card__desc">{{ Str::limit($producto->description, 95) }}</p>
                 <div class="product-card__footer">
                     <div>
-                        <small>Precio</small>
-                        <span class="product-card__price">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                        @if($producto->has_promotion && $producto->final_price < $producto->price)
+                            <small>Precio</small>
+                            <span class="product-card__price" style="text-decoration: line-through; color: var(--text-3); font-size: 0.9em;">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                            <div style="color: var(--lime); font-weight: 600;">
+                                <small>Con promo:</small>
+                                <span class="product-card__price" style="color: var(--lime);">${{ number_format($producto->final_price, 0, ',', '.') }}</span>
+                            </div>
+                        @else
+                            <small>Precio</small>
+                            <span class="product-card__price">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                        @endif
                     </div>
-                    <a href="javascript:void(0)" onclick="openQuickView('{{ $producto->slug }}')" class="product-card__cta">
+                    <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__cta">
                         Ver más
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                     </a>
@@ -1358,10 +1367,10 @@
         <span class="sec-label">Dónde estamos</span>
         <h2 class="sec-title" id="about-heading">ENCONTRANOS<br>EN MENDOZA</h2>
 
-        <p style="color:var(--text-2);margin-top:1.2rem;line-height:1.75;margin-bottom:0.8rem;font-size:0.95rem;">
+        <p style="color:var(--text-2);margin-top:1.2rem;line-height:1.75;margin-bottom:0.8rem;font-size:1.1rem;">
             Somos una tienda especializada en electrónica ubicada en el centro de Mendoza. Más de 10 años vendiendo equipos de audio, altavoces pasivos y activos, y equipamiento de las mejores marcas.
         </p>
-        <p style="color:var(--text-2);line-height:1.75;font-size:0.95rem;margin-bottom:2rem;">
+        <p style="color:var(--text-2);line-height:1.75;font-size:1.1rem;margin-bottom:2rem;">
             Nuestro equipo brinda asesoramiento real para que encontrés exactamente lo que necesitás al mejor precio.
         </p>
 
@@ -1382,18 +1391,15 @@
                 <div class="feature-item__text">0261 337-2353</div>
             </div>
             <div class="feature-item">
-                <div class="feature-item__icon">🚚</div>
-                <div class="feature-item__title">Envíos</div>
-                <div class="feature-item__text">Entrega a domicilio disponible</div>
+                <div class="feature-item__icon">⚡</div>
+                <div class="feature-item__title">Soporte Técnico</div>
+                <div class="feature-item__text">Soporte Técnico disponible</div>
             </div>
         </div>
 
         <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
             <a href="https://wa.me/5492613372353" target="_blank" rel="noopener" class="btn btn-lime">
                 Consultar por WhatsApp
-            </a>
-            <a href="tel:02613372353" class="btn btn-outline">
-                Llamar ahora
             </a>
         </div>
     </div>
@@ -1472,7 +1478,7 @@ const quickViewContent = document.getElementById('quick-view-content');
 
 // Función para abrir el modal
 window.openQuickView = function(slug) {
-    fetch('/api/producto/' + slug)
+    fetch('/api/public/products/slug/' + slug)
         .then(response => response.json())
         .then(data => {
             const discountBadge = data.discount_percentage 

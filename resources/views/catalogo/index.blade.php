@@ -49,6 +49,8 @@
 .sidebar {
     position: sticky;
     top: 84px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
 }
 
 .sidebar-card {
@@ -572,8 +574,17 @@
                     <p class="product-card__desc">{{ Str::limit($producto->description, 88) }}</p>
                     <div class="product-card__footer">
                         <div>
-                            <small>Precio</small>
-                            <span class="product-card__price">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                            @if($producto->has_promotion)
+                                <small>Precio</small>
+                                <span class="product-card__price" style="text-decoration: line-through; color: var(--text-3); font-size: 0.85em;">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                                <div style="color: var(--lime); font-weight: 600;">
+                                    <small>Con promo:</small>
+                                    <span class="product-card__price" style="color: var(--lime);">${{ number_format($producto->final_price, 0, ',', '.') }}</span>
+                                </div>
+                            @else
+                                <small>Precio</small>
+                                <span class="product-card__price">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                            @endif
                         </div>
                         <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__cta">
                             Ver más
@@ -714,6 +725,24 @@
         
         const categoryName = product.category ? product.category.name : '';
         const priceFormatted = new Intl.NumberFormat('es-AR').format(product.price);
+        const finalPriceFormatted = product.final_price ? new Intl.NumberFormat('es-AR').format(product.final_price) : priceFormatted;
+        
+        let priceHtml = '';
+        if (product.has_promotion) {
+            priceHtml = `
+                <small>Precio</small>
+                <span class="product-card__price" style="text-decoration: line-through; color: var(--text-3); font-size: 0.85em;">${priceFormatted}</span>
+                <div style="color: var(--lime); font-weight: 600;">
+                    <small>Con promo:</small>
+                    <span class="product-card__price" style="color: var(--lime);">${finalPriceFormatted}</span>
+                </div>
+            `;
+        } else {
+            priceHtml = `
+                <small>Precio</small>
+                <span class="product-card__price">${priceFormatted}</span>
+            `;
+        }
         
         return `
             <article class="product-card">
@@ -727,8 +756,7 @@
                     <p class="product-card__desc">${product.description ? product.description.substring(0, 88) : ''}</p>
                     <div class="product-card__footer">
                         <div>
-                            <small>Precio</small>
-                            <span class="product-card__price">${priceFormatted}</span>
+                            ${priceHtml}
                         </div>
                         <a href="/catalogo/${product.slug}" class="product-card__cta">
                             Ver más

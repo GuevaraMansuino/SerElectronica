@@ -181,7 +181,7 @@
 
 .product-info__name {
     font-family: var(--font-display);
-    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-size: clamp(2.2rem, 4.5vw, 3.5rem);
     font-weight: 800;
     letter-spacing: 0.02em;
     line-height: 1;
@@ -194,7 +194,7 @@
     background: var(--surface);
     border: 1px solid var(--border-solid);
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
+    padding: 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -207,14 +207,14 @@
     content: '';
     position: absolute;
     left: 0; top: 0; bottom: 0;
-    width: 3px;
+    width: 4px;
     background: var(--lime);
     border-radius: 0 2px 2px 0;
 }
 
 .price-block__value {
     font-family: var(--font-display);
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
     color: var(--lime);
     letter-spacing: 0.02em;
@@ -223,12 +223,37 @@
 
 .price-block__label {
     font-family: var(--font-mono);
-    font-size: 0.62rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.15em;
     color: var(--text-3);
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
+}
+
+.price-block__original {
+    font-size: 1.4rem;
+    text-decoration: line-through;
+    opacity: 0.5;
+    color: var(--text-2);
+}
+
+.price-block__promo {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--lime);
+    margin-top: 0.3rem;
+}
+
+.price-block__badge {
+    background: var(--lime);
+    color: var(--bg);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    display: inline-block;
 }
 
 .price-block__note {
@@ -241,11 +266,11 @@
 
 /* Description */
 .product-info__desc {
-    font-size: 0.95rem;
+    font-size: 1.05rem;
     color: var(--text-2);
     line-height: 1.8;
     margin-bottom: 2rem;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 /* Actions */
@@ -476,7 +501,13 @@
         <div class="price-block">
             <div>
                 <span class="price-block__label">Precio</span>
-                <span class="price-block__value">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                @if($producto->has_promotion)
+                    <span class="price-block__original">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                    <div class="price-block__promo">${{ number_format($producto->final_price, 0, ',', '.') }}</div>
+                    <span class="price-block__badge">{{ $producto->promotion_title }}</span>
+                @else
+                    <span class="price-block__value">${{ number_format($producto->price, 0, ',', '.') }}</span>
+                @endif
             </div>
             <p class="price-block__note">Para consultas escríbanos por WhatsApp</p>
         </div>
@@ -492,10 +523,6 @@
                     <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.054 23.948l6.257-1.64A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.878 0-3.642-.493-5.163-1.354l-.37-.22-3.838 1.006 1.024-3.74-.241-.385A9.955 9.955 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
                 </svg>
                 Consultar por WhatsApp
-            </a>
-            <a href="tel:02613372353" class="btn-call">
-                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.09a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0121.15 15l.77 1.92z"/></svg>
-                Llamar: 0261 337-2353
             </a>
         </div>
 

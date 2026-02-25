@@ -26,38 +26,8 @@ class PromotionController extends Controller
 
     public function store(\App\Http\Requests\StorePromotionRequest $request)
     {
-        // Map Spanish field names to English
-        $data = $request->all();
-        $map = [
-            'titulo' => 'title',
-            'descripcion' => 'description',
-            'fecha_inicio' => 'start_date',
-            'fecha_fin' => 'end_date',
-            'activa' => 'is_active',
-            'product_ids' => 'product_ids',
-            'categoria_id' => 'category_ids',
-        ];
-        foreach ($map as $es => $en) {
-            if (isset($data[$es])) {
-                // Si es categoria_id single, convertir a array
-                if ($es === 'categoria_id' && !empty($data[$es]) && $data[$es] !== 'none' && $data[$es] !== '') {
-                    $data[$en] = [$data[$es]];
-                } else {
-                    $data[$en] = $data[$es];
-                }
-                unset($data[$es]);
-            }
-        }
-
-        $validated = Validator::make($data, [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'discount_percentage' => 'nullable|numeric|min:0|max:100',
-            'discount_amount' => 'nullable|numeric|min:0',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_active' => 'sometimes|boolean',
-        ])->validate();
+        // Los campos ya están mapeados en el Request
+        $validated = $request->validated();
 
         $promotion = Promotion::create([
             'title' => $validated['title'],
@@ -69,14 +39,20 @@ class PromotionController extends Controller
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        // Sincronizar productos
-        if (!empty($validated['product_ids'])) {
+        // Sincronizar productos solo si product_scope es 'specific' y hay productos seleccionados
+        $productScope = $request->input('product_scope', 'none');
+        if ($productScope === 'specific' && !empty($validated['product_ids'])) {
             $promotion->products()->sync($validated['product_ids']);
+        } else {
+            // Si no es specific, limpiar cualquier asociación existente
+            $promotion->products()->sync([]);
         }
 
-        // Sincronizar categorías
-        if (!empty($validated['category_ids'])) {
+        // Sincronizar categorías solo si hay una categoría válida seleccionada
+        if (!empty($validated['category_ids']) && $validated['category_ids'][0] !== '' && $validated['category_ids'][0] !== 'none') {
             $promotion->categories()->sync($validated['category_ids']);
+        } else {
+            $promotion->categories()->sync([]);
         }
 
         return redirect()->route('admin.promociones.index')->with('success', 'Promoción creada correctamente');
@@ -92,38 +68,8 @@ class PromotionController extends Controller
 
     public function update(\App\Http\Requests\UpdatePromotionRequest $request, string $id)
     {
-        // Map Spanish field names to English
-        $data = $request->all();
-        $map = [
-            'titulo' => 'title',
-            'descripcion' => 'description',
-            'fecha_inicio' => 'start_date',
-            'fecha_fin' => 'end_date',
-            'activa' => 'is_active',
-            'product_ids' => 'product_ids',
-            'categoria_id' => 'category_ids',
-        ];
-        foreach ($map as $es => $en) {
-            if (isset($data[$es])) {
-                // Si es categoria_id single, convertir a array
-                if ($es === 'categoria_id' && !empty($data[$es]) && $data[$es] !== 'none' && $data[$es] !== '') {
-                    $data[$en] = [$data[$es]];
-                } else {
-                    $data[$en] = $data[$es];
-                }
-                unset($data[$es]);
-            }
-        }
-
-        $validated = Validator::make($data, [
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'discount_percentage' => 'nullable|numeric|min:0|max:100',
-            'discount_amount' => 'nullable|numeric|min:0',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'is_active' => 'sometimes|boolean',
-        ])->validate();
+        // Los campos ya están mapeados en el Request
+        $validated = $request->validated();
 
         $promotion = Promotion::findOrFail($id);
         $promotion->update([
@@ -136,14 +82,20 @@ class PromotionController extends Controller
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
-        // Sincronizar productos
-        if (isset($validated['product_ids'])) {
+        // Sincronizar productos solo si product_scope es 'specific' y hay productos seleccionados
+        $productScope = $request->input('product_scope', 'none');
+        if ($productScope === 'specific' && !empty($validated['product_ids'])) {
             $promotion->products()->sync($validated['product_ids']);
+        } else {
+            // Si no es specific, limpiar cualquier asociación existente
+            $promotion->products()->sync([]);
         }
 
-        // Sincronizar categorías
-        if (isset($validated['category_ids'])) {
+        // Sincronizar categorías solo si hay una categoría válida seleccionada
+        if (!empty($validated['category_ids']) && $validated['category_ids'][0] !== '' && $validated['category_ids'][0] !== 'none') {
             $promotion->categories()->sync($validated['category_ids']);
+        } else {
+            $promotion->categories()->sync([]);
         }
 
         return redirect()->route('admin.promociones.index')->with('success', 'Promoción actualizada correctamente');

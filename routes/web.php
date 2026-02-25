@@ -16,22 +16,49 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 // Página principal
 Route::get('/', function () {
     $categorias = \App\Models\Category::all();
-    $productosDestacados = \App\Models\Product::where('is_active', true)->where('destacado', true)->take(8)->get();
+    $productosDestacados = \App\Models\Product::with(['category', 'promotions', 'category.promotions'])->where('is_active', true)->where('destacado', true)->take(8)->get();
     $promociones = \App\Models\Promotion::active()->take(5)->get();
     return view('home', compact('categorias', 'productosDestacados', 'promociones'));
 })->name('home');
 
 // Catálogo público
 Route::get('/catalogo', function () {
-    $categorias = \App\Models\Category::withCount('productos')->get();
+    $categoria = request('categoria');
+    
+    $categorias = \App\Models\Category::withCount(['productos' => function ($query) {
+        $query->where('is_active', true);
+    }])->get();
+    
     $totalProductos = \App\Models\Product::where('is_active', true)->count();
-    $productos = \App\Models\Product::with('category')->where('is_active', true)->paginate(12);
-    return view('catalogo.index', compact('categorias', 'totalProductos', 'productos'));
+    
+    $query = \App\Models\Product::with(['category', 'promotions', 'category.promotions'])->where('is_active', true);
+    
+    if ($categoria) {
+        $query->whereHas('category', function ($q) use ($categoria) {
+            $q->where('slug', $categoria);
+        });
+    }
+    
+    $productos = $query->paginate(12);
+    
+    $categoriaActual = $categoria ? \App\Models\Category::where('slug', $categoria)->first() : null;
+    
+    return view('catalogo.index', compact('categorias', 'totalProductos', 'productos', 'categoriaActual'));
 })->name('catalogo.index');
 
 // Ver producto por slug (público)
 Route::get('/producto/{slug}', function ($slug) {
-    $producto = \App\Models\Product::with('category', 'promotions', 'images')->where('is_active', true)->where('slug', $slug)->firstOrFail();
+    $producto = \App\Models\Product::with(['category', 'promotions', 'images', 'category.promotions'])
+        ->where('is_active', true)
+        ->where(function($q) use ($slug) {
+            $q->where('slug', $slug);
+            // Si el parámetro son solo números, también buscamos por ID
+            if (preg_match('/^[0-9]+$/', $slug)) {
+                $q->orWhere('id', $slug);
+            }
+        })
+        ->firstOrFail();
+
     $relacionados = \App\Models\Product::where('is_active', true)->where('category_id', $producto->category_id)->where('id', '!=', $producto->id)->take(4)->get();
     return view('catalogo.show', compact('producto', 'relacionados'));
 })->name('producto.show');
@@ -63,11 +90,13 @@ Route::get('/promociones', function () {
                       ->orWhereNull('end_date');
                 });
         })
-        ->with('category', 'promotions', 'images')
+        ->with(['category', 'promotions', 'images', 'category.promotions'])
         ->get();
 
     return view('public.promotions.index', compact('promociones', 'productosEnPromo'));
 })->name('promociones.index');
+
+Route::view('/soporte-tecnico', 'soporte')->name('soporte');
 
 // ============================================================
 // 🔓 RUTAS DE AUTENTICACIÓN (API - Sanctum)

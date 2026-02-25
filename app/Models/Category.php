@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Category;
 use App\Models\Promotion;
 
 class Category extends Model
@@ -21,8 +20,7 @@ class Category extends Model
     protected $appends = [
         // Spanish aliases for backward compatibility
         'nombre',
-        'icono_emoji',
-        'productos_count'
+        'icono_emoji'
     ];
 
     // Spanish aliases
@@ -34,11 +32,6 @@ class Category extends Model
     public function getIconoEmojiAttribute()
     {
         return $this->attributes['icono_emoji'] ?? '⚡';
-    }
-
-    public function getProductosCountAttribute()
-    {
-        return $this->products_count ?? 0;
     }
 
     public function products()

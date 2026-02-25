@@ -53,7 +53,7 @@ class Product extends Model
 
     public function scopeWithRelations($query)
     {
-        return $query->with(['category', 'promotions']);
+        return $query->with(['category', 'promotions', 'category.promotions']);
     }
 
     public function scopeActive($query)

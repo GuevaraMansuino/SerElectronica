@@ -57,7 +57,7 @@ class ProductController extends Controller
         $categoria = $request->get('categoria');
         $perPage = 12;
 
-        $query = Product::with('category')->with('promotions')->where('is_active', true);
+        $query = Product::with(['category', 'promotions', 'category.promotions'])->where('is_active', true);
 
         // Filtrar por categoría si se especifica
         if ($categoria) {

@@ -3,7 +3,7 @@
 ============================================================ --}}
 @extends('admin.layout')
 
-@section('title', 'Editar: ' . $promo->titulo)
+@section('title', 'Editar: ' . $promocion->title)
 @section('page-title', 'EDITAR PROMOCIÓN')
 
 @section('topbar-actions')
@@ -16,5 +16,5 @@
 @endsection
 
 @section('content')
-@include('admin.promociones._form', ['promo' => $promo])
+@include('admin.promociones._form', ['promo' => $promocion])
 @endsection

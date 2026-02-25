@@ -265,11 +265,11 @@
                             id="product_scope"
                             class="fselect"
                             onchange="toggleProductSelect()">
-                        <option value="none" selected>No aplicar a ningún producto</option>
-                        <option value="all">Todos los productos</option>
-                        <option value="specific">Seleccionar productos específicos</option>
+                        <option value="none" {{ ($isEdit && $promo->products()->count() == 0) ? 'selected' : '' }}>No aplicar a ningún producto</option>
+                        <option value="all" {{ (!$isEdit) ? 'selected' : '' }}>Todos los productos</option>
+                        <option value="specific" {{ ($isEdit && $promo->products()->count() > 0) ? 'selected' : '' }}>Seleccionar productos específicos</option>
                     </select>
-                    <div id="specific-products" style="display:none;margin-top:0.8rem;">
+                    <div id="specific-products" style="margin-top:0.8rem;">
                         <select name="product_ids[]"
                                 id="product_ids"
                                 class="fselect"
@@ -302,7 +302,8 @@
                 <script>
                 function toggleProductSelect() {
                     const scope = document.getElementById('product_scope').value;
-                    document.getElementById('specific-products').style.display = (scope === 'specific') ? 'block' : 'none';
+                    // Always show the product selection but only save when 'specific' is selected
+                    document.getElementById('specific-products').style.display = 'block';
                 }
 
                 function toggleDiscountFields() {
@@ -315,9 +316,10 @@
                     document.getElementById('discount-amount-label').style.borderColor = isPercentage ? 'var(--border-solid)' : 'var(--lime)';
                 }
 
-                // Initialize discount fields on load
+                // Initialize on load
                 document.addEventListener('DOMContentLoaded', function() {
                     toggleDiscountFields();
+                    toggleProductSelect();
                     
                     // Set initial state based on existing values
                     if ("{{ ($isEdit && $promo->discount_percentage) ? '1' : '0' }}" === "1") {

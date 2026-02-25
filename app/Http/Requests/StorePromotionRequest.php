@@ -58,12 +58,35 @@ class StorePromotionRequest extends FormRequest
             'fecha_inicio' => 'start_date',
             'fecha_fin' => 'end_date',
             'activa' => 'is_active',
+            'product_scope' => 'product_scope',
         ];
         
         $data = [];
         foreach ($map as $es => $en) {
             if ($this->has($es)) {
                 $data[$en] = $this->$es;
+            }
+        }
+        
+        // Handle product_ids array - keep as array if present
+        if ($this->has('product_ids')) {
+            $productIds = $this->product_ids;
+            if (is_array($productIds)) {
+                // Filter out empty values
+                $productIds = array_filter($productIds, function($value) {
+                    return $value !== '' && $value !== null;
+                });
+                if (!empty($productIds)) {
+                    $data['product_ids'] = array_values($productIds);
+                }
+            }
+        }
+        
+        // Handle categoria_id - convert to category_ids array if not 'none' or empty
+        if ($this->has('categoria_id')) {
+            $categoriaId = $this->categoria_id;
+            if (!empty($categoriaId) && $categoriaId !== 'none' && $categoriaId !== '') {
+                $data['category_ids'] = [$categoriaId];
             }
         }
         
