@@ -380,16 +380,30 @@
 <div style="margin-top:1rem;">
     <div style="border-top:1px solid var(--border-solid);padding-top:1rem;margin-bottom:1rem;">
         {{-- Toggle rápido --}}
+        @php
+            $isExpired = $promo->end_date && \Carbon\Carbon::parse($promo->end_date)->isPast();
+            $canToggle = !$isExpired;
+        @endphp
         <form action="{{ route('admin.promociones.toggle', $promo) }}"
               method="POST"
               style="margin-bottom:0.5rem; display:block;">
             @csrf @method('POST')
             <button type="submit"
                     class="abtn abtn-outline {{ $promo->activa ? 'btn-toggle-off' : 'btn-toggle-on' }}"
-                    style="width:100%;justify-content:center;">
-                {{ $promo->activa ? '⏸ Desactivar' : '▶ Activar' }}
+                    style="width:100%;justify-content:center;"
+                    @if(!$canToggle) disabled @endif>
+                @if($canToggle)
+                    {{ $promo->activa ? '⏸ Desactivar' : '▶ Activar' }}
+                @else
+                    ⏸ Desactivada (vencida)
+                @endif
             </button>
         </form>
+        @if(!$canToggle)
+        <p style="font-size:0.75rem;color:var(--warning);margin-top:0.5rem;text-align:center;">
+            Esta promoción está vencida y no se puede activar.
+        </p>
+        @endif
 
         {{-- Eliminar --}}
         <form action="{{ route('admin.promociones.destroy', $promo) }}"

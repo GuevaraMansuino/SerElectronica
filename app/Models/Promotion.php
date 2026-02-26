@@ -59,6 +59,14 @@ class Promotion extends Model
 
     public function getActivaAttribute()
     {
+        // Si está vencida, actualizar la base de datos y retornar false
+        if ($this->end_date && \Carbon\Carbon::parse($this->end_date)->isPast()) {
+            if ($this->is_active) {
+                $this->is_active = false;
+                $this->save();
+            }
+            return false;
+        }
         return $this->is_active;
     }
 

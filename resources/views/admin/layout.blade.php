@@ -12,27 +12,35 @@
     <style>
     /* ================================================================
        ADMIN PANEL — SER ELECTRÓNICA
-       Circuit Navy #0C1A2B  ·  Solar Lime #B6FF3B
+       Verde Bosque #2A4941  ·  Beige #DCD0BA
     ================================================================ */
     :root {
-        --bg:           #07111C;
-        --surface:      #0E1E30;
-        --surface-2:    #132436;
-        --surface-3:    #182B3F;
-        --border:       rgba(182,255,59,0.08);
-        --border-solid: #1A3050;
+        /* 60% — Fondo principal (Verde Bosque) */
+        --bg:           #2A4941;
+        /* 20% — Superficies / Cards (Verde ligeramente más claro) */
+        --surface:      #33524A;
+        --surface-2:    #3C5F56;
+        --surface-3:    #1E3630;
 
-        --lime:         #B6FF3B;
-        --lime-dim:     rgba(182,255,59,0.1);
-        --lime-glow:    rgba(182,255,59,0.2);
+        /* Bordes */
+        --border:       rgba(220, 208, 186, 0.15);
+        --border-solid: #DCD0BA;
 
-        --text:         #F1F5F9;
-        --text-2:       #94A3B8;
-        --text-3:       #3D5A78;
+        /* 10% — Texto (Beige Claro para leer sobre verde) */
+        --text:         #F0EAD6;
+        --text-2:       #DCD0BA; /* Beige Original */
+        --text-3:       #A89F8E;
 
-        --success:  #22C55E;
-        --warning:  #F59E0B;
-        --danger:   #EF4444;
+        /* 10% — Acento (Beige) */
+        --lime:         #DCD0BA;
+        --lime-dim:     rgba(220, 208, 186, 0.1);
+        --lime-glow:    rgba(220, 208, 186, 0.25);
+        --lime-dark:    #C4B8A0;
+
+        /* Estados */
+        --success:  #16A34A;
+        --warning:  #D97706;
+        --danger:   #DC2626;
 
         --font-display: 'Barlow Condensed', sans-serif;
         --font-body:    'Barlow', sans-serif;
@@ -40,7 +48,7 @@
 
         --radius:   6px;
         --radius-lg:12px;
-        --t:        0.2s ease;
+        --t:        0.22s cubic-bezier(0.4, 0, 0.2, 1);
         --sidebar-w:250px;
     }
 
@@ -60,8 +68,8 @@
         position: fixed;
         inset: 0;
         background-image:
-            linear-gradient(rgba(182,255,59,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(182,255,59,0.02) 1px, transparent 1px);
+            linear-gradient(rgba(220,208,186,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(220,208,186,0.05) 1px, transparent 1px);
         background-size: 40px 40px;
         pointer-events: none;
         z-index: 0;
@@ -288,7 +296,7 @@
     }
 
     .abtn-lime { background: var(--lime); color: var(--bg); }
-    .abtn-lime:hover { background: #c8ff5a; box-shadow: 0 0 16px rgba(182,255,59,0.3); }
+    .abtn-lime:hover { background: var(--lime-dark); box-shadow: 0 0 16px rgba(220,208,186,0.3); }
 
     .abtn-outline { background: none; border: 1px solid var(--border-solid); color: var(--text-2); }
     .abtn-outline:hover { border-color: var(--lime); color: var(--lime); background: var(--lime-dim); }
@@ -382,7 +390,7 @@
 
     .atable tr:last-child td { border-bottom: none; }
 
-    .atable tbody tr:hover td { background: rgba(182,255,59,0.02); }
+    .atable tbody tr:hover td { background: rgba(220,208,186,0.02); }
 
     .td-main { color: var(--text) !important; font-weight: 600; }
 
@@ -425,7 +433,7 @@
         opacity: 0.7;
     }
 
-    .badge-lime    { background: rgba(182,255,59,0.12); color: var(--lime);    border: 1px solid rgba(182,255,59,0.2); }
+    .badge-lime    { background: rgba(220,208,186,0.12); color: var(--lime);    border: 1px solid rgba(220,208,186,0.2); }
     .badge-success { background: rgba(34,197,94,0.12);  color: #86efac;         border: 1px solid rgba(34,197,94,0.2); }
     .badge-danger  { background: rgba(239,68,68,0.12);  color: #fca5a5;         border: 1px solid rgba(239,68,68,0.2); }
     .badge-neutral { background: rgba(255,255,255,0.06); color: var(--text-3);  border: 1px solid var(--border-solid); }
@@ -486,7 +494,7 @@
     .fselect:focus,
     .ftextarea:focus {
         border-color: var(--lime);
-        box-shadow: 0 0 0 3px rgba(182,255,59,0.08);
+        box-shadow: 0 0 0 3px rgba(220,208,186,0.08);
     }
 
     .finput::placeholder, .ftextarea::placeholder { color: var(--text-3); }
@@ -608,7 +616,7 @@
         transition: border-color var(--t);
     }
 
-    .stat-box:hover { border-color: rgba(182,255,59,0.3); }
+    .stat-box:hover { border-color: rgba(220,208,186,0.3); }
 
     .stat-box::after {
         content: '';
@@ -804,8 +812,8 @@
 }
 
 .confirm-modal {
-    background: var(--surface, #0E1E30);
-    border: 1px solid var(--border, #1A3050);
+    background: var(--surface, #33524A);
+    border: 1px solid var(--border, #DCD0BA);
     border-radius: 12px;
     padding: 1.5rem;
     max-width: 400px;
@@ -822,12 +830,12 @@
     font-family: var(--font-d, 'Barlow Condensed', sans-serif);
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text, #F1F5F9);
+    color: var(--text, #F0EAD6);
     margin-bottom: 0.5rem;
 }
 
 .confirm-modal__message {
-    color: var(--text-2, #94A3B8);
+    color: var(--text-2, #DCD0BA);
     margin-bottom: 1.5rem;
     line-height: 1.5;
 }
@@ -850,13 +858,13 @@
 }
 
 .confirm-modal__btn--cancel {
-    background: var(--surface-2, #132436);
-    color: var(--text, #F1F5F9);
-    border: 1px solid var(--border, #1A3050);
+    background: var(--surface-2, #3C5F56);
+    color: var(--text, #F0EAD6);
+    border: 1px solid var(--border, #DCD0BA);
 }
 
 .confirm-modal__btn--cancel:hover {
-    background: var(--border, #1A3050);
+    background: var(--border, #DCD0BA);
 }
 
 .confirm-modal__btn--danger {
