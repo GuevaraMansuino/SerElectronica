@@ -143,7 +143,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
             <div class="acard-body" style="display:flex;flex-direction:column;gap:0.7rem;">
                 <div style="text-align:center;padding:1rem 0;">
                     <span style="font-family:var(--font-display);font-size:3rem;color:var(--lime);line-height:1;display:block;">
-                        {{ $categoria->productos_count ?? $categoria->productos()->count() }}
+                        {{ $categoria->products_count ?? $categoria->productos()->count() }}
                     </span>
                     <span style="font-family:var(--font-mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-3);">
                         productos asociados
@@ -164,7 +164,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
         </div>
 
         {{-- Eliminar --}}
-        @if(($categoria->productos_count ?? $categoria->productos()->count()) === 0)
+        @if(($categoria->products_count ?? $categoria->productos()->count()) === 0)
         <div class="acard" style="border-color:rgba(239,68,68,0.2);">
             <div class="acard-header" style="background:rgba(239,68,68,0.06);">
                 <span class="acard-title" style="color:#fca5a5;">Zona de peligro</span>

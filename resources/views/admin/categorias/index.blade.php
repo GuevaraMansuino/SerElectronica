@@ -193,8 +193,8 @@
                     </td>
 
                     <td>
-                        @if($cat->productos_count > 0)
-                            <span class="badge badge-lime">{{ $cat->productos_count }} producto{{ $cat->productos_count !== 1 ? 's' : '' }}</span>
+                        @if($cat->products_count > 0)
+                            <span class="badge badge-lime">{{ $cat->products_count }} producto{{ $cat->products_count !== 1 ? 's' : '' }}</span>
                         @else
                             <span class="badge badge-neutral">Sin productos</span>
                         @endif
@@ -224,7 +224,7 @@
                             </a>
 
                             {{-- Eliminar (solo si no tiene productos) --}}
-                            @if($cat->productos_count === 0)
+                            @if($cat->products_count === 0)
                             <form action="{{ route('admin.categorias.destroy', $cat) }}"
                                   method="POST"
                                   id="delete-form-{{ $cat->id }}">
