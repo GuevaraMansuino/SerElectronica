@@ -11,16 +11,16 @@
 
     <style>
     :root {
-        --bg:      #07111C;
-        --surface: #0E1E30;
-        --surface-2: #132436;
-        --border:  #1A3050;
-        --lime:    #B6FF3B;
-        --lime-dim: rgba(182,255,59,0.09);
-        --text:    #F1F5F9;
-        --text-2:  #94A3B8;
-        --text-3:  #3D5A78;
-        --danger:  #EF4444;
+        --bg:      #2A4941;
+        --surface: #234840;
+        --surface-2: #1D3B35;
+        --border:  #2A4941;
+        --lime:    #DCD0BA;
+        --lime-dim: rgba(220,208,186,0.09);
+        --text:    #DCD0BA;
+        --text-2:  #C9BEAB;
+        --text-3:  #9A9182;
+        --danger:  #E57373;
         --font-d:  'Barlow Condensed', sans-serif;
         --font-b:  'Barlow', sans-serif;
         --font-m:  'Fira Code', monospace;
@@ -60,8 +60,8 @@
         position: absolute;
         inset: 0;
         background-image:
-            linear-gradient(rgba(182,255,59,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(182,255,59,0.04) 1px, transparent 1px);
+            linear-gradient(rgba(220,208,186,0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(220,208,186,0.08) 1px, transparent 1px);
         background-size: 40px 40px;
     }
 
@@ -72,7 +72,7 @@
         top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         width: 400px; height: 400px;
-        background: radial-gradient(circle, rgba(182,255,59,0.08) 0%, transparent 65%);
+        background: radial-gradient(circle, rgba(220,208,186,0.12) 0%, transparent 65%);
         pointer-events: none;
     }
 
@@ -91,7 +91,7 @@
         display: grid;
         place-items: center;
         margin: 0 auto 1.8rem;
-        box-shadow: 0 0 40px rgba(182,255,59,0.25);
+        box-shadow: 0 0 40px rgba(220,208,186,0.25);
     }
 
     .left-logo-hex span {
@@ -136,7 +136,7 @@
     .left-feature-icon {
         width: 32px; height: 32px;
         background: var(--lime-dim);
-        border: 1px solid rgba(182,255,59,0.15);
+        border: 1px solid rgba(220,208,186,0.15);
         border-radius: 6px;
         display: grid;
         place-items: center;
@@ -227,7 +227,7 @@
 
     .finput:focus {
         border-color: var(--lime);
-        box-shadow: 0 0 0 3px rgba(182,255,59,0.1);
+        box-shadow: 0 0 0 3px rgba(220,208,186,0.1);
     }
 
     .finput::placeholder { color: var(--text-3); }
@@ -247,7 +247,7 @@
     .submit-btn {
         width: 100%;
         background: var(--lime);
-        color: var(--bg);
+        color: #1A1A1A;
         border: none;
         border-radius: var(--r);
         padding: 14px;
@@ -265,8 +265,8 @@
     }
 
     .submit-btn:hover {
-        background: #c8ff5a;
-        box-shadow: 0 0 24px rgba(182,255,59,0.35);
+        background: #B8A896;
+        box-shadow: 0 0 24px rgba(220,208,186,0.35);
         transform: translateY(-1px);
     }
 
@@ -285,7 +285,7 @@
         transition: color var(--t);
     }
 
-    .login-footer a:hover { color: #c8ff5a; }
+    .login-footer a:hover { color: #B8A896; }
 
     /* ============================================================
        RESPONSIVE

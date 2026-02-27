@@ -14,6 +14,118 @@
 
 @push('styles')
 <style>
+/* Help popup styles */
+.help-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--border-solid);
+    color: var(--text-3);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: help;
+    margin-left: 8px;
+    transition: all var(--t);
+    position: relative;
+    z-index: 10;
+}
+
+.help-trigger:hover,
+.help-trigger.active {
+    background: var(--lime);
+    color: var(--bg);
+    border-color: var(--lime);
+}
+
+.help-popup-wrapper {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+}
+
+.help-popup-wrapper:hover .help-popup,
+.help-popup-wrapper:hover ~ .help-backdrop,
+.help-popup-wrapper.active .help-popup,
+.help-popup-wrapper.active ~ .help-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+.help-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--surface);
+    border: 1px solid var(--border-solid);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    width: 380px;
+    max-width: 90vw;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 9999;
+}
+
+.help-popup-header {
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--border-solid);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface-2);
+}
+
+.help-popup-header svg { color: var(--lime); }
+
+.help-popup-title {
+    font-family: var(--font-display);
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.help-popup-body {
+    padding: 1.4rem 1.5rem;
+    font-size: 0.82rem;
+    color: var(--text-2);
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.help-popup-body p { margin: 0; }
+.help-popup-body strong { color: var(--text); }
+
+.help-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease;
+    z-index: 9998;
+}
+
+.help-trigger.active ~ .help-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
 .toolbar {
     display: flex;
     align-items: center;
@@ -130,6 +242,25 @@
                 <rect x="9" y="10" width="13" height="11"/>
             </svg>
             {{ $productos->total() }} productos
+            <span class="help-popup-wrapper">
+                <button type="button" id="helpBtn" class="help-trigger" aria-label="Ayuda sobre productos" tabindex="0">
+                    ?
+                </button>
+                <div id="helpPopup" class="help-popup" role="tooltip">
+                    <div class="help-popup-header">
+                        <span class="help-popup-title">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                            Ayuda
+                        </span>
+                    </div>
+                    <div class="help-popup-body">
+                        <p>Los <strong>productos</strong> son los artículos que vendés en tu tienda. Cada uno puede tener precio, descripción, imagen y categoría.</p>
+                        <p>Podés aplicar <strong>promociones</strong> a productos específicos o a categorías enteras.</p>
+                        <p>Los productos se muestran en el catálogo público solo si están <strong>activos</strong>.</p>
+                    </div>
+                </div>
+                <div class="help-backdrop"></div>
+            </span>
         </span>
         <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-3);">
             Página {{ $productos->currentPage() }} de {{ $productos->lastPage() }}
@@ -297,5 +428,34 @@
     </div>
     @endif
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const helpBtn = document.getElementById('helpBtn');
+    const helpPopup = document.getElementById('helpPopup');
+    
+    if (helpBtn && helpPopup) {
+        // Toggle popup on button click
+        helpBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            helpPopup.classList.toggle('active');
+        });
+        
+        // Close on click outside
+        document.addEventListener('click', function(e) {
+            if (!helpPopup.contains(e.target) && !helpBtn.contains(e.target)) {
+                helpPopup.classList.remove('active');
+            }
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                helpPopup.classList.remove('active');
+            }
+        });
+    }
+});
+</script>
 
 @endsection

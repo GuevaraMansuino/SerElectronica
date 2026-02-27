@@ -231,6 +231,7 @@
                         <th style="width:60px"></th>
                         <th>Título</th>
                         <th>Descripción</th>
+                        <th>Aplicada a</th>
                         <th>Estado</th>
                         <th>Vencimiento</th>
                         <th style="text-align:right">Acciones</th>
@@ -258,6 +259,22 @@
                         </td>
 
                         <td>
+                            @if($promo->products->count() > 0)
+                                <span style="font-size:0.78rem;color:var(--text-2);">
+                                    <strong>Producto:</strong> {{ $promo->products->first()->nombre ?? 'N/A' }}
+                                </span>
+                            @elseif($promo->categories->count() > 0)
+                                <span style="font-size:0.78rem;color:var(--text-2);">
+                                    <strong>Categoría:</strong> {{ $promo->categories->first()->nombre ?? 'N/A' }}
+                                </span>
+                            @else
+                                <span style="font-size:0.78rem;color:var(--text-3);">
+                                    General
+                                </span>
+                            @endif
+                        </td>
+
+                        <td>
                             <span class="badge {{ $promo->activa ? 'badge-success' : 'badge-danger' }}">
                                 {{ $promo->activa ? 'Activa' : 'Inactiva' }}
                             </span>
@@ -266,7 +283,7 @@
                         <td>
                             @if($promo->fecha_fin)
                                 @if($promo->fecha_fin->isPast())
-                                    <span style="font-size:0.78rem;color:var(--danger);">
+                                    <span style="font-size:0.78rem;color:var(--lime);">
                                         Venció {{ $promo->fecha_fin->format('d/m/Y') }}
                                     </span>
                                 @elseif($promo->fecha_fin->diffInDays() <= 3)
