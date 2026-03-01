@@ -50,8 +50,7 @@
 .sidebar {
     position: sticky;
     top: 84px;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
+    height: 100%;
 }
 
 .sidebar-card {

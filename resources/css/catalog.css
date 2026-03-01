@@ -36,8 +36,8 @@
 .sidebar {
     position: sticky;
     top: 84px;
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
+    overflow: visible;
+    height: auto;
 }
 
 .sidebar-card {
@@ -205,7 +205,10 @@
 /* ================================================================
    MAIN CATALOG
 ============================================================== */
-.catalog-main {}
+.catalog-main {
+    position: relative;
+    z-index: 2;
+}
 
 .catalog-toolbar {
     display: flex;
@@ -386,7 +389,16 @@
 ============================================================== */
 @media (max-width: 960px) {
     .catalog-layout { grid-template-columns: 1fr; }
-    .sidebar { position: static; }
+    .sidebar { 
+        position: static; 
+        z-index: 1;
+        height: auto;
+        overflow: visible;
+    }
+    .catalog-main {
+        position: relative;
+        z-index: 2;
+    }
     
     /* Toggle de filtros visible en tablet/móvil */
     .sidebar-card__header .sidebar-toggle {
