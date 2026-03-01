@@ -122,8 +122,16 @@ function initCatalogInfiniteScroll() {
 
     // Función para crear HTML de tarjeta de producto
     function createProductCard(product) {
-        const imageHtml = product.image
-            ? `<img src="/storage/${product.image}" alt="${product.name}" loading="lazy">`
+        // Usar thumbnail si está disponible, si no usar la imagen normal
+        let imageUrl = product.image;
+        if (product.thumbnail_url) {
+            imageUrl = product.thumbnail_url;
+        } else if (product.image && !product.image.includes('/storage/')) {
+            imageUrl = '/storage/' + product.image;
+        }
+        
+        const imageHtml = imageUrl
+            ? `<img src="${imageUrl}" alt="${product.name}" loading="lazy">`
             : `<div style="display:grid;place-items:center;height:100%;font-size:2.5rem;color:var(--text-3)">📦</div>`;
 
         const badgeHtml = product.is_new

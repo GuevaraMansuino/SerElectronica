@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Traits\ImageTrait;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Promotion;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    use ImageTrait;
 
     public function index(Request $request)
     {
@@ -56,12 +58,8 @@ class ProductController extends Controller
     {
         $validated = $request->validated();
 
-        // Guardar imagen principal
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
-        } else {
-            $validated['image'] = null;
-        }
+        // Guardar imagen principal con procesamiento (redimensiona, WebP, miniaturas)
+        $validated['image'] = $this->saveImage($request, 'image');
 
         // Quitar gallery_images del array antes de crear (no es columna de la tabla products)
         unset($validated['gallery_images']);
@@ -105,17 +103,13 @@ class ProductController extends Controller
 
         $product = Product::findOrFail($id);
 
-        // Si hay nueva imagen, eliminar la anterior
+        // Si hay nueva imagen, eliminar las anteriores y guardar nuevas
         if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $this->deleteImage($product->image);
+            $validated['image'] = $this->saveImage($request, 'image');
         } elseif ($request->has('eliminar_imagen') && $request->eliminar_imagen == '1') {
             // Eliminar imagen existente si se marcó para eliminar
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
+            $this->deleteImage($product->image);
             $validated['image'] = null;
         }
 
