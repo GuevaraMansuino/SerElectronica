@@ -74,10 +74,19 @@ function initCatalogInfiniteScroll() {
             const urlParams = new URLSearchParams(window.location.search);
             const currentCategory = urlParams.get('categoria') || '';
             const q = urlParams.get('q') || '';
+            const precioMin = urlParams.get('precio_min') || '';
+            const precioMax = urlParams.get('precio_max') || '';
+            const orden = urlParams.get('orden') || 'reciente';
             
-            let url = `/api/public/products/load-more?page=${nextPage}&categoria=${currentCategory}`;
+            let url = `/api/public/products/load-more?page=${nextPage}&categoria=${currentCategory}&orden=${orden}`;
             if (q) {
                 url += `&q=${encodeURIComponent(q)}`;
+            }
+            if (precioMin) {
+                url += `&precio_min=${encodeURIComponent(precioMin)}`;
+            }
+            if (precioMax) {
+                url += `&precio_max=${encodeURIComponent(precioMax)}`;
             }
 
             const response = await fetch(url);

@@ -25,6 +25,9 @@ Route::get('/', function () {
 Route::get('/catalogo', function () {
     $categoria = request('categoria');
     $busqueda = request('q');
+    $precioMin = request('precio_min');
+    $precioMax = request('precio_max');
+    $orden = request('orden', 'reciente');
     
     $categorias = \App\Models\Category::withCount(['productos' => function ($query) {
         $query->where('is_active', true);
@@ -44,6 +47,92 @@ Route::get('/catalogo', function () {
     // Aplicar búsqueda parcial
     if ($busqueda) {
         $query->search($busqueda);
+    }
+    
+    // Aplicar filtro de precio (considerando precio con promoción)
+    if ($precioMin !== null && $precioMin !== '') {
+        $query->where(function($q) use ($precioMin) {
+            // Precio base dentro del rango O precio con promoción dentro del rango
+            $q->where('price', '>=', (float) $precioMin)
+              ->orWhereHas('promotions', function($promoQuery) use ($precioMin) {
+                  $promoQuery->where('is_active', true)
+                      ->where(function($pq) use ($precioMin) {
+                          // Calculamos el precio con descuento mínimo posible
+                          // Si el descuento es por porcentaje o monto fijo
+                          $pq->whereRaw(
+                              "CASE 
+                                  WHEN discount_percentage IS NOT NULL THEN price - (price * discount_percentage / 100) - COALESCE(discount_amount, 0)
+                                  WHEN discount_amount IS NOT NULL THEN price - discount_amount
+                                  ELSE price
+                              END >= ?",
+                              [(float) $precioMin]
+                          );
+                      });
+              })
+              ->orWhereHas('category.promotions', function($promoQuery) use ($precioMin) {
+                  $promoQuery->where('is_active', true)
+                      ->where(function($pq) use ($precioMin) {
+                          $pq->whereRaw(
+                              "CASE 
+                                  WHEN discount_percentage IS NOT NULL THEN price - (price * discount_percentage / 100) - COALESCE(discount_amount, 0)
+                                  WHEN discount_amount IS NOT NULL THEN price - discount_amount
+                                  ELSE price
+                              END >= ?",
+                              [(float) $precioMin]
+                          );
+                      });
+              });
+        });
+    }
+    
+    // Aplicar filtro de precio máximo
+    if ($precioMax !== null && $precioMax !== '') {
+        $query->where(function($q) use ($precioMax) {
+            $q->where('price', '<=', (float) $precioMax)
+              ->orWhereHas('promotions', function($promoQuery) use ($precioMax) {
+                  $promoQuery->where('is_active', true)
+                      ->where(function($pq) use ($precioMax) {
+                          $pq->whereRaw(
+                              "CASE 
+                                  WHEN discount_percentage IS NOT NULL THEN price - (price * discount_percentage / 100) - COALESCE(discount_amount, 0)
+                                  WHEN discount_amount IS NOT NULL THEN price - discount_amount
+                                  ELSE price
+                              END <= ?",
+                              [(float) $precioMax]
+                          );
+                      });
+              })
+              ->orWhereHas('category.promotions', function($promoQuery) use ($precioMax) {
+                  $promoQuery->where('is_active', true)
+                      ->where(function($pq) use ($precioMax) {
+                          $pq->whereRaw(
+                              "CASE 
+                                  WHEN discount_percentage IS NOT NULL THEN price - (price * discount_percentage / 100) - COALESCE(discount_amount, 0)
+                                  WHEN discount_amount IS NOT NULL THEN price - discount_amount
+                                  ELSE price
+                              END <= ?",
+                              [(float) $precioMax]
+                          );
+                      });
+              });
+        });
+    }
+    
+    // Aplicar ordenamiento
+    switch ($orden) {
+        case 'precio_asc':
+            $query->orderBy('price', 'asc');
+            break;
+        case 'precio_desc':
+            $query->orderBy('price', 'desc');
+            break;
+        case 'nombre':
+            $query->orderBy('name', 'asc');
+            break;
+        case 'reciente':
+        default:
+            $query->orderBy('created_at', 'desc');
+            break;
     }
     
     $productos = $query->paginate(12);

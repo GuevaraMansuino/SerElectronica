@@ -482,6 +482,9 @@
                         @if(request('categoria'))
                             <input type="hidden" name="categoria" value="{{ request('categoria') }}">
                         @endif
+                        @if(request('q'))
+                            <input type="hidden" name="q" value="{{ request('q') }}">
+                        @endif
                         <button type="submit" class="filter-apply">Aplicar filtros</button>
 
                         @if(request()->hasAny(['precio_min','precio_max','q']))
