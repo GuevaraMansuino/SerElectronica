@@ -69,7 +69,7 @@
 /* Title */
 .hero__title {
     font-family: var(--font-display);
-    font-size: clamp(3.5rem, 7vw, 6.5rem);
+    font-size: clamp(6rem, 10vw, 10.5rem);
     font-weight: 800;
     letter-spacing: 0.02em;
     line-height: 0.92;
@@ -377,23 +377,38 @@
 /* Mobile: Categorías colapsables */
 @media (max-width: 768px) {
     .cats-section {
-        padding: 1.5rem 5vw;
+        padding: 1rem 5vw;
     }
     
     .cats-header {
         margin-bottom: 1rem;
     }
     
+    /* Ocultar las categorías por defecto en móvil */
     .cats-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        display: none;
     }
     
+    /* Cuando está abierto, mostrar como dropdown vertical */
     .cats-grid.open {
         display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        flex-direction: column;
+        overflow-x: visible;
+        gap: 0.5rem;
+        max-height: none;
+        padding: 1rem 0;
+    }
+    
+    /* Ocultar los fades en móvil cuando es dropdown */
+    .cats-fade-left,
+    .cats-fade-right {
+        display: none;
+    }
+    
+    /* Estilos para las categorías cuando están expandidas */
+    .cats-grid.open .cat-pill {
+        width: 100%;
+        justify-content: flex-start;
     }
     
     .cats-toggle {
@@ -582,7 +597,16 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 5rem;
-    align-items: center;
+    align-items: center; /* Centrado vertical */
+}
+
+.about__content {
+    padding-top: 1rem;
+}
+
+/* Ocultar mapa móvil en desktop */
+.about__map-mobile {
+    display: none;
 }
 
 .about__map-wrap {
@@ -768,8 +792,42 @@
    RESPONSIVE
 ---------------------------------------------------------------- */
 @media (max-width: 1024px) {
-    .hero { grid-template-columns: 1fr; min-height: auto; padding: 3rem 5vw 3rem; }
+    .hero { grid-template-columns: 1fr; min-height: auto; padding: 2rem 5vw 2rem; }
     .hero::after { display: none; }
+    
+    /* About section: mobile layout desde 820px */
+    .about-section { grid-template-columns: 1fr; gap: 2rem; }
+    
+    /* Ocultar mapa desktop en tablets */
+    .about-section > .about__map-wrap {
+        display: none;
+    }
+    
+    /* Mostrar mapa móvil */
+    .about__map-mobile {
+        display: block;
+        margin: 1.5rem 0;
+    }
+    
+    /* Reordenar contenido */
+    .about-section > .about__content {
+        display: flex;
+        flex-direction: column;
+    }
+    .about-section > .about__content .sec-label,
+    .about-section > .about__content .sec-title,
+    .about-section > .about__content p {
+        order: 1;
+    }
+    .about-section > .about__content .about__features {
+        order: 2;
+    }
+    .about-section > .about__content .about__map-mobile {
+        order: 3;
+    }
+    .about-section > .about__content > div:last-child {
+        order: 4;
+    }
     
     /* Imagen del local - ajustar para tablets */
     .hero__visual { 
@@ -796,16 +854,9 @@
         border-radius: var(--radius-lg);
     }
     
-    /* Ocultar elementos decorativos en tablet */
-    .hero__float-badge,
-    .hero__rating-badge,
-    .hero__corner {
-        display: none;
-    }
-    
     /* Espaciado normal para tablets */
     .hero__eyebrow { margin-bottom: 1rem; }
-    .hero__title { margin-bottom: 1rem; font-size: 3rem !important; }
+    .hero__title { margin-bottom: 1rem; font-size: 3.5rem !important; }
     .hero__subtitle { margin-bottom: 1.5rem; font-size: 1rem; }
     .hero__actions { margin-bottom: 2rem; gap: 0.75rem; }
     .hero__stats { padding-top: 2rem; gap: 1.2rem; }
@@ -821,12 +872,92 @@
     .featured-header { flex-direction: column; align-items: flex-start; }
     .reviews-grid { grid-template-columns: 1fr; }
     .reviews-header { flex-direction: column; align-items: flex-start; }
-    .about__features { grid-template-columns: 1fr; }
+    
+    /* About section: mobile layout */
+    .about-section { 
+        grid-template-columns: 1fr; 
+        gap: 2rem;
+    }
+    
+    /* En móvil: el contenido (div 2) va primero, el mapa (div 1) va después */
+    .about-section > .about__content {
+        order: 1;
+    }
+    .about-section > .about__map-wrap {
+        order: 2;
+        display: none; /* Ocultar el mapa de desktop en móvil */
+    }
+    
+    /* Mostrar el mapa móvil */
+    .about__map-mobile {
+        display: block;
+        margin: 0.5rem 0;
+    }
+    
+    /* Estilos específicos para el mapa móvil - SIN borde */
+    .about__map-mobile .about__map-wrap {
+        border: none !important;
+        border-radius: var(--radius-xl) !important;
+        overflow: hidden !important;
+        position: relative !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .about__map-mobile .about__map-wrap iframe {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: var(--radius-xl) !important;
+    }
+    
+    .about__map-mobile .about__map-pin {
+        bottom: 0.3rem !important;
+        left: 0.3rem !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+    
+    /* Reducir espacios en móvil */
+    .about__content p {
+        margin-top: 0.5rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .about__content > div:last-child {
+        margin-top: 1rem !important;
+    }
+    
+    /* Reordenar dentro del contenido para móvil */
+    .about__content {
+        display: flex;
+        flex-direction: column;
+    }
+    .about__content .sec-label,
+    .about__content .sec-title,
+    .about__content p {
+        order: 1;
+    }
+    .about__content .about__features {
+        order: 2;
+    }
+    .about__content .about__map-mobile {
+        order: 3;
+    }
+    .about__content > div:last-child {
+        order: 4;
+    }
+    
+    /* Features en 2 columnas en móvil */
+    .about__features { 
+        grid-template-columns: 1fr 1fr; 
+        margin-top: 1rem !important;
+    }
     .hero__stats { gap: 0.8rem; }
     
     /* Título más compacto */
     .hero__title {
-        font-size: 1.8rem !important;
+        font-size: 3rem !important;
         margin-bottom: 0.5rem;
     }
     
@@ -846,6 +977,15 @@
     .hero__stat-value {
         font-size: 1.8rem;
     }
+    
+    /* Reducir padding de secciones en mobile */
+    .featured-section { padding: 3rem 5vw; }
+    .reviews-section { padding: 3rem 5vw; }
+    .about-section { padding: 3rem 5vw; }
+    .promo-strip { padding: 3rem 5vw; }
+    
+    /* Mover badge Garantizado más a la derecha */
+    .hero__float-badge { left: 0.5rem !important; }
 }
 
 /* ================================================================
@@ -857,7 +997,7 @@
     }
     
     .hero__title {
-        font-size: clamp(4rem, 8vw, 7rem);
+        font-size: clamp(4.5rem, 9vw, 8rem);
     }
     
     .cats-section {

@@ -24,6 +24,7 @@ Route::get('/', function () {
 // Catálogo público
 Route::get('/catalogo', function () {
     $categoria = request('categoria');
+    $busqueda = request('q');
     
     $categorias = \App\Models\Category::withCount(['productos' => function ($query) {
         $query->where('is_active', true);
@@ -33,10 +34,16 @@ Route::get('/catalogo', function () {
     
     $query = \App\Models\Product::with(['category', 'promotions', 'category.promotions'])->where('is_active', true);
     
+    // Aplicar filtro de categoría
     if ($categoria) {
         $query->whereHas('category', function ($q) use ($categoria) {
             $q->where('slug', $categoria);
         });
+    }
+    
+    // Aplicar búsqueda parcial
+    if ($busqueda) {
+        $query->search($busqueda);
     }
     
     $productos = $query->paginate(12);

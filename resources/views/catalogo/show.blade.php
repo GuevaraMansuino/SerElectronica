@@ -583,7 +583,6 @@
                 <div class="product-card__body">
                     <span class="product-card__cat">{{ $rel->categoria->nombre }}</span>
                     <h3 class="product-card__name">{{ $rel->nombre }}</h3>
-                    <p class="product-card__desc">{{ Str::limit($rel->descripcion, 80) }}</p>
                     <div class="product-card__footer">
                         <div>
                             <small>Precio</small>

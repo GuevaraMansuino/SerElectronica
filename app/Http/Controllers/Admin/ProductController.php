@@ -15,9 +15,32 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $productos = Product::with('category', 'promotions')->latest()->paginate(15);
+        $query = Product::with('category', 'promotions');
+        
+        // Aplicar búsqueda parcial
+        if ($request->has('q') && $request->q) {
+            $query->search($request->q);
+        }
+        
+        // Filtrar por categoría
+        if ($request->has('categoria_id') && $request->categoria_id) {
+            $query->where('category_id', $request->categoria_id);
+        }
+        
+        // Filtrar por estado
+        if ($request->has('estado')) {
+            if ($request->estado === 'activo') {
+                $query->where('is_active', true);
+            } elseif ($request->estado === 'oculto') {
+                $query->where('is_active', false);
+            } elseif ($request->estado === 'destacado') {
+                $query->where('destacado', true);
+            }
+        }
+        
+        $productos = $query->latest()->paginate(15);
         $categorias = Category::all();
         return view('admin.productos.index', compact('productos', 'categorias'));
     }

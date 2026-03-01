@@ -103,25 +103,25 @@
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
             </button>
         </div>
-
+        
     </div>
 </section>
 <section class="cats-section-scrolleable">
-
+    
     <div style="position:relative;">
         <div class="cats-fade-left" id="cats-fade-left"></div>
         <div class="cats-fade-right" id="cats-fade-right"></div>
         <div class="cats-grid" id="js-cats-grid">
-        @forelse($categorias as $categoria)
-        <a href="{{ route('catalogo.index', ['categoria' => $categoria->slug]) }}" class="cat-pill">
-            <div class="cat-pill__icon">
-                {{ $categoria->icono_emoji ?? '⚡' }}
-            </div>
-            <span class="cat-pill__name">{{ $categoria->name }}</span>
-            <span class="cat-pill__count">{{ $categoria->products_count }} productos</span>
-            <span class="cat-pill__arrow">→</span>
-        </a>
-        @empty
+            @forelse($categorias as $categoria)
+            <a href="{{ route('catalogo.index', ['categoria' => $categoria->slug]) }}" class="cat-pill">
+                <div class="cat-pill__icon">
+                    {{ $categoria->icono_emoji ?? '⚡' }}
+                </div>
+                <span class="cat-pill__name">{{ $categoria->name }}</span>
+                <span class="cat-pill__count">{{ $categoria->products_count }} productos</span>
+                <span class="cat-pill__arrow">→</span>
+            </a>
+            @empty
         {{-- Placeholders mientras se cargan datos --}}
         @foreach(['🔊 Audio','🎵 Música','⚡ Amplificadores','🎚️ Mezcladoras','💡 Iluminación','🔌 Cables'] as $placeholder)
         <div class="cat-pill">
@@ -151,43 +151,7 @@
 
     <div class="products-grid">
         @forelse($productosDestacados as $producto)
-        <article class="product-card">
-            <div class="product-card__img">
-                @if($producto->image)
-                    <img src="{{ asset('storage/' . $producto->image) }}"
-                         alt="{{ $producto->name }}" loading="lazy">
-                @else
-                    <div style="display:grid;place-items:center;height:100%;font-size:3rem;color:var(--text-3);">📦</div>
-                @endif
-                @if($producto->is_new)
-                    <span class="product-card__badge">Nuevo</span>
-                @endif
-            </div>
-            <div class="product-card__body">
-                <span class="product-card__cat">{{ $producto->category->name }}</span>
-                <h3 class="product-card__name">{{ $producto->name }}</h3>
-                <p class="product-card__desc">{{ Str::limit($producto->description, 95) }}</p>
-                <div class="product-card__footer">
-                    <div>
-                        @if($producto->has_promotion && $producto->final_price < $producto->price)
-                            <small>Precio</small>
-                            <span class="product-card__price" style="text-decoration: line-through; color: var(--text-3); font-size: 0.9em;">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                            <div style="color: var(--lime); font-weight: 600;">
-                                <small>Con promo:</small>
-                                <span class="product-card__price" style="color: var(--lime);">${{ number_format($producto->final_price, 0, ',', '.') }}</span>
-                            </div>
-                        @else
-                            <small>Precio</small>
-                            <span class="product-card__price">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                        @endif
-                    </div>
-                    <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__cta">
-                        Ver más
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                </div>
-            </div>
-        </article>
+        @include('components.product-card', ['producto' => $producto])
         @empty
         <div style="grid-column:1/-1;text-align:center;padding:5rem 0;color:var(--text-3);">
             <div style="font-size:3.5rem;margin-bottom:1rem">📦</div>
@@ -249,6 +213,8 @@
      NOSOTROS / MAPA
 ============================================================ --}}
 <section class="about-section" aria-labelledby="about-heading">
+    
+    {{-- Mapa a la izquierda en desktop --}}
     <div class="about__map-wrap">
         <iframe
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3350.358977304016!2d-68.83435650000001!3d-32.888675899999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x967e092283f797bf%3A0x545fd2d1106d8b5a!2sSER!5e0!3m2!1ses-419!2sar!4v1771630104700!5m2!1ses-419!2sar"
@@ -261,8 +227,9 @@
             Lavalle 299, Mendoza Capital
         </div>
     </div>
-
-    <div>
+    
+    {{-- Contenido a la derecha en desktop --}}
+    <div class="about__content">
         <span class="sec-label">Dónde estamos</span>
         <h2 class="sec-title" id="about-heading">ENCONTRANOS<br>EN MENDOZA</h2>
 
@@ -293,6 +260,21 @@
                 <div class="feature-item__icon">⚡</div>
                 <div class="feature-item__title">Soporte Técnico</div>
                 <div class="feature-item__text">Soporte Técnico disponible</div>
+            </div>
+        </div>
+
+        <div class="about__map-mobile">
+            <div class="about__map-wrap">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3350.358977304016!2d-68.83435650000001!3d-32.888675899999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x967e092283f797bf%3A0x545fd2d1106d8b5a!2sSER!5e0!3m2!1ses-419!2sar!4v1771630104700!5m2!1ses-419!2sar"
+                    allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                    style="width:100%;height:250px;border:0;border-radius:var(--radius-xl);"
+                    title="Ubicación de SER Electrónica en Mendoza">
+                </iframe>
+                <div class="about__map-pin">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Lavalle 299
+                </div>
             </div>
         </div>
 

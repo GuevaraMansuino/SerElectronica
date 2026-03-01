@@ -4,6 +4,7 @@
 @section('meta_description', 'Catálogo de productos de electrónica, audio, altavoces y más. SER Electrónica, Lavalle 299, Mendoza.')
 
 @push('styles')
+@vite(['resources/css/catalog.css'])
 <style>
 /* ================================================================
    CATÁLOGO INDEX
@@ -428,9 +429,10 @@
         <form action="{{ route('catalogo.index') }}" method="GET" id="filter-form">
 
             <div class="sidebar-card">
-                <div class="sidebar-card__header">
+                <div class="sidebar-card__header" role="button" aria-expanded="true">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
                     <span class="sidebar-card__title">Filtros</span>
+                    <svg class="sidebar-toggle" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
 
                 <div class="sidebar-card__body">
@@ -556,43 +558,7 @@
         {{-- Grid --}}
         <div class="products-grid">
             @forelse($productos as $producto)
-            <article class="product-card">
-                <div class="product-card__img">
-                    @if($producto->image)
-                        <img src="{{ asset('storage/'.$producto->image) }}"
-                             alt="{{ $producto->name }}" loading="lazy">
-                    @else
-                        <div style="display:grid;place-items:center;height:100%;font-size:2.5rem;color:var(--text-3)">📦</div>
-                    @endif
-                    @if($producto->is_new)
-                        <span class="product-card__badge">Nuevo</span>
-                    @endif
-                </div>
-                <div class="product-card__body">
-                    <span class="product-card__cat">{{ $producto->category->name }}</span>
-                    <h2 class="product-card__name">{{ $producto->name }}</h2>
-                    <p class="product-card__desc">{{ Str::limit($producto->description, 88) }}</p>
-                    <div class="product-card__footer">
-                        <div>
-                            @if($producto->has_promotion)
-                                <small>Precio</small>
-                                <span class="product-card__price" style="text-decoration: line-through; color: var(--text-3); font-size: 0.85em;">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                                <div style="color: var(--lime); font-weight: 600;">
-                                    <small>Con promo:</small>
-                                    <span class="product-card__price" style="color: var(--lime);">${{ number_format($producto->final_price, 0, ',', '.') }}</span>
-                                </div>
-                            @else
-                                <small>Precio</small>
-                                <span class="product-card__price">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                            @endif
-                        </div>
-                        <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__cta">
-                            Ver más
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </a>
-                    </div>
-                </div>
-            </article>
+            @include('components.product-card', ['producto' => $producto])
             @empty
             <div class="empty-catalog">
                 <div class="empty-catalog__icon">🔍</div>
@@ -753,7 +719,6 @@
                 <div class="product-card__body">
                     <span class="product-card__cat">${categoryName}</span>
                     <h2 class="product-card__name">${product.name}</h2>
-                    <p class="product-card__desc">${product.description ? product.description.substring(0, 88) : ''}</p>
                     <div class="product-card__footer">
                         <div>
                             ${priceHtml}
@@ -784,6 +749,7 @@
     }
 })();
 </script>
+<script>
     const searchInput = document.getElementById('js-search');
     const searchBtn   = document.getElementById('js-search-btn');
 
@@ -797,5 +763,29 @@
 
     searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+    
+    // Toggle filtros en mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterHeader = document.querySelector('.sidebar-card__header');
+        const filterBody = document.querySelector('.sidebar-card__body');
+        const toggleIcon = filterHeader ? filterHeader.querySelector('.sidebar-toggle') : null;
+        
+        if (filterHeader && filterBody) {
+            // En móvil, iniciar colapsado
+            if (window.innerWidth <= 960) {
+                filterBody.style.display = 'none';
+            }
+            
+            filterHeader.addEventListener('click', function() {
+                if (filterBody.style.display === 'none') {
+                    filterBody.style.display = 'block';
+                    if (toggleIcon) toggleIcon.style.transform = 'rotate(180deg)';
+                } else {
+                    filterBody.style.display = 'none';
+                    if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+    });
 </script>
 @endpush

@@ -55,6 +55,7 @@ class ProductController extends Controller
     {
         $page = $request->get('page', 2); // Por defecto empezar desde página 2
         $categoria = $request->get('categoria');
+        $busqueda = $request->get('q');
         $perPage = 12;
 
         $query = Product::with(['category', 'promotions', 'category.promotions'])->where('is_active', true);
@@ -64,6 +65,11 @@ class ProductController extends Controller
             $query->whereHas('category', function($q) use ($categoria) {
                 $q->where('slug', $categoria);
             });
+        }
+
+        // Aplicar búsqueda parcial
+        if ($busqueda) {
+            $query->search($busqueda);
         }
 
         $productos = $query->orderBy('created_at', 'desc')

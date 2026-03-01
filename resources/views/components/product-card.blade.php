@@ -15,7 +15,6 @@
     <div class="product-card__body">
         <span class="product-card__cat">{{ $producto->category->name }}</span>
         <h2 class="product-card__name">{{ $producto->name }}</h2>
-        <p class="product-card__desc">{{ Str::limit($producto->description, 88) }}</p>
 
         <div class="product-card__footer">
             <div>

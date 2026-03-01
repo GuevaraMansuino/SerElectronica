@@ -39,8 +39,11 @@
         </div>
 
         {{-- Navegación --}}
-        <div>
-            <span class="footer__col-title">Navegación</span>
+        <div class="footer__col-group">
+            <button class="footer__col-toggle" type="button">
+                <span class="footer__col-title">Navegación</span>
+                <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
             <ul class="footer__nav-list">
                 <li><a href="{{ route('home') }}">Inicio</a></li>
                 <li><a href="{{ route('catalogo.index') }}">Todos los Productos</a></li>
@@ -51,8 +54,11 @@
         </div>
 
         {{-- Categorías --}}
-        <div>
-            <span class="footer__col-title">Categorías</span>
+        <div class="footer__col-group">
+            <button class="footer__col-toggle" type="button">
+                <span class="footer__col-title">Categorías</span>
+                <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
             <ul class="footer__nav-list">
                 @foreach(\App\Models\Category::take(6)->get() as $cat)
                     <li><a href="{{ route('catalogo.index', ['categoria' => $cat->slug]) }}">{{ $cat->name }}</a></li>
@@ -61,8 +67,11 @@
         </div>
 
         {{-- Horarios --}}
-        <div>
-            <span class="footer__col-title">Horarios</span>
+        <div class="footer__col-group">
+            <button class="footer__col-toggle" type="button">
+                <span class="footer__col-title">Horarios</span>
+                <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
             <div class="footer__schedule">
                 <div><strong>Lun – Vie</strong></div>
                 <div style="margin-bottom:0.8rem">09:00 – 18:00 hs</div>

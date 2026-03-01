@@ -61,6 +61,32 @@ class Product extends Model
         return $query->where('is_active', true);
     }
 
+    /**
+     * Scope para búsqueda parcial de productos
+     * Busca en nombre, descripción, marca, modelo y nombre de categoría
+     */
+    public function scopeSearch($query, $searchTerm)
+    {
+        if (!$searchTerm) return $query;
+        
+        $term = trim($searchTerm);
+        
+        return $query->where(function($q) use ($term) {
+            // Buscar en nombre (partial match)
+            $q->where('name', 'LIKE', "%{$term}%")
+            // Buscar en descripción
+              ->orWhere('description', 'LIKE', "%{$term}%")
+            // Buscar en marca
+              ->orWhere('marca', 'LIKE', "%{$term}%")
+            // Buscar en modelo
+              ->orWhere('modelo', 'LIKE', "%{$term}%")
+            // Buscar en nombre de categoría
+              ->orWhereHas('category', function($categoryQuery) use ($term) {
+                  $categoryQuery->where('name', 'LIKE', "%{$term}%");
+              });
+        });
+    }
+
     /*
     |--------------------------------------------------------------------------
     | RELACIONES

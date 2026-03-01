@@ -12,7 +12,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/productCard.css', 'resources/js/app.js'])
 
     <style>
     /* ================================================================
@@ -448,7 +448,11 @@
         letter-spacing: 0.2em;
         color: var(--lime);
         margin-bottom: 1.2rem;
-        display: block;
+    }
+    
+    /* Footer toggle button - hidden on desktop */
+    .footer__col-toggle {
+        display: none;
     }
 
     .footer__nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
@@ -591,186 +595,6 @@
         text-underline-offset: 3px;
     }
 
-    /* Product card — shared across pages */
-    .product-card {
-        background: var(--surface);
-        border: 1px solid var(--border-solid);
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: all var(--t);
-        position: relative;
-    }
-
-    .product-card:hover {
-        border-color: var(--lime);
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(182,255,59,0.2);
-    }
-
-    .product-card__img {
-        aspect-ratio: 4 / 3;
-        overflow: hidden;
-        background: var(--surface-2);
-        position: relative;
-    }
-
-    .product-card__img img {
-        width: 100%; height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-
-    .product-card:hover .product-card__img img { transform: scale(1.06); }
-
-    .product-card__badge {
-        position: absolute;
-        top: 10px; left: 10px;
-        background: var(--lime);
-        color: var(--bg);
-        font-family: var(--font-mono);
-        font-size: 0.7rem;
-        font-weight: 500;
-        letter-spacing: 0.15em;
-        text-transform: uppercase;
-        padding: 4px 12px;
-        border-radius: 4px;
-    }
-
-    .product-card__body {
-        padding: 1rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .product-card__cat {
-        font-family: var(--font-mono);
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.15em;
-        color: var(--lime);
-        margin-bottom: 0.3rem;
-    }
-
-    .product-card__name {
-        font-family: var(--font-display);
-        font-size: 1.1rem;
-        font-weight: 700;
-        letter-spacing: 0.02em;
-        color: var(--text);
-        margin-bottom: 0.4rem;
-        line-height: 1.25;
-    }
-
-    .product-card__desc {
-        font-size: 0.85rem;
-        color: var(--text-2);
-        line-height: 1.4;
-        flex: 1;
-        margin-bottom: 0.7rem;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .product-card__footer {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-top: 0.7rem;
-        border-top: 1px solid var(--border-solid);
-    }
-
-    .product-card__price {
-        font-family: var(--font-display);
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: var(--lime);
-        letter-spacing: 0.02em;
-        line-height: 1;
-    }
-
-    .product-card__price small {
-        display: block;
-        font-family: var(--font-body);
-        font-size: 0.75rem;
-        font-weight: 400;
-        color: var(--text-3);
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }
-
-    .product-card__cta {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 7px 14px;
-        border: 1px solid var(--border-solid);
-        border-radius: var(--radius);
-        font-size: 0.8rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--text-2);
-        transition: all var(--t);
-    }
-
-    .product-card__cta:hover {
-        border-color: var(--lime);
-        color: var(--lime);
-        background: var(--lime-dim);
-    }
-
-    /* Mobile: Product cards en 2 columnas */
-    @media (max-width: 768px) {
-        .product-card__body {
-            padding: 0.9rem;
-        }
-        
-        .product-card__cat {
-            font-size: 0.65rem;
-        }
-        
-        .product-card__name {
-            font-size: 1rem;
-        }
-        
-        .product-card__desc {
-            font-size: 0.8rem;
-            margin-bottom: 0.6rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-        
-        .product-card__footer {
-            padding-top: 0.6rem;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-        
-        .product-card__price {
-            font-size: 1.25rem;
-        }
-        
-        .product-card__price small {
-            font-size: 0.7rem;
-        }
-        
-        .product-card__cta {
-            width: 100%;
-            justify-content: center;
-            padding: 8px 12px;
-            font-size: 0.75rem;
-        }
-    }
-
     /* Divisor decorativo */
     .divider-lime {
         height: 1px;
@@ -784,12 +608,53 @@
         .footer__main { grid-template-columns: 1fr 1fr; }
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 820px) {
         .navbar__links { display: none; }
         .navbar__burger { display: flex; }
-        .footer__main { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 5vw 2rem; }
+        .footer__main { 
+            grid-template-columns: 1fr; 
+            gap: 0; 
+            padding: 1.5rem 5vw 1rem; 
+        }
         .footer__desc { max-width: 100%; }
         .footer__bottom { flex-direction: column; gap: 0.5rem; text-align: center; }
+        
+        /* Footer toggles */
+        .footer__col-group {
+            border-bottom: 1px solid var(--border);
+        }
+        .footer__col-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 1rem 0;
+            cursor: pointer;
+            color: var(--text);
+        }
+        .footer__col-title {
+            margin-bottom: 0;
+        }
+        .footer__col-arrow {
+            transition: transform var(--t);
+        }
+        .footer__col-group.open .footer__col-arrow {
+            transform: rotate(180deg);
+        }
+        .footer__nav-list,
+        .footer__schedule {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding-bottom: 0;
+        }
+        .footer__col-group.open .footer__nav-list,
+        .footer__col-group.open .footer__schedule {
+            max-height: 300px;
+            padding-bottom: 1rem;
+        }
     }
     
     /* Pantallas grandes - aprovechar todo el ancho */
@@ -1068,8 +933,11 @@ function dismissToast(toast) {
         </div>
 
         {{-- Navegación --}}
-        <div>
-            <span class="footer__col-title">Navegación</span>
+        <div class="footer__col-group">
+            <button class="footer__col-toggle" type="button">
+                <span class="footer__col-title">Navegación</span>
+                <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
             <ul class="footer__nav-list">
                 <li><a href="{{ route('home') }}">Inicio</a></li>
                 <li><a href="{{ route('catalogo.index') }}">Todos los Productos</a></li>
@@ -1080,8 +948,11 @@ function dismissToast(toast) {
         </div>
 
         {{-- Categorías --}}
-        <div>
-            <span class="footer__col-title">Categorías</span>
+        <div class="footer__col-group">
+            <button class="footer__col-toggle" type="button">
+                <span class="footer__col-title">Categorías</span>
+                <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
             <ul class="footer__nav-list">
                 @foreach(\App\Models\Category::take(6)->get() as $cat)
                 <li><a href="{{ route('catalogo.index', ['categoria' => $cat->slug]) }}">{{ $cat->name }}</a></li>
@@ -1090,8 +961,11 @@ function dismissToast(toast) {
         </div>
 
         {{-- Horarios --}}
-        <div>
-            <span class="footer__col-title">Horarios</span>
+        <div class="footer__col-group">
+            <button class="footer__col-toggle" type="button">
+                <span class="footer__col-title">Horarios</span>
+                <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
             <div class="footer__schedule">
                 <div><strong>Lun – Vie</strong></div>
                 <div style="margin-bottom:0.8rem">09:00 – 18:00 hs</div>
@@ -1113,6 +987,14 @@ function dismissToast(toast) {
     const burger   = document.getElementById('js-burger');
     const mobileNav = document.getElementById('js-mobile-nav');
     const mobileClose = document.getElementById('js-mobile-close');
+
+    // Footer toggles
+    document.querySelectorAll('.footer__col-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const group = this.parentElement;
+            group.classList.toggle('open');
+        });
+    });
 
     burger.addEventListener('click', () => {
         mobileNav.classList.add('open');
@@ -1140,5 +1022,7 @@ function dismissToast(toast) {
 </script>
 
 @stack('scripts')
+
+@include('components.floating-whatsapp')
 </body>
 </html>
