@@ -5,7 +5,9 @@
 
 @push('styles')
 @vite(['resources/css/catalog.css'])
-<style>
+@endpush
+
+@section('content')
 /* ================================================================
    CATÁLOGO INDEX
 ================================================================ */
@@ -386,17 +388,11 @@
     .catalog-layout { grid-template-columns: 1fr; }
     .sidebar { position: static; }
 }
-
-@media (max-width: 600px) {
-    .catalog-toolbar { flex-direction: column; align-items: stretch; }
-    .catalog-controls { flex-wrap: wrap; }
-    .search-bar input { width: 160px; }
-}
 </style>
+
 @endpush
 
 @section('content')
-
 {{-- PAGE BANNER --}}
 <div class="page-banner">
     <div class="page-banner__inner">
