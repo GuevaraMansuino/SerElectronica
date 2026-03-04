@@ -3,6 +3,18 @@
    Estilos específicos para la página del catálogo
 ============================================================== */
 
+/* Page Banner */
+.page-banner {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 5vw 2.5rem;
+}
+
+.page-banner__inner { 
+    max-width: 1320px; 
+    margin: 0 auto; 
+}
+
 .breadcrumb {
     display: flex;
     align-items: center;
@@ -201,7 +213,28 @@
     background: var(--border-solid);
     margin: 1.4rem 0;
 }
+/* Aviso de precios */
+.price-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+    background: rgba(255, 200, 0, 0.08);
+    border: 1px solid rgba(255, 200, 0, 0.25);
+    border-radius: var(--radius);
+    font-size: 0.82rem;
+    color: var(--text-2);
+    line-height: 1.5;
+    margin-bottom: 2rem;
+    margin-top: 1.5rem;
 
+}
+
+.price-notice svg {
+    flex-shrink: 0;
+    color: #ffc800;
+    margin-top: 1px;
+}
 /* ================================================================
    MAIN CATALOG
 ============================================================== */

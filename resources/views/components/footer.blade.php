@@ -60,15 +60,12 @@
                 <svg class="footer__col-arrow" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <ul class="footer__nav-list">
-                @try
-                    @foreach(\App\Models\Category::take(6)->get() as $cat)
-                        <li><a href="{{ route('catalogo.index', ['categoria' => $cat->slug]) }}">{{ $cat->name }}</a></li>
-                    @endforeach
-                @catch(\Exception $e)
-                    <li><a href="{{ route('catalogo.index') }}">Audio</a></li>
-                    <li><a href="{{ route('catalogo.index') }}">Parlantes</a></li>
-                    <li><a href="{{ route('catalogo.index') }}">Cables</a></li>
-                @endtry
+                <li><a href="{{ route('catalogo.index', ['categoria' => 'audio']) }}">Audio</a></li>
+                <li><a href="{{ route('catalogo.index', ['categoria' => 'parlantes']) }}">Parlantes</a></li>
+                <li><a href="{{ route('catalogo.index', ['categoria' => 'cables']) }}">Cables</a></li>
+                <li><a href="{{ route('catalogo.index', ['categoria' => 'auriculares']) }}">Auriculares</a></li>
+                <li><a href="{{ route('catalogo.index', ['categoria' => 'accesorios']) }}">Accesorios</a></li>
+                <li><a href="{{ route('catalogo.index') }}">Ver todas</a></li>
             </ul>
         </div>
 
@@ -93,5 +90,11 @@
     <div class="footer__bottom">
         <span>&copy; {{ date('Y') }} SER Electrónica — Todos los derechos reservados.</span>
         <span>Mendoza, Argentina</span>
+    </div>
+
+    {{-- Aviso de precios en footer --}}
+    <div class="footer__price-notice">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Precios de contado/transferencia. Los precios pueden variar. Son precios de lista sujetos a cambios sin previo aviso.</span>
     </div>
 </footer>

@@ -264,6 +264,27 @@
     line-height: 1.4;
 }
 
+/* Aviso de precios */
+.price-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+    background: rgba(255, 200, 0, 0.08);
+    border: 1px solid rgba(255, 200, 0, 0.25);
+    border-radius: var(--radius);
+    font-size: 0.82rem;
+    color: var(--text-2);
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+.price-notice svg {
+    flex-shrink: 0;
+    color: #ffc800;
+    margin-top: 1px;
+}
+
 /* Description */
 .product-info__desc {
     font-size: 1.05rem;
@@ -511,6 +532,18 @@
             </div>
             <p class="price-block__note">Para consultas escríbanos por WhatsApp</p>
         </div>
+
+        {{-- Aviso de precios --}}
+        <div class="price-notice">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><strong>Precio de contado/transferencia.</strong></span>
+        </div>
+
+        <div class= "price-notice">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span><strong>Los precios pueden variar.</strong> Son precios de <strong>Lista</strong> sujetos a cambios sin previo aviso.</span>
+        </div>
+        
 
         <p class="product-info__desc">{{ $producto->description }}</p>
 

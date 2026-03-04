@@ -50,7 +50,7 @@
                 <span class="hero__stat-label">Reseñas</span>
             </div>
             <div class="hero__stat">
-                <span class="hero__stat-value">+10</span>
+                <span class="hero__stat-value">+30</span>
                 <span class="hero__stat-label">Años en Mendoza</span>
             </div>
         </div>
@@ -141,6 +141,12 @@
      PRODUCTOS DESTACADOS
 ============================================================ --}}
 <section class="featured-section" aria-labelledby="featured-heading">
+    {{-- Aviso de precios --}}
+    <div class="price-notice" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:0.6rem 1rem;background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.25);border-radius:var(--radius);font-size:0.85rem;color:var(--text-2);margin-bottom:1rem;text-align:center;max-width:800px;margin-left:auto;margin-right:auto;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0;color:#ffc800;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>Precios de contado/transferencia</strong>. Los precios pueden variar. Son precios de lista sujetos a cambios sin previo aviso.</span>
+    </div>
+
     <div class="featured-header">
         <div>
             <span class="sec-label">Lo mejor de la tienda</span>
@@ -260,6 +266,11 @@
                 <div class="feature-item__icon">⚡</div>
                 <div class="feature-item__title">Soporte Técnico</div>
                 <div class="feature-item__text">Soporte Técnico disponible</div>
+            </div>
+            <div class="feature-item feature-item--recycle">
+                <div class="feature-item__icon">♻️</div>
+                <div class="feature-item__title">Reciclaje Responsable</div>
+                <div class="feature-item__text">Reciclamos equipos electrónicos, pilas y baterías para cuidar el medio ambiente. ¡Traenos los tuyos!</div>
             </div>
         </div>
 

@@ -35,6 +35,7 @@
                         ${{ number_format($producto->price, 0, ',', '.') }}
                     </span>
                 @endif
+                <div class="product-card__price-note">Contado/Transferencia</div>
             </div>
 
             <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__cta">

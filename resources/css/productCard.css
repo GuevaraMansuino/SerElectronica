@@ -137,6 +137,14 @@
     background: var(--lime-dim);
 }
 
+/* Nota de precio en tarjeta */
+.product-card__price-note {
+    font-size: 0.65rem;
+    color: var(--text-3);
+    margin-top: 2px;
+    font-style: italic;
+}
+
 /* Mobile: Product cards en 2 columnas */
 @media (max-width: 768px) {
     .product-card__body {
@@ -213,7 +221,7 @@
 }
 
 /* Show only on mobile */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .floating-whatsapp {
         display: block;
     }
