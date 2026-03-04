@@ -238,6 +238,7 @@ a { color: inherit; text-decoration: none; }
     padding: 80px 30px 30px;
     gap: 0;
     box-shadow: -10px 0 40px rgba(0,0,0,0.5);
+    overflow-y: auto;
 }
 
 .mobile-nav.open { 
@@ -496,6 +497,77 @@ a { color: inherit; text-decoration: none; }
     flex-shrink: 0;
     color: #ffc800;
 }
+
+/* Toast Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-radius: var(--radius-lg);
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 280px;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    animation: toastSlideIn 0.3s ease-out;
+    color: white;
+}
+
+.toast.toast-exit {
+    animation: toastSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes toastSlideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.toast-success { background: rgba(34, 197, 94, 0.95); border: 1px solid rgba(34, 197, 94, 0.3); }
+.toast-error { background: rgba(239, 68, 68, 0.95); border: 1px solid rgba(239, 68, 68, 0.3); }
+.toast-warning { background: rgba(245, 158, 11, 0.95); border: 1px solid rgba(245, 158, 11, 0.3); }
+.toast-info { background: rgba(59, 130, 246, 0.95); border: 1px solid rgba(59, 130, 246, 0.3); }
+
+.toast svg { flex-shrink: 0; width: 20px; height: 20; }
+
+.toast-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: white;
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+}
+
+.toast-close:hover { opacity: 1; }
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+@keyframes toastShrink { from { width: 100%; } to { width: 0%; } }
 
 .footer__lime-bar {
     height: 3px;
