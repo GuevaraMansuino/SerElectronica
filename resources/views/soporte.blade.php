@@ -45,10 +45,10 @@
             </div>
             {{-- Card 3 --}}
             <div class="service-card">
-                <div class="service-card__icon">⚡</div>
-                <h3 class="service-card__title">Potencias</h3>
+                <div class="service-card__icon">🔌</div>
+                <h3 class="service-card__title">Armado de Cables</h3>
                 <p class="service-card__desc">
-                    Servicio técnico para amplificadores de potencia, etapas de salida, fuentes de alimentación y circuitos de protección.
+                    Fabricación de cables a medida: speakon, canon (XLR), plug 6.3mm, cable de parlante y extensiones personalizadas. Materiales de calidad profesional.
                 </p>
             </div>
             {{-- Card 4 --}}

@@ -268,7 +268,7 @@
                 <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3350.358977304016!2d-68.83435650000001!3d-32.888675899999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x967e092283f797bf%3A0x545fd2d1106d8b5a!2sSER!5e0!3m2!1ses-419!2sar!4v1771630104700!5m2!1ses-419!2sar"
                     allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-                    style="width:100%;height:250px;border:0;border-radius:var(--radius-xl);"
+                    style="width:100%;border:0;border-radius:var(--radius-xl);"
                     title="Ubicación de SER Electrónica en Mendoza">
                 </iframe>
                 <div class="about__map-pin">

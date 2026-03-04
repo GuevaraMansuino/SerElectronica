@@ -607,6 +607,7 @@
 /* Ocultar mapa móvil en desktop */
 .about__map-mobile {
     display: none;
+    padding-top: 2rem;
 }
 
 .about__map-wrap {
