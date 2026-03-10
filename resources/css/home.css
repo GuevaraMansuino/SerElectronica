@@ -10,7 +10,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
-    gap: 4rem;
+    gap: 2rem;
     max-width: 100%;
     margin: 0 auto;
     padding: 5rem 8vw 4rem;
@@ -255,7 +255,7 @@
 ---------------------------------------------------------------- */
 .cats-section {
     background: var(--surface);
-    padding: 1.5rem 5vw;
+    padding: 2rem 5vw;
 }
 
 .cats-section-scrolleable {
@@ -1024,7 +1024,7 @@
     }
     
     .cats-section {
-        padding: 4rem 10vw;
+        padding: 2rem 10vw;
     }
     
     .featured-section {
@@ -1055,7 +1055,7 @@
     }
     
     .cats-section {
-        padding: 4rem 15vw;
+        padding: 2rem 15vw;
     }
     
     .featured-section {

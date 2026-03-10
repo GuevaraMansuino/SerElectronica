@@ -313,6 +313,12 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::delete('/admin/categorias/{id}', [AdminCategoryController::class, 'destroy'])
         ->name('admin.categorias.destroy');
 
+    // Import
+    Route::get('/admin/categorias/import', [\App\Http\Controllers\Admin\ImportController::class, 'showImportCategories'])
+        ->name('admin.categorias.import');
+    Route::post('/admin/categorias/import', [\App\Http\Controllers\Admin\ImportController::class, 'importCategories'])
+        ->name('admin.categorias.import.store');
+
     // ---------- PRODUCTOS (CRUD) ----------
     // Listar
     Route::get('/admin/productos', [AdminProductController::class, 'index'])
@@ -347,6 +353,13 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
         ->name('admin.productos.toggle');
 
     // ---------- IMPORTACIÓN ----------
+    // Web import routes
+    Route::get('/admin/productos/import', [\App\Http\Controllers\Admin\ImportController::class, 'showImportProducts'])
+        ->name('admin.productos.import');
+    Route::post('/admin/productos/import', [\App\Http\Controllers\Admin\ImportController::class, 'importProducts'])
+        ->name('admin.productos.import.store');
+    
+    // API import routes (for reference)
     Route::post('/import/products', [\App\Http\Controllers\Api\ImportController::class, 'importProducts'])
         ->name('import.products');
     
