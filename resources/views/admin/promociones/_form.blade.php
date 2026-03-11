@@ -11,81 +11,8 @@
     $method = $isEdit ? 'PUT' : 'POST';
 @endphp
 
-@push('styles')
-<style>
-/* Preview card de la promo */
-.promo-preview {
-    background: var(--bg);
-    border: 1px solid var(--border-solid);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    position: relative;
-    overflow: hidden;
-    transition: border-color var(--t);
-}
-
-.promo-preview::after {
-    content: '';
-    position: absolute;
-    top: -40px; right: -40px;
-    width: 140px; height: 140px;
-    background: radial-gradient(circle, rgba(182,255,59,0.08) 0%, transparent 60%);
-    pointer-events: none;
-}
-
-.promo-preview__tag {
-    display: inline-block;
-    background: var(--lime);
-    color: var(--bg);
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 3px;
-    margin-bottom: 0.8rem;
-}
-
-.promo-preview__title {
-    font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--text);
-    letter-spacing: 0.04em;
-    line-height: 1.1;
-    margin-bottom: 0.6rem;
-}
-
-.promo-preview__desc {
-    font-size: 0.84rem;
-    color: var(--text-2);
-    line-height: 1.6;
-    margin-bottom: 1.2rem;
-}
-
-.promo-preview__label {
-    position: absolute;
-    top: 8px; right: 8px;
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    color: var(--text-3);
-    background: var(--surface);
-    padding: 2px 7px;
-    border-radius: 3px;
-    border: 1px solid var(--border-solid);
-}
-.btn-toggle-off {
-    border-color: rgba(239,68,68,0.3) !important;
-    color: #fca5a5 !important;
-}
-.btn-toggle-on {
-    border-color: rgba(34,197,94,0.3) !important;
-    color: #86efac !important;
-}
-</style>
+@push('css')
+<link rel="stylesheet" href="{{ asset('css/admin-promociones.css') }}">
 @endpush
 
 <form action="{{ $action }}" method="POST" enctype="multipart/form-data" id="promo-form">
