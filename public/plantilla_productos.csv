@@ -1,11 +1,11 @@
 name;slug;description;price;category_id;marca;modelo;is_active;is_new;destacado;image;gallery
-Auricular Bluetooth;auricular-bluetooth;Auriculares inalambricos con sonido de alta calidad;2500;3;Sony;WH-1000XM4;1;1;1;;auricular-1.jpg,auricular-2.jpg
-Mouse Gamer RGB;mouse-gamer-rgb;Mouse gamer con iluminacion RGB y sensor optico;1500;2;Logitech;G502 Hero;1;0;1;;mouse-1.jpg
+Auricular Bluetooth;auricular-bluetooth;Auriculares inalambricos con sonido de alta calidad;2500;3;Sony;WH-1000XM4;1;1;1;https://i.imgur.com/example1.jpg;https://i.imgur.com/example1a.jpg,https://i.imgur.com/example1b.jpg
+Mouse Gamer RGB;mouse-gamer-rgb;Mouse gamer con iluminacion RGB y sensor optico;1500;2;Logitech;G502 Hero;1;0;1;https://i.imgur.com/example2.jpg;
 Cable HDMI 2 metros;cable-hdmi-2m;Cable HDMI de alta velocidad 4K;450;4;Samsung;HDMIM2;1;0;0;;
-Parlante Portatil;parlante-portatil;Parlante bluetooth resistente al agua;3200;3;JBL;Flip 5;1;1;1;;parlante-1.jpg,parlante-2.jpg,parlante-3.jpg
-USB Flash 32GB;usb-flash-32gb;Memoria USB 3.0 de 32GB;350;4;Kingston;DataTraveler;1;0;0;;
-Webcam HD 1080p;webcam-hd-1080p;Camara web Full HD para videollamadas;2800;2;Logitech;C920;1;0;1;;
-Teclado Mecanico;teclado-mecanico;Teclado gamer con switches azules RGB;4500;2;Corsair;K70 RGB;1;1;1;;teclado-1.jpg,teclado-2.jpg
-Monitor 24 pulgadas;monitor-24-pulgadas;Monitor LED Full HD 75Hz;12000;3;LG;24MK430H;1;0;1;;
-Cargador Universal;cargador-universal;Cargador rapido USB-C 65W;2200;4;Anker;PowerPort;1;1;0;;
-Hub USB 7 puertos;hub-usb-7-puertos;Hub USB 3.0 con alimentacion externa;1800;4;UGREEN;UH704;1;0;0;;
+Parlante Portatil;parlante-portatil;Parlante bluetooth resistente al agua;3200;3;JBL;Flip 5;1;1;1;https://i.imgur.com/example3.jpg;https://i.imgur.com/example3a.jpg,https://i.imgur.com/example3b.jpg
+USB Flash 32GB;usb-flash-32gb;Memoria USB 3.0 de 32GB;350;4;Kingston;DataTraveler;1;0;0;https://i.imgur.com/example4.jpg;
+Webcam HD 1080p;webcam-hd-1080p;Camara web Full HD para videollamadas;2800;2;Logitech;C920;1;0;1;https://i.imgur.com/example5.jpg;
+Teclado Mecanico;teclado-mecanico;Teclado gamer con switches azules RGB;4500;2;Corsair;K70 RGB;1;1;1;https://i.imgur.com/example6.jpg;https://i.imgur.com/example6a.jpg
+Monitor 24 pulgadas;monitor-24-pulgadas;Monitor LED Full HD 75Hz;12000;3;LG;24MK430H;1;0;1;https://i.imgur.com/example7.jpg;
+Cargador Universal;cargador-universal;Cargador rapido USB-C 65W;2200;4;Anker;PowerPort;1;1;0;https://i.imgur.com/example8.jpg;
+Hub USB 7 puertos;hub-usb-7-puertos;Hub USB 3.0 con alimentacion externa;1800;4;UGREEN;UH704;1;0;0;https://i.imgur.com/example9.jpg;

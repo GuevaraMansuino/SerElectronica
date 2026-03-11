@@ -621,7 +621,7 @@
                             <small>Precio</small>
                             <span class="product-card__price">${{ number_format($rel->precio, 0, ',', '.') }}</span>
                         </div>
-                        <a href="{{ route('catalogo.show', $rel->slug) }}" class="product-card__cta">
+                        <a href="{{ route('producto.show', $rel->slug) }}" class="product-card__cta">
                             Ver más
                             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                         </a>

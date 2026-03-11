@@ -64,8 +64,9 @@
                                     <span class="filter-cats__count">{{ $totalProductos }}</span>
                                 </a>
                             </li>
-                            @foreach($categorias as $cat)
-                            <li class="filter-cats__item">
+                            @php $categoriasArray = $categorias->toArray(); @endphp
+                            @foreach($categorias as $index => $cat)
+                            <li class="filter-cats__item {{ $index >= 4 ? 'more-category' : '' }}" {{ $index >= 4 ? 'style=display:none' : '' }}>
                                 <a href="{{ route('catalogo.index', array_merge(request()->except(['categoria','page']), ['categoria' => $cat->slug])) }}"
                                    class="{{ request('categoria') === $cat->slug ? 'active' : '' }}">
                                     <span>{{ $cat->nombre }}</span>
@@ -73,6 +74,14 @@
                                 </a>
                             </li>
                             @endforeach
+                            @if(count($categorias) > 4)
+                            <li class="filter-cats__item">
+                                <a href="#" class="toggle-more-categories" onclick="event.preventDefault(); toggleMoreCategories();">
+                                    <span>Más categorías</span>
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                                </a>
+                            </li>
+                            @endif
                         </ul>
                     </div>
 
@@ -249,9 +258,29 @@
     const urlParams = new URLSearchParams(window.location.search);
     const currentCategory = urlParams.get('categoria') || '';
     
-    // Ocultar paginación tradicional si hay más páginas
-    if (hasMore && pagination) {
-        pagination.style.display = 'none';
+    // NO ocultar paginación tradicional - permitir uso normal
+    // if (hasMore && pagination) {
+    //     pagination.style.display = 'none';
+    // }
+    
+    // Función para construir URL con todos los filtros
+    function buildFilterParams() {
+        const params = new URLSearchParams();
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        const categoria = urlParams.get('categoria');
+        const q = urlParams.get('q');
+        const precioMin = urlParams.get('precio_min');
+        const precioMax = urlParams.get('precio_max');
+        const orden = urlParams.get('orden');
+        
+        if (categoria) params.set('categoria', categoria);
+        if (q) params.set('q', q);
+        if (precioMin) params.set('precio_min', precioMin);
+        if (precioMax) params.set('precio_max', precioMax);
+        if (orden) params.set('orden', orden);
+        
+        return params.toString();
     }
     
     // Función para cargar más productos
@@ -264,7 +293,8 @@
         
         try {
             const nextPage = currentPage + 1;
-            const url = `/api/public/products/load-more?page=${nextPage}&categoria=${currentCategory}`;
+            const filterParams = buildFilterParams();
+            const url = `/api/public/products/load-more?page=${nextPage}&${filterParams}`;
             
             const response = await fetch(url);
             const data = await response.json();
@@ -344,7 +374,7 @@
                         <div>
                             ${priceHtml}
                         </div>
-                        <a href="/catalogo/${product.slug}" class="product-card__cta">
+                        <a href="/producto/${product.slug}" class="product-card__cta">
                             Ver más
                             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                         </a>
@@ -382,6 +412,27 @@
         window.location.href = '?' + params.toString();
     }
 
+    // Toggle Más categorías
+    let categoriesExpanded = false;
+    function toggleMoreCategories() {
+        const moreCategories = document.querySelectorAll('.more-category');
+        const toggleLink = document.querySelector('.toggle-more-categories');
+        
+        categoriesExpanded = !categoriesExpanded;
+        
+        moreCategories.forEach(item => {
+            item.style.display = categoriesExpanded ? 'block' : 'none';
+        });
+        
+        if (toggleLink) {
+            if (categoriesExpanded) {
+                toggleLink.innerHTML = '<span>Ver menos</span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>';
+            } else {
+                toggleLink.innerHTML = '<span>Más categorías</span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+            }
+        }
+    }
+    
     searchBtn.addEventListener('click', doSearch);
     searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
     
