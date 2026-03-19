@@ -21,13 +21,13 @@
                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
                 <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
             </svg>
-            Importar productos desde CSV
+            Importar productos desde CSV o Excel
         </span>
     </div>
 
     <div style="padding: 2rem;">
         <p style="color: var(--text-2); margin-bottom: 1.5rem; line-height: 1.6;">
-            Subí un archivo CSV con los productos que querés importar. El formato debe tener las siguientes columnas:
+            Subí un archivo <strong>CSV</strong> o <strong>Excel (.xlsx)</strong> con los productos que querés importar. La primera fila debe contener los encabezados:
         </p>
 
         <div style="background: var(--surface-2); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
@@ -61,7 +61,7 @@
             
             <div style="margin-bottom: 1.5rem;">
                 <label style="display: block; font-size: 0.85rem; color: var(--text-2); margin-bottom: 0.5rem;">
-                    Seleccionar archivo CSV
+                    Seleccionar archivo CSV o Excel (.xlsx / .xls)
                 </label>
                 <input type="file" 
                        name="file" 

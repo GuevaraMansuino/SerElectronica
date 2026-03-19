@@ -213,102 +213,52 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // ============================================================
-// 🔓 RUTAS PÚBLICAS - GET (Lectura sin auth para Admin)
-// ============================================================
-
-// Dashboard
-Route::get('/admin/dashboard', function () {
-    $stats = [
-        'productos' => \App\Models\Product::count(),
-        'categorias' => \App\Models\Category::count(),
-        'promociones' => \App\Models\Promotion::where('is_active', true)->count(),
-        'sin_imagen' => \App\Models\Product::whereNull('image')->orWhere('image', '')->count(),
-    ];
-    
-    $ultimosProductos = \App\Models\Product::with('category')->orderBy('created_at', 'desc')->take(5)->get();
-    $promocionesActivas = \App\Models\Promotion::where('is_active', true)->orderBy('end_date', 'asc')->take(5)->get();
-    
-    return view('admin.dashboard', compact('stats', 'ultimosProductos', 'promocionesActivas'));
-})->name('admin.dashboard');
-
-// Categorías - Listar
-Route::get('/admin/categorias', [AdminCategoryController::class, 'index'])
-    ->name('admin.categorias.index');
-
-// Categoría - Ver detalle
-Route::get('/admin/categorias/{id}', [AdminCategoryController::class, 'show'])
-    ->name('admin.categorias.show')
-    ->where('id', '[0-9]+');
-
-// Productos - Listar
-Route::get('/admin/productos', [ProductController::class, 'index'])
-    ->name('admin.productos.index');
-
-// Producto - Ver detalle
-Route::get('/admin/productos/{id}', [ProductController::class, 'show'])
-    ->name('admin.productos.show')
-    ->where('id', '[0-9]+');
-
-
-Route::get('/admin/promociones', [AdminPromotionController::class, 'index'])
-    ->name('admin.promociones.index');
-
-// ============================================================
-// 🔒 RUTAS PROTEGIDAS - CRUD (Solo admin)
+// 🔒 RUTAS PROTEGIDAS - Todo el panel Admin (Solo admin autenticado)
 // ============================================================
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
-    // ---------- PROMICIONES (CRUD) ----------
-    // Create - Formulario
-    Route::get('/admin/promociones/create', [AdminPromotionController::class, 'create'])
-        ->name('admin.promociones.create');
+    // ---------- DASHBOARD ----------
+    Route::get('/admin/dashboard', function () {
+        $stats = [
+            'productos' => \App\Models\Product::count(),
+            'categorias' => \App\Models\Category::count(),
+            'promociones' => \App\Models\Promotion::where('is_active', true)->count(),
+            'sin_imagen' => \App\Models\Product::whereNull('image')->orWhere('image', '')->count(),
+        ];
 
-    // Create - Guardar
-    Route::post('/admin/promociones', [AdminPromotionController::class, 'store'])
-        ->name('admin.promociones.store');
+        $ultimosProductos = \App\Models\Product::with('category')->orderBy('created_at', 'desc')->take(5)->get();
+        $promocionesActivas = \App\Models\Promotion::where('is_active', true)->orderBy('end_date', 'asc')->take(5)->get();
 
-    // Edit - Formulario
-    Route::get('/admin/promociones/{id}/edit', [AdminPromotionController::class, 'edit'])
-        ->name('admin.promociones.edit');
+        return view('admin.dashboard', compact('stats', 'ultimosProductos', 'promocionesActivas'));
+    })->name('admin.dashboard');
 
-    // Edit - Actualizar
-    Route::put('/admin/promociones/{id}', [AdminPromotionController::class, 'update'])
-        ->name('admin.promociones.update');
+    // ---------- CATEGORÍAS ----------
+    // Listar
+    Route::get('/admin/categorias', [AdminCategoryController::class, 'index'])
+        ->name('admin.categorias.index');
 
-    // Delete
-    Route::delete('/admin/promociones/{id}', [AdminPromotionController::class, 'destroy'])
-        ->name('admin.promociones.destroy');
+    // Ver detalle
+    Route::get('/admin/categorias/{id}', [AdminCategoryController::class, 'show'])
+        ->name('admin.categorias.show')
+        ->where('id', '[0-9]+');
 
-    // Toggle active/inactive - using signed URL for reliability
-    Route::get('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'toggle'])
-        ->name('admin.promociones.toggle')
-        ->middleware('signed');
-    
-    // Also support POST/PATCH for backwards compatibility with cached forms
-    Route::post('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'togglePost'])
-        ->name('admin.promociones.toggle.post');
-    
-    Route::patch('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'togglePost'])
-        ->name('admin.promociones.toggle.patch');
-
-    // ---------- CATEGORÍAS (CRUD) ----------
     // Create - Formulario
     Route::get('/admin/categorias/create', [AdminCategoryController::class, 'create'])
         ->name('admin.categorias.create');
-    
+
     // Create - Guardar
     Route::post('/admin/categorias', [AdminCategoryController::class, 'store'])
         ->name('admin.categorias.store');
-    
+
     // Edit - Formulario
     Route::get('/admin/categorias/{id}/edit', [AdminCategoryController::class, 'edit'])
         ->name('admin.categorias.edit');
-    
+
     // Edit - Actualizar
     Route::put('/admin/categorias/{id}', [AdminCategoryController::class, 'update'])
         ->name('admin.categorias.update');
-    
+
     // Delete
     Route::delete('/admin/categorias/{id}', [AdminCategoryController::class, 'destroy'])
         ->name('admin.categorias.destroy');
@@ -319,10 +269,15 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/admin/categorias/import', [\App\Http\Controllers\Admin\ImportController::class, 'importCategories'])
         ->name('admin.categorias.import.store');
 
-    // ---------- PRODUCTOS (CRUD) ----------
+    // ---------- PRODUCTOS ----------
     // Listar
     Route::get('/admin/productos', [AdminProductController::class, 'index'])
         ->name('admin.productos.index');
+
+    // Ver detalle
+    Route::get('/admin/productos/{id}', [AdminProductController::class, 'show'])
+        ->name('admin.productos.show')
+        ->where('id', '[0-9]+');
     
     // Create - Formulario
     Route::get('/admin/productos/create', [AdminProductController::class, 'create'])
@@ -351,6 +306,42 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Toggle activo
     Route::patch('/admin/productos/{id}/toggle', [AdminProductController::class, 'toggle'])
         ->name('admin.productos.toggle');
+
+    // ---------- PROMOCIONES ----------
+    // Listar
+    Route::get('/admin/promociones', [AdminPromotionController::class, 'index'])
+        ->name('admin.promociones.index');
+
+    // Create - Formulario
+    Route::get('/admin/promociones/create', [AdminPromotionController::class, 'create'])
+        ->name('admin.promociones.create');
+
+    // Create - Guardar
+    Route::post('/admin/promociones', [AdminPromotionController::class, 'store'])
+        ->name('admin.promociones.store');
+
+    // Edit - Formulario
+    Route::get('/admin/promociones/{id}/edit', [AdminPromotionController::class, 'edit'])
+        ->name('admin.promociones.edit');
+
+    // Edit - Actualizar
+    Route::put('/admin/promociones/{id}', [AdminPromotionController::class, 'update'])
+        ->name('admin.promociones.update');
+
+    // Delete
+    Route::delete('/admin/promociones/{id}', [AdminPromotionController::class, 'destroy'])
+        ->name('admin.promociones.destroy');
+
+    // Toggle active/inactive
+    Route::get('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'toggle'])
+        ->name('admin.promociones.toggle')
+        ->middleware('signed');
+
+    Route::post('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'togglePost'])
+        ->name('admin.promociones.toggle.post');
+
+    Route::patch('/admin/promociones/{id}/toggle', [AdminPromotionController::class, 'togglePost'])
+        ->name('admin.promociones.toggle.patch');
 
     // ---------- IMPORTACIÓN ----------
     // Web import routes
