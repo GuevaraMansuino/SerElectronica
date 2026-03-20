@@ -14,24 +14,17 @@ class Category extends Model
         'name',
         'slug',
         'description',
-        'icono_emoji'
     ];
 
     protected $appends = [
-        // Spanish aliases for backward compatibility
+        // Spanish alias for backward compatibility
         'nombre',
-        'icono_emoji'
     ];
 
-    // Spanish aliases
+    // Spanish alias
     public function getNombreAttribute()
     {
         return $this->name;
-    }
-
-    public function getIconoEmojiAttribute()
-    {
-        return $this->attributes['icono_emoji'] ?? '⚡';
     }
 
     public function products()

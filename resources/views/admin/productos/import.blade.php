@@ -32,17 +32,21 @@
 
         <div style="background: var(--surface-2); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
             <code style="font-size: 0.75rem; color: var(--lime);">
-                name; slug; description; price; category_id; marca; modelo; is_active; is_new; destacado; image; gallery
+                name; slug; description; price; category_name; marca; modelo; is_active; is_new; destacado; image; gallery
             </code>
         </div>
 
         <div style="margin-bottom: 1.5rem; padding: 1rem; background: var(--surface-2); border-radius: var(--radius);">
             <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 0.5rem;"><strong>Notas importantes:</strong></p>
             <ul style="font-size: 0.8rem; color: var(--text-3); padding-left: 1.2rem; line-height: 1.8;">
-                <li><strong>category_id:</strong> Debe existir la categoría. Las categorías disponibles son:</li>
-                <ul>
+                <li>
+                    <strong>category_name</strong> (recomendado): escribi el nombre exacto de la categoría (sin distinguir mayúsculas).<br>
+                    <strong>category_id</strong> (alternativo): podés usar el ID numérico en su lugar.
+                    <br>Categorías disponibles:
+                </li>
+                <ul style="margin-top: 0.25rem;">
                     @foreach($categorias as $cat)
-                        <li>{{ $cat->id }} = {{ $cat->name }}</li>
+                        <li>ID {{ $cat->id }} &mdash; <strong>{{ $cat->name }}</strong></li>
                     @endforeach
                 </ul>
                 <li><strong>is_active, is_new, destacado:</strong> Usar 1 para sí, 0 para no</li>

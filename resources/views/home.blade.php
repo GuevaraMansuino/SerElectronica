@@ -115,22 +115,18 @@
             @forelse($categorias as $categoria)
             <a href="{{ route('catalogo.index', ['categoria' => $categoria->slug]) }}" class="cat-pill">
                 <div class="cat-pill__icon">
-                    {{ $categoria->icono_emoji ?? '⚡' }}
+                    {{ strtoupper(substr($categoria->name, 0, 1)) }}
                 </div>
                 <span class="cat-pill__name">{{ $categoria->name }}</span>
                 <span class="cat-pill__count">{{ $categoria->products_count }} productos</span>
                 <span class="cat-pill__arrow">→</span>
             </a>
             @empty
-        {{-- Placeholders mientras se cargan datos --}}
-        @foreach(['🔊 Audio','🎵 Música','⚡ Amplificadores','🎚️ Mezcladoras','💡 Iluminación','🔌 Cables'] as $placeholder)
         <div class="cat-pill">
-            <div class="cat-pill__icon">{{ explode(' ', $placeholder)[0] }}</div>
-            <span class="cat-pill__name">{{ ltrim(strstr($placeholder, ' ')) }}</span>
+            <div class="cat-pill__icon">A</div>
+            <span class="cat-pill__name">Sin categorías</span>
             <span class="cat-pill__count">— productos</span>
-            <span class="cat-pill__arrow">→</span>
         </div>
-        @endforeach
         @endforelse
     </div>
     </div>

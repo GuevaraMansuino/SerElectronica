@@ -32,7 +32,7 @@
 
         <div style="background: var(--surface-2); border-radius: var(--radius); padding: 1rem; margin-bottom: 1.5rem;">
             <code style="font-size: 0.8rem; color: var(--lime);">
-                name; slug; description; icono_emoji
+                name; slug; description
             </code>
         </div>
 

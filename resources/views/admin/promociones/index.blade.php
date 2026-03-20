@@ -12,8 +12,8 @@
 </a>
 @endsection
 
-@push('css')
-<link rel="stylesheet" href="{{ asset('css/admin-promociones.css') }}">
+@push('styles')
+    @vite(['resources/css/admin-promociones.css'])
 @endpush
 
 @section('content')

@@ -36,7 +36,7 @@ class ImportController extends Controller
      * Importar categorías desde archivo CSV o Excel (.xlsx / .xls)
      *
      * Columnas esperadas (primera fila = encabezados):
-     * name, slug (opcional), description (opcional), icono_emoji (opcional)
+     * name, slug (opcional), description (opcional)
      */
     public function importCategories(Request $request)
     {
@@ -69,7 +69,8 @@ class ImportController extends Controller
      * Importar productos desde archivo CSV o Excel (.xlsx / .xls)
      *
      * Columnas esperadas (primera fila = encabezados):
-     * name, slug (opcional), description (opcional), price, category_id,
+     * name, slug (opcional), description (opcional), price,
+     * category_id (ID numérico) O category_name (nombre de la categoría),
      * marca (opcional), modelo (opcional), is_active (opcional, 1/0),
      * is_new (opcional, 1/0), destacado (opcional, 1/0),
      * image (opcional, URL), gallery (opcional, URLs separadas por coma)
@@ -142,7 +143,6 @@ class CategoriesImporter implements ToCollection, WithHeadingRow
                 'name'        => trim($data['name']),
                 'slug'        => $slug,
                 'description' => isset($data['description']) ? trim($data['description']) : null,
-                'icono_emoji' => !empty($data['icono_emoji']) ? trim($data['icono_emoji']) : '📦',
             ]);
 
             $this->imported++;
@@ -182,14 +182,43 @@ class ProductsImporter implements ToCollection, WithHeadingRow
                 continue;
             }
 
-            // Validar categoría
-            $categoryId = isset($data['category_id']) && is_numeric($data['category_id'])
-                ? (int) $data['category_id']
-                : 1;
+            // Resolver categoría
+            $categoryId = null;
+            $catValue = $data['category_name'] ?? $data['categoria'] ?? $data['category_id'] ?? null;
 
-            if (!Category::where('id', $categoryId)->exists()) {
-                $this->errors[] = "Categoría ID {$categoryId} no existe, usando 1";
-                $categoryId = 1;
+            if (!empty($catValue)) {
+                $catValue = trim($catValue);
+                // Si es un número visible, intentamos buscarlo por ID
+                if (is_numeric($catValue)) {
+                    $catId = (int) $catValue;
+                    if (Category::where('id', $catId)->exists()) {
+                        $categoryId = $catId;
+                    }
+                }
+                
+                // Si no se encontró por ID o no era un ID, buscar por nombre
+                if (!$categoryId) {
+                    $category = Category::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($catValue)])->first();
+                    if ($category) {
+                        $categoryId = $category->id;
+                    } else {
+                        $this->errors[] = "Categoría '{$catValue}' no encontrada en fila '{$data['name']}', usando categoría por defecto";
+                    }
+                }
+            }
+
+            // Fallback seguro: primera categoría o crear una
+            if (!$categoryId) {
+                $firstCat = Category::first();
+                if ($firstCat) {
+                    $categoryId = $firstCat->id;
+                } else {
+                    $emergencyCat = Category::create([
+                        'name' => 'General',
+                        'slug' => 'general'
+                    ]);
+                    $categoryId = $emergencyCat->id;
+                }
             }
 
             // Slug único

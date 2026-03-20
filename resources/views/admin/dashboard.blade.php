@@ -226,7 +226,7 @@
                 @foreach(\App\Models\Category::withCount('products')->orderByDesc('products_count')->take(6)->get() as $cat)
                 <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0;border-bottom:1px solid var(--border-solid);">
                     <div style="display:flex;align-items:center;gap:0.5rem;">
-                        <span style="font-size:1rem;">{{ $cat->icono_emoji ?? '📦' }}</span>
+                        <span style="font-size:0.95rem;font-weight:600;width:22px;text-align:center;color:var(--lime);">{{ strtoupper(substr($cat->nombre, 0, 1)) }}</span>
                         <span style="font-size:0.84rem;color:var(--text-2);">{{ $cat->nombre }}</span>
                     </div>
                     <span class="badge badge-lime">{{ $cat->productos_count }}</span>

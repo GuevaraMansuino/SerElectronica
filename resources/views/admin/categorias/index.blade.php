@@ -71,7 +71,6 @@
         <table class="atable">
             <thead>
                 <tr>
-                    <th style="width:50px">Ícono</th>
                     <th>Nombre</th>
                     <th>Slug URL</th>
                     <th>Productos</th>
@@ -81,12 +80,6 @@
             <tbody>
                 @forelse($categorias as $cat)
                 <tr>
-                    <td>
-                        <div style="width:40px;height:40px;background:var(--lime-dim);border:1px solid rgba(182,255,59,0.2);border-radius:8px;display:grid;place-items:center;font-size:1.3rem;">
-                            {{ $cat->icono_emoji ?? '📦' }}
-                        </div>
-                    </td>
-
                     <td class="td-main">{{ $cat->nombre }}</td>
 
                     <td>
@@ -158,7 +151,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" style="text-align:center;padding:4rem 2rem;">
+                    <td colspan="4" style="text-align:center;padding:4rem 2rem;">
                         <div style="font-size:2.5rem;margin-bottom:0.8rem">🗂️</div>
                         <p style="color:var(--text-2);margin-bottom:0.5rem;">Todavía no hay categorías</p>
                         <a href="{{ route('admin.categorias.create') }}" style="color:var(--lime);font-size:0.85rem;">

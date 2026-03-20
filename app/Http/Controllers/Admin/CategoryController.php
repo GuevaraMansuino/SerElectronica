@@ -39,7 +39,6 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:categories,slug',
             'description' => 'nullable|string',
-            'icono_emoji' => 'nullable|string|max:10',
         ])->validate();
 
         Category::create($validated);
@@ -79,7 +78,6 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:categories,slug,' . $categoria->id,
             'description' => 'nullable|string',
-            'icono_emoji' => 'nullable|string|max:10',
         ])->validate();
 
         $categoria->update($validated);

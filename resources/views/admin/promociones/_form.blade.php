@@ -11,8 +11,8 @@
     $method = $isEdit ? 'PUT' : 'POST';
 @endphp
 
-@push('css')
-<link rel="stylesheet" href="{{ asset('css/admin-promociones.css') }}">
+@push('styles')
+    @vite(['resources/css/admin-promociones.css'])
 @endpush
 
 <form action="{{ $action }}" method="POST" enctype="multipart/form-data" id="promo-form">

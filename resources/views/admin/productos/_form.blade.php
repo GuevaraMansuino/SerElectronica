@@ -300,8 +300,8 @@
         </div>
     </div>
 
-@push('css')
-<link rel="stylesheet" href="{{ asset('css/admin-productos.css') }}">
+@push('styles')
+    @vite(['resources/css/admin-productos.css'])
 @endpush
 
 @push('scripts')
