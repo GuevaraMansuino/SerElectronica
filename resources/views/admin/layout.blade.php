@@ -65,15 +65,15 @@
             <img src="{{ asset('ggm-logo.svg') }}" alt="GGM" style="width:60px;height:auto;opacity:0.7;align-self:center;margin:0 auto;">
             <div style="font-size:0.65rem;color:var(--text-3);margin-top:0.3rem;">Desarrollador Web Gerónimo Guevara Mansuino</div>
         </div>
-        <div class="sidebar__user">
+        <a href="{{ route('admin.perfil.edit') }}" class="sidebar__user" title="Editar Mi Perfil" style="text-decoration:none; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
             <div class="user-avatar" aria-hidden="true">
                 {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
             </div>
             <div>
-                <div class="user-name">{{ auth()->user()->name ?? 'Admin' }}</div>
-                <div class="user-role">Administrador</div>
+                <div class="user-name" style="text-decoration:none;">{{ auth()->user()->name ?? 'Admin' }}</div>
+                <div class="user-role" style="text-decoration:none;">Administrador</div>
             </div>
-        </div>
+        </a>
         <form action="{{ route('logout') }}" method="POST">
             @csrf
             <button type="submit" class="sidebar__logout">

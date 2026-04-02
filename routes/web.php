@@ -5,9 +5,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 
 // ============================================================
 // 🌐 RUTAS PÚBLICAS (Sin autenticación)
@@ -207,16 +210,39 @@ Route::get('/login', function () {
 })->name('login');
 
 // Login - POST (procesar login)
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+Route::post('/login', [AuthController::class, 'login'])
+    ->middleware('throttle:auth')
+    ->name('login.post');
 
 // Logout - Usa el endpoint API existente
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Password Reset
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.request');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+    ->middleware(['guest', 'throttle:auth'])
+    ->name('password.email');
+
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->middleware('guest')
+    ->name('password.reset');
+
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->middleware(['guest', 'throttle:auth'])
+    ->name('password.update');
 
 // ============================================================
 // 🔒 RUTAS PROTEGIDAS - Todo el panel Admin (Solo admin autenticado)
 // ============================================================
 
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+
+    // ---------- PERFIL ----------
+    Route::get('/admin/perfil', [AdminProfileController::class, 'edit'])->name('admin.perfil.edit');
+    Route::put('/admin/perfil', [AdminProfileController::class, 'update'])->name('admin.perfil.update');
 
     // ---------- DASHBOARD ----------
     Route::get('/admin/dashboard', function () {

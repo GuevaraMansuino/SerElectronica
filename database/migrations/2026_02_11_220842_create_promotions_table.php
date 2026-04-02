@@ -20,12 +20,14 @@ return new class extends Migration
             $table->decimal('discount_percentage', 5, 2)->nullable();
             $table->decimal('discount_amount', 10, 2)->nullable();
 
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
 
-            $table->boolean('is_active')->default(true);
+            $table->boolean('is_active')->default(true)->index();
 
             $table->timestamps();
+
+            $table->index(['start_date', 'end_date']);
         });
 
     }

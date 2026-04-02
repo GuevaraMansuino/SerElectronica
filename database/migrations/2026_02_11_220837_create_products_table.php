@@ -23,6 +23,12 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
             $table->string('image')->nullable();
+            
+            $table->boolean('is_active')->default(true)->index();
+            $table->boolean('is_new')->default(false);
+            $table->boolean('destacado')->default(false);
+            $table->string('marca')->nullable();
+            $table->string('modelo')->nullable();
 
             $table->timestamps();
         });

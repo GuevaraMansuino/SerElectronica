@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->statefulApi();
         
+        // Apply rate limiting to the web routing group
+        $middleware->web(append: [
+            \Illuminate\Routing\Middleware\ThrottleRequests::class.':web',
+        ]);
+        
         // Exclude toggle routes from CSRF verification
         $middleware->validateCsrfTokens(except: [
             'admin/promociones/*/toggle',

@@ -94,6 +94,10 @@
                 @enderror
             </div>
 
+            <div style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+                <a href="{{ route('password.request') }}" style="color:var(--text-3); font-size:13px; text-decoration:none;">¿Olvidaste tu contraseña?</a>
+            </div>
+
             <label class="fcheck">
                 <input type="checkbox" name="remember" value="1">
                 <span>Recordarme en este dispositivo</span>
