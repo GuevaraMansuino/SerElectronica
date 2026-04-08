@@ -13,7 +13,7 @@
     gap: 2rem;
     max-width: 100%;
     margin: 0 auto;
-    padding: 5rem 8vw 4rem;
+    padding: 5rem 8vw 1.5rem; /* Reduced bottom padding */
     position: relative;
     overflow: hidden;
 }
@@ -125,7 +125,7 @@
     border-top: 1px solid var(--border-solid);
 }
 
-.hero__stat {}
+
 
 .hero__stat-value {
     font-family: var(--font-display);
@@ -255,7 +255,7 @@
 ---------------------------------------------------------------- */
 .cats-section {
     background: var(--surface);
-    padding: 2rem 5vw;
+    padding: 0.8rem 8vw 0; /* Minimized even further */
 }
 
 .cats-section-scrolleable {
@@ -287,7 +287,9 @@
     scrollbar-width: thin;
     scrollbar-color: var(--border-solid) transparent;
     position: relative;
-    padding: 4rem;
+    padding: 0 8vw 1rem;
+    margin-top: -2.2rem; /* Aggressively pull the grid up to close the gap */
+    z-index: 5; /* Ensure it stays above any section overlaps */
 }
 
 .cats-grid::-webkit-scrollbar {
@@ -333,46 +335,32 @@
 
 .cat-pill {
     background: var(--bg);
-    border: 1px solid var(--border-solid);
+    border: 1.5px solid var(--border-solid); /* Slightly thicker border for visibility */
     border-radius: 100px;
-    padding: 0.75rem 1.4rem;
+    padding: 1rem 2rem; /* Larger padding */
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
+    justify-content: center;
     cursor: pointer;
     transition: all var(--t);
     text-decoration: none;
     white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Added subtle shadow for depth */
 }
 
 .cat-pill:hover {
     border-color: var(--lime);
     background: var(--lime-dim);
-}
-
-.cat-pill:hover .cat-pill__arrow { color: var(--lime); transform: translateX(3px); }
-
-.cat-pill__icon {
-    font-size: 1.2rem;
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 6px 16px rgba(182,255,59,0.15);
 }
 
 .cat-pill__name {
     font-family: var(--font-display);
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 0.03em;
+    font-size: 1.15rem; /* Larger font size */
+    font-weight: 700; /* Bolder for visibility */
+    letter-spacing: 0.04em;
     color: var(--text);
-}
-
-.cat-pill__count {
-    font-size: 0.8rem;
-    color: var(--text-3);
-}
-
-.cat-pill__arrow {
-    color: var(--text-3);
-    font-size: 1rem;
-    transition: all var(--t);
 }
 
 /* Mobile: Categorías colapsables */
@@ -447,24 +435,14 @@
     }
 }
 
-.cat-pill__count {
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    color: var(--text-3);
-    letter-spacing: 0.1em;
-}
+ /* Count and Arrow removed as per user request */ 
 
-.cat-pill__arrow {
-    color: var(--text-3);
-    margin-top: auto;
-    transition: all var(--t);
-}
 
 /* ----------------------------------------------------------------
    PRODUCTOS DESTACADOS
 ---------------------------------------------------------------- */
 .featured-section {
-    padding: 3rem 8vw;
+    padding: 1.5rem 8vw 3rem; /* Reduced top padding */
     max-width: 100%;
     margin: 0 auto;
 }
@@ -581,7 +559,7 @@
     letter-spacing: 0.03em;
     color: var(--text);
     line-height: 1.1;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.5rem; /* Slightly tighter gap */
 }
 
 .promo-card__desc {

@@ -1,0 +1,26 @@
+/* 
+   COMPONENTE ESPECÍFICO PARA COMPACTAR CATEGORÍAS
+   Este archivo se creó para forzar la reducción de espacio entre el título y las pastillas.
+*/
+
+#js-cats-grid {
+    padding-top: 0 !important;
+    margin-top: -2.5rem !important; /* Ajuste agresivo para cerrar la brecha */
+    position: relative;
+    z-index: 10;
+}
+
+.cats-section {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.cats-header {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.sec-title#cats-heading {
+    margin-bottom: 0 !important;
+    line-height: 0.8 !important; /* Compacta el área del texto */
+}
