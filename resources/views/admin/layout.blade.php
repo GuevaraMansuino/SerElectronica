@@ -172,38 +172,6 @@ function dismissToast(toast) {
     }, 300);
 }
 
-// Custom confirm function
-function confirmDelete(button) {
-    const message = button.dataset.confirm;
-    const form = button.closest('form');
-    
-    const modal = document.getElementById('confirmModal');
-    const titleEl = document.getElementById('confirmModalTitle');
-    const messageEl = document.getElementById('confirmModalMessage');
-    const confirmBtn = document.getElementById('confirmModalConfirm');
-    const cancelBtn = document.getElementById('confirmModalCancel');
-    
-    titleEl.textContent = 'Confirmar eliminación';
-    messageEl.textContent = message;
-    
-    modal.classList.add('active');
-    
-    // Clean up previous event listeners
-    const newConfirmBtn = confirmBtn.cloneNode(true);
-    const newCancelBtn = cancelBtn.cloneNode(true);
-    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-    
-    newConfirmBtn.addEventListener('click', () => {
-        modal.classList.remove('active');
-        form.submit();
-    });
-    
-    newCancelBtn.addEventListener('click', () => {
-        modal.classList.remove('active');
-    });
-}
-
 // Confirm Modal Functions
 let confirmCallback = null;
 
@@ -214,70 +182,63 @@ function confirmAction(title, message, onConfirm) {
     const confirmBtn = document.getElementById('confirmModalConfirm');
     const cancelBtn = document.getElementById('confirmModalCancel');
     
+    if (!modal || !titleEl || !messageEl || !confirmBtn || !cancelBtn) {
+        console.error('Confirm modal elements not found');
+        if (onConfirm) onConfirm();
+        return;
+    }
+
     titleEl.textContent = title;
-    messageEl.textContent = message;
+    messageEl.textContent = message.replace(/\\n/g, '\n');
     confirmCallback = onConfirm;
     
     modal.classList.add('active');
     
-    // Handle button clicks
+    // Clean up previous event listeners (using clones to remove all listeners)
+    const newConfirmBtn = confirmBtn.cloneNode(true);
+    const newCancelBtn = cancelBtn.cloneNode(true);
+    confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+    
     const handleConfirm = () => {
         modal.classList.remove('active');
+        document.removeEventListener('keydown', handleEscape);
         if (confirmCallback) {
             confirmCallback();
             confirmCallback = null;
         }
-        cleanup();
     };
     
     const handleCancel = () => {
         modal.classList.remove('active');
-        confirmCallback = null;
-        cleanup();
-    };
-    
-    const cleanup = () => {
-        confirmBtn.removeEventListener('click', handleConfirm);
-        cancelBtn.removeEventListener('click', handleCancel);
         document.removeEventListener('keydown', handleEscape);
+        confirmCallback = null;
     };
     
-    const handleEscape = (e) => {
+    function handleEscape(e) {
         if (e.key === 'Escape') {
             handleCancel();
         }
     };
     
-    confirmBtn.addEventListener('click', handleConfirm);
-    cancelBtn.addEventListener('click', handleCancel);
+    newConfirmBtn.addEventListener('click', handleConfirm);
+    newCancelBtn.addEventListener('click', handleCancel);
     document.addEventListener('keydown', handleEscape);
 }
 
-// Override confirm for forms
+// Global handler for confirmations (Forms and Links)
 document.addEventListener('submit', function(e) {
     const form = e.target;
-    const confirmMsg = form.dataset.confirm || form.getAttribute('data-confirm');
-    if (confirmMsg) {
+    // Check if confirming or if already confirmed via a custom flag
+    if (form.dataset.confirm && !form.dataset.confirmed) {
         e.preventDefault();
         const title = form.dataset.confirmTitle || 'Confirmar acción';
-        const message = confirmMsg;
+        const message = form.dataset.confirm;
+        
         confirmAction(title, message, () => {
-            // Submit the form normally
-            const methodInput = form.querySelector('input[name="_method"]');
-            if (methodInput) {
-                // Use method spoofing
-                const tempForm = document.createElement('form');
-                tempForm.action = form.action;
-                tempForm.method = 'POST';
-                
-                // Copy all inputs from original form
-                Array.from(form.querySelectorAll('input, select, textarea')).forEach(input => {
-                    const clone = input.cloneNode(true);
-                    tempForm.appendChild(clone);
-                });
-                
-                document.body.appendChild(tempForm);
-                tempForm.submit();
+            form.dataset.confirmed = 'true';
+            if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
             } else {
                 form.submit();
             }
@@ -285,27 +246,22 @@ document.addEventListener('submit', function(e) {
     }
 });
 
-// Handle onclick confirm for links and buttons
 document.addEventListener('click', function(e) {
     const target = e.target.closest('[data-confirm]');
-    if (target && !target.hasAttribute('data-confirm-processed')) {
-        e.preventDefault();
-        target.setAttribute('data-confirm-processed', 'true');
-        
-        const title = target.dataset.confirmTitle || 'Confirmar acción';
-        const message = target.dataset.confirm;
-        
-        confirmAction(title, message, () => {
-            // If it's a link, navigate
-            if (target.tagName === 'A') {
-                window.location.href = target.href;
-            } else if (target.onclick) {
-                target.onclick();
-            } else if (target.type === 'submit') {
-                target.form.submit();
-            }
-        });
-    }
+    if (!target || target.tagName === 'FORM') return;
+
+    // Handle links and other elements
+    e.preventDefault();
+    const title = target.dataset.confirmTitle || 'Confirmar acción';
+    const message = target.dataset.confirm;
+    
+    confirmAction(title, message, () => {
+        if (target.tagName === 'A') {
+            window.location.href = target.href;
+        } else if (target.onclick) {
+            target.onclick();
+        }
+    });
 });
 
 // Add shrink animation

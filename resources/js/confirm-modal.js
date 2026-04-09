@@ -16,7 +16,7 @@ function _openConfirm(title, message, onConfirm) {
     const cancelBtn  = document.getElementById('confirmModalCancel');
 
     titleEl.textContent   = title;
-    messageEl.textContent = message;
+    messageEl.textContent = message.replace(/\\n/g, '\n');
     modal.classList.add('active');
 
     const close = () => {

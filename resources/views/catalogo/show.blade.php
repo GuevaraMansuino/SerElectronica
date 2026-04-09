@@ -3,8 +3,8 @@
 @section('title', $producto->name . ' – SER Electrónica')
 @section('meta_description', Str::limit($producto->description, 155))
 
-@push('css')
-<link rel="stylesheet" href="{{ asset('css/producto-detalle.css') }}">
+@push('styles')
+    @vite(['resources/css/producto-detalle.css'])
 @endpush
 
 
@@ -177,29 +177,7 @@
 
         <div class="products-grid">
             @foreach($relacionados as $rel)
-            <article class="product-card">
-                <div class="product-card__img">
-                    @if($rel->imagen)
-                        <img src="{{ asset('storage/'.$rel->imagen) }}" alt="{{ $rel->nombre }}" loading="lazy">
-                    @else
-                        <div style="display:grid;place-items:center;height:100%;font-size:2.5rem;color:var(--text-3)">📦</div>
-                    @endif
-                </div>
-                <div class="product-card__body">
-                    <span class="product-card__cat">{{ $rel->categoria->nombre }}</span>
-                    <h3 class="product-card__name">{{ $rel->nombre }}</h3>
-                    <div class="product-card__footer">
-                        <div>
-                            <small>Precio</small>
-                            <span class="product-card__price">${{ number_format($rel->precio, 0, ',', '.') }}</span>
-                        </div>
-                        <a href="{{ route('producto.show', $rel->slug) }}" class="product-card__cta">
-                            Ver más
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                        </a>
-                    </div>
-                </div>
-            </article>
+                @include('components.product-card', ['producto' => $rel])
             @endforeach
         </div>
     </div>

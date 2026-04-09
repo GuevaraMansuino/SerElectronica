@@ -213,19 +213,17 @@
                                 {{-- Eliminar --}}
                                 <form action="{{ route('admin.promociones.destroy', $promo) }}"
                                       method="POST"
-                                      id="delete-form-{{ $promo->id }}"
-                                      style="display:contents">
+                                      class="d-inline"
+                                      data-confirm="¿Eliminar la promoción «{{ $promo->titulo }}»?"
+                                      data-confirm-title="Confirmar eliminación">
                                     @csrf @method('DELETE')
-                                    <button type="button" 
+                                    <button type="submit" 
                                             class="action-btn del" 
-                                            title="Eliminar"
-                                            data-confirm="¿Eliminar la promoción «{{ addslashes($promo->titulo) }}»?"
-                                            onclick="confirmDelete(this)">
+                                            title="Eliminar">
                                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <polyline points="3 6 5 6 21 6"/>
                                             <path d="M19 6l-1 14H6L5 6"/>
-                                            <path d="M10 11v6M14 11v6"/>
-                                            <path d="M9 6V4h6v2"/>
+                                            <path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
                                         </svg>
                                     </button>
                                 </form>

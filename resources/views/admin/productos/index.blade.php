@@ -201,22 +201,17 @@
                         </form>
 
                         {{-- Eliminar --}}
-                        <form action="{{ route('admin.productos.destroy', $producto) }}"
-                              method="POST"
-                              id="delete-form-{{ $producto->id }}"
-                              style="display:contents">
-                            @csrf @method('DELETE')
-                            <button type="button" 
+                        <form action="{{ route('admin.productos.destroy', $producto) }}" 
+                              method="POST" 
+                              class="d-inline"
+                              data-confirm="¿Eliminar «{{ $producto->name }}»?\nEsta acción no se puede deshacer."
+                              data-confirm-title="Confirmar eliminación">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" 
                                     class="action-btn del" 
-                                    title="Eliminar producto"
-                                    data-confirm="¿Eliminar «{{ addslashes($producto->nombre) }}»?\nEsta acción no se puede deshacer."
-                                    onclick="confirmDelete(this)">
-                                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6l-1 14H6L5 6"/>
-                                    <path d="M10 11v6M14 11v6"/>
-                                    <path d="M9 6V4h6v2"/>
-                                </svg>
+                                    title="Eliminar producto">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                             </button>
                         </form>
                     </div>

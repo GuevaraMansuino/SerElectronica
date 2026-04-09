@@ -138,7 +138,7 @@ Route::get('/catalogo', function () {
             break;
     }
     
-    $productos = $query->paginate(12);
+    $productos = $query->paginate(12)->withQueryString();
     
     $categoriaActual = $categoria ? \App\Models\Category::where('slug', $categoria)->first() : null;
     

@@ -169,7 +169,7 @@ class ProductController extends Controller
         
         $product->delete();
 
-        return redirect()->route('admin.productos.index')->with('success', 'Producto eliminado correctamente');
+        return back()->with('success', 'Producto eliminado correctamente');
     }
 
     public function toggle(Request $request, string $id)

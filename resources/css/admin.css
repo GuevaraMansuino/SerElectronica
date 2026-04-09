@@ -809,6 +809,7 @@ body > * { position: relative; z-index: 1; }
     color: var(--text-2);
     margin-bottom: 1.5rem;
     line-height: 1.5;
+    white-space: pre-line;
 }
 
 .confirm-modal__actions {

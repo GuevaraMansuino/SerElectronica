@@ -106,7 +106,7 @@ class PromotionController extends Controller
         $promotion = Promotion::findOrFail($id);
         $promotion->delete();
 
-        return redirect()->route('admin.promociones.index')->with('success', 'Promoción eliminada correctamente');
+        return back()->with('success', 'Promoción eliminada correctamente');
     }
 
     public function toggle(Request $request, string $id)

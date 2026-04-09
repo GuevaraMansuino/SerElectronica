@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/css/admin-productos.css',
                 'resources/css/admin-promociones.css',
                 'resources/css/perfilAdmin.css',
+                'resources/css/producto-detalle.css',
                 'resources/js/app.js',
                 'resources/js/bootstrap.js',
                 'resources/js/catalog.js',

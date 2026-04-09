@@ -244,7 +244,7 @@ class ProductsImporter implements ToCollection, WithHeadingRow
                 'is_active'   => isset($data['is_active'])  ? $this->toBool($data['is_active'])  : true,
                 'is_new'      => isset($data['is_new'])     ? $this->toBool($data['is_new'])     : false,
                 'destacado'   => isset($data['destacado'])  ? $this->toBool($data['destacado'])  : false,
-                'image'       => isset($data['image'])   ? trim($data['image'])   : null,
+                'image'       => isset($data['image'])   ? $this->normalizeImagePath($data['image'])   : null,
             ]);
 
             // Galería (URLs separadas por coma)
@@ -252,7 +252,7 @@ class ProductsImporter implements ToCollection, WithHeadingRow
                 $galleryImages = explode(',', $data['gallery']);
                 $order = 1;
                 foreach ($galleryImages as $imagePath) {
-                    $imagePath = trim($imagePath);
+                    $imagePath = $this->normalizeImagePath($imagePath);
                     if (!empty($imagePath)) {
                         $product->images()->create([
                             'image_path' => $imagePath,
@@ -265,5 +265,31 @@ class ProductsImporter implements ToCollection, WithHeadingRow
 
             $this->imported++;
         }
+    }
+
+    /**
+     * Normaliza la ruta de la imagen para que sea a prueba de errores
+     */
+    private function normalizeImagePath(mixed $path): ?string
+    {
+        if (empty($path)) return null;
+        
+        $path = trim((string) $path);
+        
+        // Si es una URL completa, no tocarla
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        // Quitar barras iniciales si existen
+        $path = ltrim($path, '/\\');
+
+        // Si ya empieza con 'products/', solo normalizar las barras
+        if (str_starts_with($path, 'products/') || str_starts_with($path, 'products\\')) {
+            return str_replace('\\', '/', $path);
+        }
+
+        // De lo contrario, asegurar que esté bajo 'products/'
+        return 'products/' . str_replace('\\', '/', $path);
     }
 }
