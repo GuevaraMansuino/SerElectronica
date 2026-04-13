@@ -145,7 +145,7 @@
 /* Price inputs */
 .price-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.6rem;
     margin-bottom: 0.8rem;
 }
@@ -326,7 +326,7 @@
     align-items: center;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-bottom:rem;
+    margin-bottom: 1rem;
 }
 
 .filter-chip {
@@ -394,6 +394,8 @@
     gap: 0.4rem;
     overflow-x: auto;
     max-width: 350px; 
+    flex: 1; /* Allow to shrink and grow */
+    min-width: 0; /* Let it be smaller than content on small devices */
     scroll-behavior: smooth;
 }
 
@@ -462,7 +464,10 @@
    RESPONSIVE
 ============================================================== */
 @media (max-width: 960px) {
-    .catalog-layout { grid-template-columns: 1fr; }
+    .catalog-layout { 
+        grid-template-columns: minmax(0, 1fr); 
+        padding: 2.5rem 1rem 4rem;
+    }
     .sidebar { 
         position: static; 
         z-index: 1;
@@ -486,13 +491,16 @@
 }
 
 @media (max-width: 600px) {
-    .catalog-toolbar { flex-direction: column; align-items: stretch; }
-    .catalog-controls { flex-wrap: wrap; }
-    .search-bar input { width: 160px; }
+    .catalog-toolbar { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+    .catalog-controls { flex-direction: column; align-items: stretch; gap: 0.5rem; width: 100%; }
+    .search-bar { width: 100%; display: flex; }
+    .search-bar input { width: 100%; flex: 1; }
+    .sort-select { width: 100%; }
     
     /* Productos en 2 columnas en móvil */
     .products-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 0.8rem;
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 0.6rem;
     }
 }
