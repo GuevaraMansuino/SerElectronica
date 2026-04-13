@@ -265,7 +265,7 @@
                 </div>
                 <div class="acard-body" style="display:flex;flex-direction:column;gap:0.7rem;">
                     <button type="submit" form="producto-form" class="abtn abtn-lime" style="justify-content:center;width:100%;padding:11px;">
-                        {{ $isEdit ? '💾 Guardar cambios' : '+ Crear producto' }}
+                        {{ $isEdit ? 'Guardar cambios' : '+ Crear producto' }}
                     </button>
                     <a href="{{ route('admin.productos.index') }}" class="abtn abtn-outline" style="justify-content:center;">
                         Cancelar

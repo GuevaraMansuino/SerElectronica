@@ -232,7 +232,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:4rem 2rem;">
+                        <td colspan="7" style="text-align:center;padding:4rem 2rem;">
                             <div style="font-size:2.5rem;margin-bottom:0.8rem">⭐</div>
                             <p style="color:var(--text-2);margin-bottom:0.5rem;">Todavía no hay promociones</p>
                             <a href="{{ route('admin.promociones.create') }}"

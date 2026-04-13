@@ -19,8 +19,8 @@ class StorePromotionRequest extends FormRequest
             'description' => 'nullable|string|max:1000',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
             'discount_amount' => 'nullable|numeric|min:0',
-            'start_date' => 'required|date|before_or_equal:end_date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date',
             'is_active' => 'boolean',
             'product_ids' => 'nullable|array',
             'product_ids.*' => 'exists:products,id',
@@ -32,8 +32,6 @@ class StorePromotionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'start_date.before_or_equal' => 'La fecha de inicio debe ser anterior o igual a la fecha fin.',
-            'end_date.after_or_equal' => 'La fecha fin debe ser posterior o igual a la fecha de inicio.',
             'discount_percentage.min' => 'El porcentaje no puede ser negativo.',
             'discount_percentage.max' => 'El porcentaje no puede superar 100.',
             'discount_amount.min' => 'El monto no puede ser negativo.',
@@ -45,6 +43,12 @@ class StorePromotionRequest extends FormRequest
         $validator->after(function ($validator) {
             if (empty($this->discount_percentage) && empty($this->discount_amount)) {
                 $validator->errors()->add('discount', 'Debe proporcionar un descuento porcentual o un monto.');
+            }
+
+            if (!empty($this->start_date) && !empty($this->end_date)) {
+                if (strtotime($this->end_date) < strtotime($this->start_date)) {
+                    $validator->errors()->add('end_date', 'La fecha fin debe ser posterior o igual a la fecha de inicio.');
+                }
             }
         });
     }

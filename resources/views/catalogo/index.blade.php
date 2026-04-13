@@ -198,25 +198,37 @@
 
         {{-- Pagination --}}
         @if($productos->hasPages())
-        <nav class="pagination" aria-label="Paginación">
+        <nav class="pagination" aria-label="Paginación" style="position:relative;">
             @if($productos->onFirstPage())
-                <span class="disabled">‹</span>
+                <span class="disabled" style="flex-shrink:0;">‹</span>
             @else
-                <a href="{{ $productos->previousPageUrl() }}" aria-label="Página anterior">‹</a>
+                <a href="{{ $productos->previousPageUrl() }}" aria-label="Página anterior" style="flex-shrink:0;">‹</a>
             @endif
 
-            @foreach($productos->getUrlRange(1, $productos->lastPage()) as $page => $url)
-                @if($page == $productos->currentPage())
-                    <span class="current" aria-current="page">{{ $page }}</span>
-                @else
-                    <a href="{{ $url }}" aria-label="Página {{ $page }}">{{ $page }}</a>
-                @endif
-            @endforeach
+            {{-- Botón custom de Scroll Izquierda --}}
+            @if($productos->lastPage() > 5)
+                <button type="button" onclick="document.getElementById('client-pagination').scrollBy({left: -150, behavior: 'smooth'})" class="scroll-pag-btn" aria-label="Desplazar páginas" style="flex-shrink:0;">«</button>
+            @endif
+
+            <div class="pagination-numbers" id="client-pagination" style="scrollbar-width: none; overflow-x: auto;">
+                @foreach($productos->getUrlRange(1, $productos->lastPage()) as $page => $url)
+                    @if($page == $productos->currentPage())
+                        <span class="current" aria-current="page" style="flex-shrink:0;">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" aria-label="Página {{ $page }}" style="flex-shrink:0;">{{ $page }}</a>
+                    @endif
+                @endforeach
+            </div>
+
+            {{-- Botón custom de Scroll Derecha --}}
+            @if($productos->lastPage() > 5)
+                <button type="button" onclick="document.getElementById('client-pagination').scrollBy({left: 150, behavior: 'smooth'})" class="scroll-pag-btn" aria-label="Desplazar páginas" style="flex-shrink:0;">»</button>
+            @endif
 
             @if($productos->hasMorePages())
-                <a href="{{ $productos->nextPageUrl() }}" aria-label="Página siguiente">›</a>
+                <a href="{{ $productos->nextPageUrl() }}" aria-label="Página siguiente" style="flex-shrink:0;">›</a>
             @else
-                <span class="disabled">›</span>
+                <span class="disabled" style="flex-shrink:0;">›</span>
             @endif
         </nav>
         @endif

@@ -380,11 +380,52 @@
 ============================================================== */
 .pagination {
     display: flex;
-    align-items: center;
+    align-items: center; /* Alineación perfecta vertical */
     justify-content: center;
     gap: 0.4rem;
     margin-top: 3rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    max-width: 100%;
+}
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    overflow-x: auto;
+    max-width: 350px; 
+    scroll-behavior: smooth;
+}
+
+.pagination-numbers::-webkit-scrollbar {
+    display: none; /* Oculta completamente el scrollbar en WebKit */
+}
+
+.pagination-numbers {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+/* Botones especiales de scroll de la paginacion */
+.scroll-pag-btn {
+    min-width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px dashed var(--border-solid);
+    color: var(--text-3);
+    padding: 0 8px;
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--t);
+}
+.scroll-pag-btn:hover {
+    color: var(--lime);
+    border-color: var(--lime);
 }
 
 .pagination a,

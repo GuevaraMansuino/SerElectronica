@@ -90,9 +90,9 @@
 
                     <td>
                         @if($cat->products_count > 0)
-                            <span class="badge badge-lime">{{ $cat->products_count }} producto{{ $cat->products_count !== 1 ? 's' : '' }}</span>
+                            <span class="badge" style="color: #22c55e; background: rgba(34, 197, 94, 0.1);">{{ $cat->products_count }} producto{{ $cat->products_count !== 1 ? 's' : '' }}</span>
                         @else
-                            <span class="badge badge-neutral">Sin productos</span>
+                            <span class="badge" style="color: #ef4444; background: rgba(239, 68, 68, 0.1);">Sin productos</span>
                         @endif
                     </td>
 

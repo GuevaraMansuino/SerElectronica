@@ -1,4 +1,4 @@
-﻿{{--
+{{--
     Partial: resources/views/admin/categorias/_form.blade.php
     Recibe: $categoria (nueva o existente)
 --}}
@@ -20,7 +20,7 @@
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path d="M3 7h4l2-4h6l2 4h4"/><path d="M5 21h14"/><line x1="12" y1="7" x2="12" y2="21"/>
                 </svg>
-                {{ $isEdit ? 'Editar: ' . $categoria->nombre : 'Datos de la categorÃ­a' }}
+                {{ $isEdit ? 'Editar: ' . $categoria->nombre : 'Datos de la categoría' }}
             </span>
         </div>
         <div class="acard-body">
@@ -34,7 +34,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
     var btn = form.querySelector('button[type=submit]');
     var originalText = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = 'â³ Guardando...';
+    btn.innerHTML = 'Guardando...';
     
     fetch(form.action, {
         method: 'POST',
@@ -67,7 +67,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
                 {{-- Nombre --}}
                 <div class="fgroup" style="margin-bottom:1.4rem;">
                     <label class="flabel" for="nombre">
-                        Nombre de la categorÃ­a <em>*</em>
+                        Nombre de la categoría <em>*</em>
                     </label>
                     <input type="text"
                            name="nombre"
@@ -81,7 +81,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
                     @error('nombre')
                         <span class="ferror">{{ $message }}</span>
                     @enderror
-                    <span class="fhint">El slug URL se genera automÃ¡ticamente: <code id="slug-preview" style="color:var(--lime);font-family:var(--font-mono);font-size:0.72rem;"></code></span>
+                    <span class="fhint">El slug URL se genera automáticamente: <code id="slug-preview" style="color:var(--lime);font-family:var(--font-mono);font-size:0.72rem;"></code></span>
                 </div>
 
 
@@ -98,7 +98,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
 
                 <div class="form-actions">
                     <button type="submit" class="abtn abtn-lime" style="padding:11px 28px;">
-                        {{ $isEdit ? 'ðŸ’¾ Guardar cambios' : '+ Crear categorÃ­a' }}
+                        {{ $isEdit ? 'Guardar cambios' : '+ Crear categoría' }}
                     </button>
                     <a href="{{ route('admin.categorias.index') }}" class="abtn abtn-outline">
                         Cancelar
@@ -115,7 +115,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
         @if($isEdit)
         <div class="acard">
             <div class="acard-header">
-                <span class="acard-title">EstadÃ­sticas</span>
+                <span class="acard-title">Estadísticas</span>
             </div>
             <div class="acard-body" style="display:flex;flex-direction:column;gap:0.7rem;">
                 <div style="text-align:center;padding:1rem 0;">
@@ -129,13 +129,13 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
                 <a href="{{ route('admin.productos.index', ['categoria_id' => $categoria->id]) }}"
                    class="abtn abtn-outline"
                    style="justify-content:center;font-size:0.78rem;">
-                    Ver productos â†’
+                    Ver productos →
                 </a>
                 <a href="{{ route('catalogo.index', ['categoria' => $categoria->slug]) }}"
                    target="_blank"
                    class="abtn abtn-outline"
                    style="justify-content:center;font-size:0.78rem;">
-                    Ver en el sitio â†’
+                    Ver en el sitio →
                 </a>
             </div>
         </div>
@@ -148,7 +148,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
             </div>
             <div class="acard-body">
                 <p style="font-size:0.8rem;color:var(--text-2);margin-bottom:1rem;line-height:1.5;">
-                    Eliminar esta categorÃ­a es permanente y no se puede deshacer.
+                    Eliminar esta categoría es permanente y no se puede deshacer.
                 </p>
                 <form action="{{ route('admin.categorias.destroy', $categoria) }}"
                       method="POST"
@@ -158,9 +158,9 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
                     <button type="button" 
                             class="abtn abtn-danger" 
                             style="width:100%;justify-content:center;"
-                            data-confirm="Â¿Eliminar la categorÃ­a Â«{{ addslashes($categoria->nombre) }}Â» permanentemente?"
+                            data-confirm="¿Eliminar la categoría «{{ addslashes($categoria->nombre) }}» permanentemente?"
                             onclick="confirmDelete(this)">
-                        Eliminar categorÃ­a
+                        Eliminar categoría
                     </button>
                 </form>
             </div>
@@ -173,7 +173,7 @@ document.getElementById('cat-form').addEventListener('submit', function(e) {
 
 @push('scripts')
 <script>
-/* â”€â”€ Slug preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Slug preview ─────────────────────────────────────── */
 const nombreInput   = document.getElementById('nombre');
 const slugPreview   = document.getElementById('slug-preview');
 const slugInput     = document.getElementById('slug');

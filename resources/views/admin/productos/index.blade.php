@@ -235,29 +235,58 @@
 
     {{-- Paginación --}}
     @if($productos->hasPages())
+    <style>
+        /* Ocultar barra de scroll nativa en admin */
+        .admin-pag-scroll::-webkit-scrollbar { display: none; }
+        .admin-pag-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .scroll-pag-btn-admin {
+            padding: 6px 4px;
+            font-size: 0.85rem;
+            font-family: monospace;
+            cursor: pointer;
+            border-radius: var(--radius);
+            transition: all var(--t);
+            display: grid;
+            place-items: center;
+        }
+        .scroll-pag-btn-admin:hover {
+            color: var(--lime);
+        }
+    </style>
     <div style="padding:1.2rem 1.5rem;border-top:1px solid var(--border-solid);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;">
         <span style="font-size:0.78rem;color:var(--text-3);">
             Mostrando {{ $productos->firstItem() }}–{{ $productos->lastItem() }} de {{ $productos->total() }}
         </span>
-        <div style="display:flex;gap:0.3rem;">
+        <div style="display:flex;gap:0.3rem; max-width: 100%; align-items: center; justify-content: center; overflow: hidden;">
             @if($productos->onFirstPage())
-                <span class="abtn abtn-outline" style="opacity:0.3;pointer-events:none;padding:6px 10px;">‹</span>
+                <span class="abtn abtn-outline" style="opacity:0.3;pointer-events:none;padding:6px 10px;flex-shrink:0;">‹</span>
             @else
-                <a href="{{ $productos->previousPageUrl() }}" class="abtn abtn-outline" style="padding:6px 10px;">‹</a>
+                <a href="{{ $productos->previousPageUrl() }}" class="abtn abtn-outline" style="padding:6px 10px;flex-shrink:0;">‹</a>
             @endif
 
-            @foreach($productos->getUrlRange(max(1, $productos->currentPage()-2), min($productos->lastPage(), $productos->currentPage()+2)) as $page => $url)
-                @if($page == $productos->currentPage())
-                    <span class="abtn abtn-lime" style="padding:6px 12px;">{{ $page }}</span>
-                @else
-                    <a href="{{ $url }}" class="abtn abtn-outline" style="padding:6px 12px;">{{ $page }}</a>
-                @endif
-            @endforeach
+            @if($productos->lastPage() > 5)
+                <button type="button" onclick="document.getElementById('admin-pagination').scrollBy({left: -150, behavior: 'smooth'})" class="abtn abtn-outline scroll-pag-btn-admin" style="flex-shrink:0;" aria-label="Ver páginas anteriores">«</button>
+            @endif
+
+            <div id="admin-pagination" class="admin-pag-scroll" style="display:flex; align-items: center; gap:0.3rem; overflow-x:auto; max-width: 350px; scroll-behavior: smooth;">
+                @foreach($productos->getUrlRange(1, $productos->lastPage()) as $page => $url)
+                    @if($page == $productos->currentPage())
+                        <span class="abtn abtn-lime" style="padding:6px 12px; flex-shrink:0;">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" class="abtn abtn-outline" style="padding:6px 12px; flex-shrink:0;">{{ $page }}</a>
+                    @endif
+                @endforeach
+            </div>
+
+            @if($productos->lastPage() > 5)
+                <button type="button" onclick="document.getElementById('admin-pagination').scrollBy({left: 150, behavior: 'smooth'})" class="abtn abtn-outline scroll-pag-btn-admin" style="flex-shrink:0;" aria-label="Ver páginas siguientes">»</button>
+            @endif
 
             @if($productos->hasMorePages())
-                <a href="{{ $productos->nextPageUrl() }}" class="abtn abtn-outline" style="padding:6px 10px;">›</a>
+                <a href="{{ $productos->nextPageUrl() }}" class="abtn abtn-outline" style="padding:6px 10px;flex-shrink:0;">›</a>
             @else
-                <span class="abtn abtn-outline" style="opacity:0.3;pointer-events:none;padding:6px 10px;">›</span>
+                <span class="abtn abtn-outline" style="opacity:0.3;pointer-events:none;padding:6px 10px;flex-shrink:0;">›</span>
             @endif
         </div>
     </div>

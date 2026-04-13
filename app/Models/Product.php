@@ -36,6 +36,7 @@ class Product extends Model
         'promotion_title',
         'discount_type',
         'discount_value',
+        'discount_string',
         'image_url',
         'thumbnail_url',
     ];
@@ -427,6 +428,21 @@ class Product extends Model
     {
         $best = $this->getBestPromotion();
         return $best ? $best['discount_value'] : 0;
+    }
+
+    public function getDiscountStringAttribute()
+    {
+        $best = $this->getBestPromotion();
+        if (!$best) return null;
+
+        $promo = $best['promotion'];
+        if (!is_null($promo->discount_percentage)) {
+            return round($promo->discount_percentage) . '% OFF';
+        }
+        if (!is_null($promo->discount_amount)) {
+            return '$' . number_format($promo->discount_amount, 0, ',', '.') . ' OFF';
+        }
+        return null;
     }
 
     /*

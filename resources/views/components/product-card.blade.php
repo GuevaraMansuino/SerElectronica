@@ -19,15 +19,22 @@
         <div class="product-card__footer">
             <div>
                 @if($producto->has_promotion)
-                    <small>Precio</small>
-                    <span class="product-card__price" style="text-decoration:line-through;color:var(--text-3);font-size:0.85em;">
-                        ${{ number_format($producto->price, 0, ',', '.') }}
-                    </span>
+                    <div style="color: #ef4444; font-size: 0.85em; font-weight: 500;">
+                        <small>Antes: </small>
+                        <span style="text-decoration:line-through;">
+                            ${{ number_format($producto->price, 0, ',', '.') }}
+                        </span>
+                    </div>
                     <div>
-                        <small>Con promo:</small>
+                        <small>Ahora:</small>
                         <span class="product-card__price">
                             ${{ number_format($producto->final_price, 0, ',', '.') }}
                         </span>
+                        @if($producto->discount_string)
+                            <span style="font-size: 0.8em; color: var(--lime, #84cc16); font-weight: bold; margin-left: 4px;">
+                                -{{ $producto->discount_string }}
+                            </span>
+                        @endif
                     </div>
                 @else
                     <small>Precio</small>

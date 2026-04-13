@@ -45,7 +45,7 @@
 </div>
 
 {{-- ── Layout 2 columnas ─────────────────────────────────────── --}}
-<div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;">
+<div style="display:grid;grid-template-columns:minmax(0, 1fr) 320px;gap:1.5rem;align-items:start;">
 
     {{-- Últimos productos ──────────────────────────────────── --}}
     <div class="acard">
@@ -65,60 +65,62 @@
             </a>
         </div>
 
-        <table class="atable">
-            <thead>
-                <tr>
-                    <th style="width:56px"></th>
-                    <th>Nombre</th>
-                    <th>Categoría</th>
-                    <th>Precio</th>
-                    <th>Estado</th>
-                    <th style="text-align:right"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($ultimosProductos as $p)
-                <tr>
-                    <td>
-                        @if($p->image)
-                            <img src="{{ asset('storage/' . $p->image) }}"
-                                 class="td-img" alt="{{ $p->name }}">
-                        @else
-                            <span class="td-img-ph">📦</span>
-                        @endif
-                    </td>
-                    <td class="td-main">{{ $p->name }}</td>
-                    <td>
-                        <span class="badge badge-neutral">{{ $p->category->name }}</span>
-                    </td>
-                    <td style="font-family:var(--font-display);font-size:1.05rem;color:var(--lime);letter-spacing:0.02em;">
-                        ${{ number_format($p->price, 0, ',', '.') }}
-                    </td>
-                    <td>
-                        <span class="badge {{ $p->is_active ? 'badge-success' : 'badge-danger' }}">
-                            {{ $p->is_active ? 'Activo' : 'Oculto' }}
-                        </span>
-                    </td>
-                    <td style="text-align:right;">
-                        <a href="{{ route('admin.productos.edit', $p) }}"
-                           class="action-btn" title="Editar">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                            </svg>
-                        </a>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text-3);">
-                        <a href="{{ route('admin.productos.create') }}"
-                           style="color:var(--lime);">+ Crear el primer producto</a>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+        <div style="overflow-x: auto; width: 100%;">
+            <table class="atable" style="min-width: 600px;">
+                <thead>
+                    <tr>
+                        <th style="width:56px"></th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Estado</th>
+                        <th style="text-align:right"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($ultimosProductos as $p)
+                    <tr>
+                        <td>
+                            @if($p->image)
+                                <img src="{{ asset('storage/' . $p->image) }}"
+                                     class="td-img" alt="{{ $p->name }}">
+                            @else
+                                <span class="td-img-ph">📦</span>
+                            @endif
+                        </td>
+                        <td class="td-main" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="{{ $p->name }}">{{ $p->name }}</td>
+                        <td>
+                            <span class="badge badge-neutral" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; display: inline-block; vertical-align: middle;" title="{{ $p->category->name }}">{{ $p->category->name }}</span>
+                        </td>
+                        <td style="font-family:var(--font-display);font-size:1.05rem;color:var(--lime);letter-spacing:0.02em;">
+                            ${{ number_format($p->price, 0, ',', '.') }}
+                        </td>
+                        <td>
+                            <span class="badge {{ $p->is_active ? 'badge-success' : 'badge-danger' }}">
+                                {{ $p->is_active ? 'Activo' : 'Oculto' }}
+                            </span>
+                        </td>
+                        <td style="text-align:right;">
+                            <a href="{{ route('admin.productos.edit', $p) }}"
+                               class="action-btn" title="Editar">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:2.5rem;color:var(--text-3);">
+                            <a href="{{ route('admin.productos.create') }}"
+                               style="color:var(--lime);">+ Crear el primer producto</a>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {{-- Panel derecho ──────────────────────────────────────── --}}

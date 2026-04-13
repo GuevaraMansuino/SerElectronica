@@ -479,9 +479,7 @@
                 </svg>
                 Consultar por WhatsApp
             </a>
-            <a href="tel:02613372353" class="btn btn-outline">
-                📞 0261 337-2353
-            </a>
+
             <a href="{{ route('catalogo.index') }}" class="btn btn-outline">
                 Ver catálogo completo
             </a>

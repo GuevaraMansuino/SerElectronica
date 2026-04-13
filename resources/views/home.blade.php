@@ -10,10 +10,10 @@
         {{-- Estilos forzados para compactar categorías --}}
         <style>
             #js-cats-grid {
-                margin-top: -0.5rem !important;
-                padding-top: 0 !important;
-                padding-bottom: 0.8rem !important;
-                /* Eliminamos el espacio sobrante abajo */
+                margin-top: -1.2rem !important;
+                padding-top: 0.8rem !important;
+                padding-bottom: 1.5rem !important;
+                /* Reducimos margen superior y agregamos padding en todos los lados Y para sombra */
             }
 
             .cats-section {
@@ -280,7 +280,7 @@
             <h2 class="sec-title" id="about-heading">ENCONTRANOS<br>EN MENDOZA</h2>
 
             <p style="color:var(--text-2);margin-top:1.2rem;line-height:1.75;margin-bottom:0.8rem;font-size:1.1rem;">
-                Somos una tienda especializada en electrónica ubicada en el centro de Mendoza. Más de 10 años vendiendo
+                Somos una tienda especializada en electrónica ubicada en el centro de Mendoza. Más de 30 años vendiendo
                 equipos de audio, altavoces pasivos y activos, y equipamiento de las mejores marcas.
             </p>
             <p style="color:var(--text-2);line-height:1.75;font-size:1.1rem;margin-bottom:2rem;">

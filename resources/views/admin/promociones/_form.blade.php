@@ -203,11 +203,19 @@
                                 multiple
                                 size="5"
                                 style="height:auto;">
-                            <option value="" disabled>Seleccioná productos (Ctrl+click para varios)</option>
-                            @php $selectedProducts = $isEdit ? $promo->products()->pluck('products.id')->toArray() : []; @endphp
-                            @foreach(\App\Models\Product::where('is_active', true)->orderBy('name')->get() as $prod)
-                            <option value="{{ $prod->id }}" {{ in_array($prod->id, old('product_ids', $selectedProducts)) ? 'selected' : '' }}>{{ $prod->name }}</option>
-                            @endforeach
+                            @php 
+                                $activeProducts = \App\Models\Product::where('is_active', true)->orderBy('name')->get();
+                                $selectedProducts = $isEdit ? $promo->products()->pluck('products.id')->toArray() : []; 
+                            @endphp
+                            
+                            @if($activeProducts->isEmpty())
+                                <option value="" disabled>No hay productos registrados o activos en la tienda.</option>
+                            @else
+                                <option value="" disabled>Seleccioná productos (Ctrl+click para varios)</option>
+                                @foreach($activeProducts as $prod)
+                                <option value="{{ $prod->id }}" {{ in_array($prod->id, old('product_ids', $selectedProducts)) ? 'selected' : '' }}>{{ $prod->name }}</option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                 </div>
@@ -229,8 +237,11 @@
                 <script>
                 function toggleProductSelect() {
                     const scope = document.getElementById('product_scope').value;
-                    // Always show the product selection but only save when 'specific' is selected
-                    document.getElementById('specific-products').style.display = 'block';
+                    if (scope === 'none') {
+                        document.getElementById('specific-products').style.display = 'none';
+                    } else {
+                        document.getElementById('specific-products').style.display = 'block';
+                    }
                 }
 
                 function toggleDiscountFields() {
@@ -271,7 +282,7 @@
                 </div>
                 <div class="acard-body" style="display:flex;flex-direction:column;gap:0.7rem;">
                     <button type="submit" class="abtn abtn-lime" style="justify-content:center;width:100%;padding:11px;">
-                        {{ $isEdit ? '💾 Guardar cambios' : '+ Crear promoción' }}
+                        {{ $isEdit ? 'Guardar cambios' : '+ Crear promoción' }}
                     </button>
                     <a href="{{ route('admin.promociones.index') }}" class="abtn abtn-outline" style="justify-content:center;">
                         Cancelar
