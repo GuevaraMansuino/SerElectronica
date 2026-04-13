@@ -291,8 +291,8 @@ class Product extends Model
         $directPromos = $this->promotions
             ?->filter(function ($promo) use ($now) {
                 return $promo->is_active 
-                    && ($promo->start_date === null || \Carbon\Carbon::parse($promo->start_date)->lte($now))
-                    && ($promo->end_date === null || \Carbon\Carbon::parse($promo->end_date)->gte($now));
+                    && (empty($promo->start_date) || \Carbon\Carbon::parse($promo->start_date)->lte($now))
+                    && (empty($promo->end_date) || \Carbon\Carbon::parse($promo->end_date)->gte($now));
             }) ?? collect();
 
         // Si hay promociones directas, tomar la mejor
@@ -303,11 +303,11 @@ class Product extends Model
             foreach ($directPromos as $promo) {
                 $discounted = $price;
 
-                if (!is_null($promo->discount_percentage)) {
+                if (!empty($promo->discount_percentage)) {
                     $discounted -= $price * ($promo->discount_percentage / 100);
                 }
 
-                if (!is_null($promo->discount_amount)) {
+                if (!empty($promo->discount_amount)) {
                     $discounted -= $promo->discount_amount;
                 }
 
@@ -334,8 +334,8 @@ class Product extends Model
             ? $this->category->promotions
                 ->filter(function ($promo) use ($now) {
                     return $promo->is_active 
-                        && ($promo->start_date === null || \Carbon\Carbon::parse($promo->start_date)->lte($now))
-                        && ($promo->end_date === null || \Carbon\Carbon::parse($promo->end_date)->gte($now));
+                        && (empty($promo->start_date) || \Carbon\Carbon::parse($promo->start_date)->lte($now))
+                        && (empty($promo->end_date) || \Carbon\Carbon::parse($promo->end_date)->gte($now));
                 })
             : collect();
 

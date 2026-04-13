@@ -167,27 +167,48 @@ Route::get('/promociones', function () {
     $promociones = \App\Models\Promotion::where('is_active', true)
         ->where(function($query) {
             $query->whereDate('start_date', '<=', now())
-                  ->orWhereNull('start_date');
+                  ->orWhereNull('start_date')
+                  ->orWhere('start_date', '');
         })
         ->where(function($query) {
             $query->whereDate('end_date', '>=', now())
-                  ->orWhereNull('end_date');
+                  ->orWhereNull('end_date')
+                  ->orWhere('end_date', '');
         })
         ->orderBy('created_at', 'desc')
         ->get();
 
-    // Productos que tienen promociones activas
+    // Productos que tienen promociones activas (directas o por categoría)
     $productosEnPromo = \App\Models\Product::where('is_active', true)
-        ->whereHas('promotions', function($query) {
-            $query->where('is_active', true)
-                ->where(function($q) {
-                    $q->whereDate('start_date', '<=', now())
-                      ->orWhereNull('start_date');
-                })
-                ->where(function($q) {
-                    $q->whereDate('end_date', '>=', now())
-                      ->orWhereNull('end_date');
-                });
+        ->where(function($productQuery) {
+            // Promo directa
+            $productQuery->whereHas('promotions', function($query) {
+                $query->where('is_active', true)
+                    ->where(function($q) {
+                        $q->whereDate('start_date', '<=', now())
+                          ->orWhereNull('start_date')
+                          ->orWhere('start_date', '');
+                    })
+                    ->where(function($q) {
+                        $q->whereDate('end_date', '>=', now())
+                          ->orWhereNull('end_date')
+                          ->orWhere('end_date', '');
+                    });
+            })
+            // O promo por categoría
+            ->orWhereHas('category.promotions', function($query) {
+                $query->where('is_active', true)
+                    ->where(function($q) {
+                        $q->whereDate('start_date', '<=', now())
+                          ->orWhereNull('start_date')
+                          ->orWhere('start_date', '');
+                    })
+                    ->where(function($q) {
+                        $q->whereDate('end_date', '>=', now())
+                          ->orWhereNull('end_date')
+                          ->orWhere('end_date', '');
+                    });
+            });
         })
         ->with(['category', 'promotions', 'images', 'category.promotions'])
         ->get();

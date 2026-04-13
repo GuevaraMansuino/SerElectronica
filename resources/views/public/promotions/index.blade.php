@@ -347,45 +347,7 @@
         </h2>
         <div class="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;">
             @foreach($productosEnPromo as $producto)
-            <article class="product-card">
-                <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__img">
-                    @if($producto->image)
-                    <img src="{{ asset('storage/'.$producto->image) }}" alt="{{ $producto->name }}" loading="lazy">
-                    @else
-                    <div class="product-card__placeholder">📷</div>
-                    @endif
-                    @if($producto->is_new)
-                    <span class="product-card__badge">NUEVO</span>
-                    @endif
-                    @if($producto->has_promotion)
-                    <span class="product-card__tag">
-                        <span class="product-card__tag-dot"></span>
-                        OFERTA
-                    </span>
-                    @endif
-                </a>
-                <div class="product-card__content">
-                    <div class="product-card__cat">{{ $producto->category->name ?? 'Sin categoría' }}</div>
-                    <h3 class="product-card__title">
-                        <a href="{{ route('producto.show', $producto->slug) }}">{{ $producto->name }}</a>
-                    </h3>
-                    @if($producto->marca)
-                    <div class="product-card__marca">{{ $producto->marca }}</div>
-                    @endif
-                    <div class="product-card__price">
-                        @if($producto->has_promotion && $producto->final_price < $producto->price)
-                        <span class="price-original">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                        <span class="price-final">${{ number_format($producto->final_price, 0, ',', '.') }}</span>
-                        <span class="price-discount">-{{ round(($producto->price - $producto->final_price) / $producto->price * 100) }}%</span>
-                        @else
-                        <span class="price-final">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                        @endif
-                    </div>
-                    <a href="{{ route('producto.show', $producto->slug) }}" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:0.8rem;">
-                        Ver producto
-                    </a>
-                </div>
-            </article>
+            <x-product-card :producto="$producto" />
             @endforeach
         </div>
     </div>
@@ -399,45 +361,7 @@
         </h2>
         <div class="products-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;">
             @foreach($productosEnPromo as $producto)
-            <article class="product-card">
-                <a href="{{ route('producto.show', $producto->slug) }}" class="product-card__img">
-                    @if($producto->image)
-                    <img src="{{ asset('storage/'.$producto->image) }}" alt="{{ $producto->name }}" loading="lazy">
-                    @else
-                    <div class="product-card__placeholder">📷</div>
-                    @endif
-                    @if($producto->is_new)
-                    <span class="product-card__badge">NUEVO</span>
-                    @endif
-                    @if($producto->has_promotion)
-                    <span class="product-card__tag">
-                        <span class="product-card__tag-dot"></span>
-                        OFERTA
-                    </span>
-                    @endif
-                </a>
-                <div class="product-card__content">
-                    <div class="product-card__cat">{{ $producto->category->name ?? 'Sin categoría' }}</div>
-                    <h3 class="product-card__title">
-                        <a href="{{ route('producto.show', $producto->slug) }}">{{ $producto->name }}</a>
-                    </h3>
-                    @if($producto->marca)
-                    <div class="product-card__marca">{{ $producto->marca }}</div>
-                    @endif
-                    <div class="product-card__price">
-                        @if($producto->has_promotion && $producto->final_price < $producto->price)
-                        <span class="price-original">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                        <span class="price-final">${{ number_format($producto->final_price, 0, ',', '.') }}</span>
-                        <span class="price-discount">-{{ round(($producto->price - $producto->final_price) / $producto->price * 100) }}%</span>
-                        @else
-                        <span class="price-final">${{ number_format($producto->price, 0, ',', '.') }}</span>
-                        @endif
-                    </div>
-                    <a href="{{ route('producto.show', $producto->slug) }}" class="btn btn-outline" style="width:100%;justify-content:center;margin-top:0.8rem;">
-                        Ver producto
-                    </a>
-                </div>
-            </article>
+            <x-product-card :producto="$producto" />
             @endforeach
         </div>
     </div>

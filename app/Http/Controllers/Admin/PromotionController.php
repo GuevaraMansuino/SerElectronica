@@ -29,13 +29,16 @@ class PromotionController extends Controller
         // Los campos ya están mapeados en el Request
         $validated = $request->validated();
 
+        $startDate = !empty($validated['start_date']) ? $validated['start_date'] : null;
+        $endDate = !empty($validated['end_date']) ? $validated['end_date'] : null;
+
         $promotion = Promotion::create([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'discount_percentage' => $validated['discount_percentage'] ?? null,
             'discount_amount' => $validated['discount_amount'] ?? null,
-            'start_date' => $validated['start_date'] ?? null,
-            'end_date' => $validated['end_date'] ?? null,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
@@ -43,14 +46,23 @@ class PromotionController extends Controller
         $productScope = $request->input('product_scope', 'none');
         if ($productScope === 'specific' && !empty($validated['product_ids'])) {
             $promotion->products()->sync($validated['product_ids']);
+        } elseif ($productScope === 'all') {
+            // Si es "Todos los productos", sincronizamos a todos los productos activos
+            $allProductIds = Product::where('is_active', true)->pluck('id')->toArray();
+            $promotion->products()->sync($allProductIds);
         } else {
-            // Si no es specific, limpiar cualquier asociación existente
+            // Si no es specific ni all, limpiar cualquier asociación existente
             $promotion->products()->sync([]);
         }
 
         // Sincronizar categorías solo si hay una categoría válida seleccionada
+        $categoriaId = $request->input('categoria_id', 'none');
         if (!empty($validated['category_ids']) && $validated['category_ids'][0] !== '' && $validated['category_ids'][0] !== 'none') {
             $promotion->categories()->sync($validated['category_ids']);
+        } elseif ($categoriaId === '') {
+            // "Todas las categorias" seleccionado (value="")
+            $allCategoryIds = Category::pluck('id')->toArray();
+            $promotion->categories()->sync($allCategoryIds);
         } else {
             $promotion->categories()->sync([]);
         }
@@ -72,13 +84,17 @@ class PromotionController extends Controller
         $validated = $request->validated();
 
         $promotion = Promotion::findOrFail($id);
+        
+        $startDate = !empty($validated['start_date']) ? $validated['start_date'] : null;
+        $endDate = !empty($validated['end_date']) ? $validated['end_date'] : null;
+        
         $promotion->update([
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'discount_percentage' => $validated['discount_percentage'] ?? null,
             'discount_amount' => $validated['discount_amount'] ?? null,
-            'start_date' => $validated['start_date'] ?? null,
-            'end_date' => $validated['end_date'] ?? null,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
@@ -86,14 +102,23 @@ class PromotionController extends Controller
         $productScope = $request->input('product_scope', 'none');
         if ($productScope === 'specific' && !empty($validated['product_ids'])) {
             $promotion->products()->sync($validated['product_ids']);
+        } elseif ($productScope === 'all') {
+            // Si es "Todos los productos", sincronizamos a todos los productos activos
+            $allProductIds = Product::where('is_active', true)->pluck('id')->toArray();
+            $promotion->products()->sync($allProductIds);
         } else {
-            // Si no es specific, limpiar cualquier asociación existente
+            // Si no es specific ni all, limpiar cualquier asociación existente
             $promotion->products()->sync([]);
         }
 
         // Sincronizar categorías solo si hay una categoría válida seleccionada
+        $categoriaId = $request->input('categoria_id', 'none');
         if (!empty($validated['category_ids']) && $validated['category_ids'][0] !== '' && $validated['category_ids'][0] !== 'none') {
             $promotion->categories()->sync($validated['category_ids']);
+        } elseif ($categoriaId === '') {
+            // "Todas las categorias" seleccionado (value="")
+            $allCategoryIds = Category::pluck('id')->toArray();
+            $promotion->categories()->sync($allCategoryIds);
         } else {
             $promotion->categories()->sync([]);
         }
