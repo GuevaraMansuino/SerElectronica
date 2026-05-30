@@ -1,0 +1,475 @@
+@extends('layouts.app')
+
+@section('title', 'Catálogo – SER Electrónica')
+@section('meta_description', 'Catálogo de productos de electrónica, audio, altavoces y más. SER Electrónica, Lavalle 299, Mendoza.')
+
+@push('styles')
+@vite(['resources/css/catalog.css'])
+@endpush
+
+@section('content')
+{{-- PAGE BANNER --}}
+<div class="page-banner">
+    <div class="page-banner__inner">
+        <nav class="breadcrumb" aria-label="Migas de pan">
+            <a href="{{ route('home') }}">Inicio</a>
+            <span>›</span>
+            <span>Catálogo</span>
+            @if(request('categoria') && isset($categoriaActual))
+                <span>›</span>
+                <span>{{ $categoriaActual->name }}</span>
+            @endif
+        </nav>
+        <span class="sec-label">Productos</span>
+        <h1 class="sec-title">
+            @if(request('categoria') && isset($categoriaActual))
+                {{ strtoupper($categoriaActual->name) }}
+            @else
+                CATÁLOGO COMPLETO
+            @endif
+        </h1>
+    </div>
+</div>
+
+{{-- Aviso de precios --}}
+    <div class="price-notice" style="display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:0.6rem 1rem;background:rgba(255,200,0,0.08);border:1px solid rgba(255,200,0,0.25);border-radius:var(--radius);font-size:0.85rem;color:var(--text-2);margin-bottom:1rem;text-align:center;max-width:800px;margin-left:auto;margin-right:auto;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true" style="flex-shrink:0;color:#ffc800;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span><strong>Precios de contado/transferencia</strong>. Los precios pueden variar. Son precios de lista sujetos a cambios sin previo aviso.</span>
+    </div>
+
+{{-- LAYOUT --}}
+<div class="catalog-layout">
+
+    {{-- SIDEBAR --}}
+    <aside class="sidebar" aria-label="Filtros">
+        <form action="{{ route('catalogo.index') }}" method="GET" id="filter-form">
+
+            <div class="sidebar-card">
+                <div class="sidebar-card__header" role="button" aria-expanded="true">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    <span class="sidebar-card__title">Filtros</span>
+                    <svg class="sidebar-toggle" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+
+                <div class="sidebar-card__body">
+
+                    {{-- Categorías --}}
+                    <div class="filter-section">
+                        <span class="filter-section__label">Categoría</span>
+                        <ul class="filter-cats">
+                            <li class="filter-cats__item">
+                                <a href="{{ route('catalogo.index') }}"
+                                   class="{{ !request('categoria') ? 'active' : '' }}">
+                                    <span>Todas las categorías</span>
+                                    <span class="filter-cats__count">{{ $totalProductos }}</span>
+                                </a>
+                            </li>
+                            @php $categoriasArray = $categorias->toArray(); @endphp
+                            @foreach($categorias as $index => $cat)
+                            <li class="filter-cats__item {{ $index >= 4 ? 'more-category' : '' }}" {{ $index >= 4 ? 'style=display:none' : '' }}>
+                                <a href="{{ route('catalogo.index', array_merge(request()->except(['categoria','page']), ['categoria' => $cat->slug])) }}"
+                                   class="{{ request('categoria') === $cat->slug ? 'active' : '' }}">
+                                    <span>{{ $cat->nombre }}</span>
+                                    <span class="filter-cats__count">{{ $cat->productos_count }}</span>
+                                </a>
+                            </li>
+                            @endforeach
+                            @if(count($categorias) > 4)
+                            <li class="filter-cats__item">
+                                <a href="#" class="toggle-more-categories" onclick="event.preventDefault(); toggleMoreCategories();">
+                                    <span>Más categorías</span>
+                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                                </a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+
+                    <div class="filter-divider"></div>
+
+                    {{-- Precio --}}
+                    <div class="filter-section">
+                        <span class="filter-section__label">Rango de precio</span>
+                        <div class="price-row">
+                            <div class="price-field">
+                                <label for="precio_min">Desde</label>
+                                <input type="number" id="precio_min" name="precio_min"
+                                       placeholder="0"
+                                       value="{{ request('precio_min') }}" min="0">
+                            </div>
+                            <div class="price-field">
+                                <label for="precio_max">Hasta</label>
+                                <input type="number" id="precio_max" name="precio_max"
+                                       placeholder="∞"
+                                       value="{{ request('precio_max') }}" min="0">
+                            </div>
+                        </div>
+                        @if(request('categoria'))
+                            <input type="hidden" name="categoria" value="{{ request('categoria') }}">
+                        @endif
+                        @if(request('q'))
+                            <input type="hidden" name="q" value="{{ request('q') }}">
+                        @endif
+                        <button type="submit" class="filter-apply">Aplicar filtros</button>
+
+                        @if(request()->hasAny(['precio_min','precio_max','q']))
+                        <a href="{{ route('catalogo.index', request()->only('categoria')) }}"
+                           class="filter-reset">✕ Limpiar filtros</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </form>
+    </aside>
+
+    {{-- PRODUCTOS --}}
+    <div class="catalog-main">
+
+        {{-- Active filter chips --}}
+        @if(request()->hasAny(['categoria','precio_min','precio_max','q']))
+        <div class="active-filters">
+            <span style="font-size:0.75rem;color:var(--text-3);font-family:var(--font-mono);">Filtros activos:</span>
+            @if(request('categoria'))
+                <span class="filter-chip">
+                    {{ $categoriaActual->name ?? request('categoria') }}
+                    <a href="{{ route('catalogo.index', request()->except('categoria')) }}" aria-label="Quitar filtro categoría">✕</a>
+                </span>
+            @endif
+            @if(request('precio_min') || request('precio_max'))
+                <span class="filter-chip">
+                    Precio: ${{ request('precio_min', '0') }} – ${{ request('precio_max', '∞') }}
+                    <a href="{{ route('catalogo.index', request()->except(['precio_min','precio_max'])) }}" aria-label="Quitar filtro precio">✕</a>
+                </span>
+            @endif
+            @if(request('q'))
+                <span class="filter-chip">
+                    "{{ request('q') }}"
+                    <a href="{{ route('catalogo.index', request()->except('q')) }}" aria-label="Quitar búsqueda">✕</a>
+                </span>
+            @endif
+        </div>
+        @endif
+
+        {{-- Toolbar --}}
+        <div class="catalog-toolbar">
+            <span class="catalog-count">
+                <strong>{{ $productos->total() }}</strong> productos encontrados
+            </span>
+
+            <div class="catalog-controls">
+                {{-- Search --}}
+                <div class="search-bar">
+                    <input type="text"
+                           id="js-search"
+                           placeholder="Buscar..."
+                           value="{{ request('q') }}"
+                           aria-label="Buscar producto">
+                    <button type="button" id="js-search-btn" aria-label="Buscar">
+                        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    </button>
+                </div>
+
+                {{-- Sort --}}
+                <select class="sort-select" onchange="location.href=this.value" aria-label="Ordenar por">
+                    <option value="{{ request()->fullUrlWithQuery(['orden'=>'reciente','page'=>null]) }}"
+                        {{ request('orden','reciente')==='reciente' ? 'selected' : '' }}>Más recientes</option>
+                    <option value="{{ request()->fullUrlWithQuery(['orden'=>'precio_asc','page'=>null]) }}"
+                        {{ request('orden')==='precio_asc' ? 'selected' : '' }}>Precio: menor a mayor</option>
+                    <option value="{{ request()->fullUrlWithQuery(['orden'=>'precio_desc','page'=>null]) }}"
+                        {{ request('orden')==='precio_desc' ? 'selected' : '' }}>Precio: mayor a menor</option>
+                    <option value="{{ request()->fullUrlWithQuery(['orden'=>'nombre','page'=>null]) }}"
+                        {{ request('orden')==='nombre' ? 'selected' : '' }}>Nombre A–Z</option>
+                </select>
+            </div>
+        </div>
+
+        {{-- Grid --}}
+        <div class="products-grid">
+            @forelse($productos as $producto)
+            @include('components.product-card', ['producto' => $producto])
+            @empty
+            <div class="empty-catalog">
+                <div class="empty-catalog__icon">🔍</div>
+                <h3>Sin resultados</h3>
+                <p>No encontramos productos con esos filtros.<br>Intentá cambiar los criterios de búsqueda.</p>
+            </div>
+            @endforelse
+        </div>
+
+        {{-- Pagination --}}
+        @if($productos->hasPages())
+        <nav class="pagination" aria-label="Paginación" style="position:relative;">
+            @if($productos->onFirstPage())
+                <span class="disabled" style="flex-shrink:0;">‹</span>
+            @else
+                <a href="{{ $productos->previousPageUrl() }}" aria-label="Página anterior" style="flex-shrink:0;">‹</a>
+            @endif
+
+            {{-- Botón custom de Scroll Izquierda --}}
+            @if($productos->lastPage() > 5)
+                <button type="button" onclick="document.getElementById('client-pagination').scrollBy({left: -150, behavior: 'smooth'})" class="scroll-pag-btn" aria-label="Desplazar páginas" style="flex-shrink:0;">«</button>
+            @endif
+
+            <div class="pagination-numbers" id="client-pagination" style="scrollbar-width: none; overflow-x: auto;">
+                @foreach($productos->getUrlRange(1, $productos->lastPage()) as $page => $url)
+                    @if($page == $productos->currentPage())
+                        <span class="current" aria-current="page" style="flex-shrink:0;">{{ $page }}</span>
+                    @else
+                        <a href="{{ $url }}" aria-label="Página {{ $page }}" style="flex-shrink:0;">{{ $page }}</a>
+                    @endif
+                @endforeach
+            </div>
+
+            {{-- Botón custom de Scroll Derecha --}}
+            @if($productos->lastPage() > 5)
+                <button type="button" onclick="document.getElementById('client-pagination').scrollBy({left: 150, behavior: 'smooth'})" class="scroll-pag-btn" aria-label="Desplazar páginas" style="flex-shrink:0;">»</button>
+            @endif
+
+            @if($productos->hasMorePages())
+                <a href="{{ $productos->nextPageUrl() }}" aria-label="Página siguiente" style="flex-shrink:0;">›</a>
+            @else
+                <span class="disabled" style="flex-shrink:0;">›</span>
+            @endif
+        </nav>
+        @endif
+
+        {{-- Scroll Infinito: Sentinel para detectar fin de página --}}
+        <div id="scroll-sentinel" style="display:none;"></div>
+        
+        {{-- Indicador de carga --}}
+        <div id="loading-indicator" style="display:none;text-align:center;padding:2rem;">
+            <div style="color:var(--text-2);font-size:0.9rem;">Cargando más productos...</div>
+        </div>
+
+        {{-- Fin del catálogo --}}
+        <div id="no-more-products" style="display:none;text-align:center;padding:2rem;color:var(--text-3);">
+            <p>Has visto todos los productos</p>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+// Scroll Infinito para el catálogo
+(function() {
+    'use strict';
+    
+    const sentinel = document.getElementById('scroll-sentinel');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const noMoreProducts = document.getElementById('no-more-products');
+    const pagination = document.querySelector('.pagination');
+    
+    let currentPage = {{ $productos->currentPage() }};
+    let lastPage = {{ $productos->lastPage() }};
+    let isLoading = false;
+    let hasMore = {{ $productos->hasMorePages() ? 'true' : 'false' }};
+    
+    // Obtener categoría actual de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentCategory = urlParams.get('categoria') || '';
+    
+    // NO ocultar paginación tradicional - permitir uso normal
+    // if (hasMore && pagination) {
+    //     pagination.style.display = 'none';
+    // }
+    
+    // Función para construir URL con todos los filtros
+    function buildFilterParams() {
+        const params = new URLSearchParams();
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        const categoria = urlParams.get('categoria');
+        const q = urlParams.get('q');
+        const precioMin = urlParams.get('precio_min');
+        const precioMax = urlParams.get('precio_max');
+        const orden = urlParams.get('orden');
+        
+        if (categoria) params.set('categoria', categoria);
+        if (q) params.set('q', q);
+        if (precioMin) params.set('precio_min', precioMin);
+        if (precioMax) params.set('precio_max', precioMax);
+        if (orden) params.set('orden', orden);
+        
+        return params.toString();
+    }
+    
+    // Función para cargar más productos
+    async function loadMoreProducts() {
+        if (isLoading || !hasMore) return;
+        
+        isLoading = true;
+        loadingIndicator.style.display = 'block';
+        sentinel.style.display = 'block';
+        
+        try {
+            const nextPage = currentPage + 1;
+            const filterParams = buildFilterParams();
+            const url = `/api/public/products/load-more?page=${nextPage}&${filterParams}`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+            
+            if (data.products && data.products.length > 0) {
+                // Agregar productos al grid
+                const grid = document.querySelector('.products-grid');
+                
+                data.products.forEach(product => {
+                    const card = createProductCard(product);
+                    grid.insertAdjacentHTML('beforeend', card);
+                });
+                
+                currentPage = data.current_page;
+                hasMore = data.has_more;
+                
+                if (!hasMore) {
+                    loadingIndicator.style.display = 'none';
+                    noMoreProducts.style.display = 'block';
+                }
+            } else {
+                hasMore = false;
+                loadingIndicator.style.display = 'none';
+                noMoreProducts.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error cargando más productos:', error);
+        } finally {
+            isLoading = false;
+            sentinel.style.display = 'none';
+        }
+    }
+    
+    // Función para crear HTML de tarjeta de producto
+    function createProductCard(product) {
+        const imageHtml = product.image 
+            ? `<img src="/storage/${product.image}" alt="${product.name}" loading="lazy">`
+            : `<div style="display:grid;place-items:center;height:100%;font-size:2.5rem;color:var(--text-3)">📦</div>`;
+        
+        const badgeHtml = product.is_new 
+            ? `<span class="product-card__badge">Nuevo</span>` 
+            : '';
+        
+        const categoryName = product.category ? product.category.name : '';
+        const priceFormatted = new Intl.NumberFormat('es-AR').format(product.price);
+        const finalPriceFormatted = product.final_price ? new Intl.NumberFormat('es-AR').format(product.final_price) : priceFormatted;
+        
+        let priceHtml = '';
+        if (product.has_promotion) {
+            priceHtml = `
+                <small>Precio</small>
+                <span class="product-card__price" style="text-decoration: line-through; color: var(--text-3); font-size: 0.85em;">${priceFormatted}</span>
+                <div style="color: var(--lime); font-weight: 600;">
+                    <small>Con promo:</small>
+                    <span class="product-card__price" style="color: var(--lime);">${finalPriceFormatted}</span>
+                </div>
+                <div class="product-card__price-note">Contado/Transferencia</div>
+            `;
+        } else {
+            priceHtml = `
+                <small>Precio</small>
+                <span class="product-card__price">${priceFormatted}</span>
+                <div class="product-card__price-note">Contado/Transferencia</div>
+            `;
+        }
+        
+        return `
+            <article class="product-card">
+                <div class="product-card__img">
+                    ${imageHtml}
+                    ${badgeHtml}
+                </div>
+                <div class="product-card__body">
+                    <span class="product-card__cat">${categoryName}</span>
+                    <h2 class="product-card__name">${product.name}</h2>
+                    <div class="product-card__footer">
+                        <div>
+                            ${priceHtml}
+                        </div>
+                        <a href="/producto/${product.slug}" class="product-card__cta">
+                            Ver más
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+    
+    // Intersection Observer para detectar cuando llegamos al final
+    if (hasMore) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isLoading) {
+                    loadMoreProducts();
+                }
+            });
+        }, { rootMargin: '100px' });
+        
+        if (sentinel) {
+            observer.observe(sentinel);
+        }
+    }
+})();
+</script>
+<script>
+    const searchInput = document.getElementById('js-search');
+    const searchBtn   = document.getElementById('js-search-btn');
+
+    function doSearch() {
+        const params = new URLSearchParams(window.location.search);
+        const q = searchInput.value.trim();
+        if (q) params.set('q', q); else params.delete('q');
+        params.delete('page');
+        window.location.href = '?' + params.toString();
+    }
+
+    // Toggle Más categorías
+    let categoriesExpanded = false;
+    function toggleMoreCategories() {
+        const moreCategories = document.querySelectorAll('.more-category');
+        const toggleLink = document.querySelector('.toggle-more-categories');
+        
+        categoriesExpanded = !categoriesExpanded;
+        
+        moreCategories.forEach(item => {
+            item.style.display = categoriesExpanded ? 'block' : 'none';
+        });
+        
+        if (toggleLink) {
+            if (categoriesExpanded) {
+                toggleLink.innerHTML = '<span>Ver menos</span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>';
+            } else {
+                toggleLink.innerHTML = '<span>Más categorías</span><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>';
+            }
+        }
+    }
+    
+    searchBtn.addEventListener('click', doSearch);
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+    
+    // Toggle filtros en mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterHeader = document.querySelector('.sidebar-card__header');
+        const filterBody = document.querySelector('.sidebar-card__body');
+        const toggleIcon = filterHeader ? filterHeader.querySelector('.sidebar-toggle') : null;
+        
+        if (filterHeader && filterBody) {
+            // En móvil, iniciar colapsado
+            if (window.innerWidth <= 960) {
+                filterBody.style.display = 'none';
+            }
+            
+            filterHeader.addEventListener('click', function() {
+                if (filterBody.style.display === 'none') {
+                    filterBody.style.display = 'block';
+                    if (toggleIcon) toggleIcon.style.transform = 'rotate(180deg)';
+                } else {
+                    filterBody.style.display = 'none';
+                    if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+                }
+            });
+        }
+    });
+</script>
+@endpush

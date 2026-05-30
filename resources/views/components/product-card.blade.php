@@ -1,7 +1,7 @@
 <article class="product-card">
     <div class="product-card__img">
-        @if($producto->image)
-            <img src="{{ asset('storage/' . $producto->image) }}"
+        @if($producto->thumbnail_url)
+            <img src="{{ $producto->thumbnail_url }}"
                  alt="{{ $producto->name }}" loading="lazy">
         @else
             <div style="display:grid;place-items:center;height:100%;font-size:2.5rem;color:var(--text-3)">📦</div>

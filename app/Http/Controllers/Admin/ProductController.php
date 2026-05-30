@@ -69,9 +69,15 @@ class ProductController extends Controller
         // Guardar imágenes de la galería (siempre es un INSERT, no UPDATE)
         if ($request->hasFile('gallery_images')) {
             $galleryOrder = 1;
+            $galleryDir = public_path('products/gallery');
+            if (!is_dir($galleryDir)) {
+                mkdir($galleryDir, 0755, true);
+            }
             foreach ($request->file('gallery_images') as $file) {
                 if ($file->isValid()) {
-                    $path = $file->store('products/gallery', 'public');
+                    $filename = $file->hashName();
+                    $file->move($galleryDir, $filename);
+                    $path = 'products/gallery/' . $filename;
                     $product->images()->create([
                         'image_path' => $path,
                         'order' => $galleryOrder++,
@@ -125,7 +131,10 @@ class ProductController extends Controller
             $imagesToDelete = $product->images()->whereIn('id', $deleteIds)->get();
             foreach ($imagesToDelete as $img) {
                 if ($img->image_path) {
-                    Storage::disk('public')->delete($img->image_path);
+                    $fullPath = public_path($img->image_path);
+                    if (file_exists($fullPath)) {
+                        unlink($fullPath);
+                    }
                 }
             }
             $product->images()->whereIn('id', $deleteIds)->delete();
@@ -135,10 +144,15 @@ class ProductController extends Controller
         if ($request->hasFile('gallery_images')) {
             $currentMaxOrder = $product->images()->max('order') ?? 0;
             $galleryOrder = $currentMaxOrder + 1;
-            
+            $galleryDir = public_path('products/gallery');
+            if (!is_dir($galleryDir)) {
+                mkdir($galleryDir, 0755, true);
+            }
             foreach ($request->file('gallery_images') as $file) {
                 if ($file->isValid()) {
-                    $path = $file->store('products/gallery', 'public');
+                    $filename = $file->hashName();
+                    $file->move($galleryDir, $filename);
+                    $path = 'products/gallery/' . $filename;
                     $product->images()->create([
                         'image_path' => $path,
                         'order' => $galleryOrder++,
@@ -161,12 +175,12 @@ class ProductController extends Controller
     public function destroy(string $id)
     {
         $product = Product::findOrFail($id);
-        
-        // Eliminar imagen
+
+        // Eliminar imagen principal (y todas sus versiones WebP)
         if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+            $this->deleteImage($product->image);
         }
-        
+
         $product->delete();
 
         return back()->with('success', 'Producto eliminado correctamente');
@@ -188,10 +202,13 @@ class ProductController extends Controller
     {
         $image = ProductImage::findOrFail($imageId);
         if ($image->image_path) {
-            Storage::disk('public')->delete($image->image_path);
+            $fullPath = public_path($image->image_path);
+            if (file_exists($fullPath)) {
+                unlink($fullPath);
+            }
         }
         $image->delete();
-        
+
         return response()->json(['success' => true]);
     }
 }

@@ -1,0 +1,384 @@
+{{--
+    Partial: resources/views/admin/promociones/_form.blade.php
+    Recibe: $promo (nueva o existente)
+--}}
+
+@php
+    $isEdit = isset($promo->id) && $promo->id;
+    $action = $isEdit
+        ? route('admin.promociones.update', $promo)
+        : route('admin.promociones.store');
+    $method = $isEdit ? 'PUT' : 'POST';
+@endphp
+
+@push('styles')
+    @vite(['resources/css/admin-promociones.css'])
+@endpush
+
+<form action="{{ $action }}" method="POST" enctype="multipart/form-data" id="promo-form">
+    @csrf
+    @method($method)
+
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;">
+
+        {{-- ── FORMULARIO ──────────────────────────────── --}}
+        <div class="acard">
+            <div class="acard-header">
+                <span class="acard-title">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                    {{ $isEdit ? 'Editar: ' . $promo->titulo : 'Datos de la promoción' }}
+                </span>
+            </div>
+            <div class="acard-body">
+
+                {{-- Título --}}
+                <div class="fgroup" style="margin-bottom:1.3rem;">
+                    <label class="flabel" for="titulo">
+                        Título de la promoción <em>*</em>
+                    </label>
+                    <input type="text"
+                           name="titulo"
+                           id="titulo"
+                           class="finput"
+                           value="{{ old('titulo', $promo->titulo ?? '') }}"
+                           placeholder="Ej: Verano en audio – 20% OFF en altavoces"
+                           required
+                           maxlength="120"
+                           oninput="updatePreview()">
+                    @error('titulo')
+                        <span class="ferror">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Descripción --}}
+                <div class="fgroup" style="margin-bottom:1.3rem;">
+                    <label class="flabel" for="descripcion">
+                        Descripción <em>*</em>
+                    </label>
+                    <textarea name="descripcion"
+                              id="descripcion"
+                              class="ftextarea"
+                              rows="4"
+                              placeholder="Describí la promo: productos incluidos, condiciones, cómo aprovecharla..."
+                              required
+                              oninput="updatePreview()">{{ old('descripcion', $promo->descripcion ?? '') }}</textarea>
+                    @error('descripcion')
+                        <span class="ferror">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Descuentos: porcentaje o monto --}}
+                <div class="fgroup" style="margin-bottom:1.3rem;">
+                    <label class="flabel">Tipo de descuento</label>
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;background:var(--bg);border:1px solid var(--border-solid);border-radius:var(--radius);padding:8px 12px;flex:1;transition:all var(--t);"
+                               id="discount-percentage-label">
+                            <input type="radio"
+                                   name="discount_type"
+                                   id="discount_percentage"
+                                   value="percentage"
+                                   checked
+                                   onchange="toggleDiscountFields()"
+                                   style="accent-color:var(--lime);">
+                            <span style="font-size:0.86rem;">% Porcentaje</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;background:var(--bg);border:1px solid var(--border-solid);border-radius:var(--radius);padding:8px 12px;flex:1;transition:all var(--t);"
+                               id="discount-amount-label">
+                            <input type="radio"
+                                   name="discount_type"
+                                   id="discount_amount"
+                                   value="amount"
+                                   onchange="toggleDiscountFields()"
+                                   style="accent-color:var(--lime);">
+                            <span style="font-size:0.86rem;">$ Monto fijo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-grid" style="margin-bottom:1.3rem;">
+                    <div class="fgroup" id="percentage-field">
+                        <label class="flabel" for="discount_percentage_value">
+                            Descuento (%)
+                        </label>
+                        <div style="position:relative;">
+                            <input type="number"
+                                   name="discount_percentage"
+                                   id="discount_percentage_value"
+                                   class="finput"
+                                   value="{{ old('discount_percentage', $promo->discount_percentage ?? '') }}"
+                                   placeholder="0"
+                                   min="0"
+                                   max="100"
+                                   step="1">
+                            <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-weight:600;" class="discount-symbol">%</span>
+                        </div>
+                        <span class="fhint">Ej: 20 para 20% OFF</span>
+                    </div>
+
+                    <div class="fgroup" id="amount-field" style="display:none;">
+                        <label class="flabel" for="discount_amount_value">
+                            Descuento ($)
+                        </label>
+                        <div style="position:relative;">
+                            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-3);font-weight:600;">$</span>
+                            <input type="number"
+                                   name="discount_amount"
+                                   id="discount_amount_value"
+                                   class="finput"
+                                   value="{{ old('discount_amount', $promo->discount_amount ?? '') }}"
+                                   placeholder="0"
+                                   min="0"
+                                   step="100"
+                                   style="padding-left:26px;">
+                        </div>
+                        <span class="fhint">Monto fijo a descontar</span>
+                    </div>
+                </div>
+
+                {{-- Fila: fecha de inicio + fecha de vencimiento + estado --}}
+                <div class="form-grid" style="margin-bottom:1.3rem;">
+                    <div class="fgroup">
+                        <label class="flabel" for="fecha_inicio">
+                            Fecha de inicio
+                        </label>
+                        <input type="date"
+                               name="fecha_inicio"
+                               id="fecha_inicio"
+                               class="finput"
+                               value="{{ old('fecha_inicio', isset($promo->fecha_inicio) ? $promo->fecha_inicio->format('Y-m-d') : '') }}"
+                               min="{{ now()->format('Y-m-d') }}">
+                        <span class="fhint">Dejar vacío = comienza inmediatamente</span>
+                    </div>
+
+                    <div class="fgroup">
+                        <label class="flabel" for="fecha_fin">
+                            Fecha de vencimiento
+                        </label>
+                        <input type="date"
+                               name="fecha_fin"
+                               id="fecha_fin"
+                               class="finput"
+                               value="{{ old('fecha_fin', isset($promo->fecha_fin) ? $promo->fecha_fin->format('Y-m-d') : '') }}"
+                               min="{{ now()->format('Y-m-d') }}">
+                        <span class="fhint">Dejar vacío = sin vencimiento automático</span>
+                    </div>
+
+                    <div class="fgroup" style="justify-content:flex-end;">
+                        <label class="flabel">Estado inicial</label>
+                        <label style="display:flex;align-items:center;gap:0.7rem;cursor:pointer;background:var(--bg);border:1px solid var(--border-solid);border-radius:var(--radius);padding:10px 14px;transition:all var(--t);"
+                               id="activa-label">
+                            <input type="checkbox"
+                                   name="activa"
+                                   id="activa"
+                                   value="1"
+                                   {{ old('activa', $promo->activa ?? true) ? 'checked' : '' }}
+                                   style="accent-color:var(--lime);width:18px;height:18px;"
+                                   onchange="this.closest('label').style.borderColor = this.checked ? 'var(--lime)' : 'var(--border-solid)'">
+                            <div>
+                                <span style="font-size:0.86rem;font-weight:600;color:var(--text);display:block;">Activa</span>
+                                <span style="font-size:0.72rem;color:var(--text-3);">Visible en el sitio</span>
+                            </div>
+                        </label>
+                        @error('activa') <span class="ferror">{{ $message }}</span> @enderror
+                    </div>
+                </div>
+
+                {{-- Productos y Categorías vinculados --}}
+                <div class="fgroup" style="margin-bottom:1.3rem;">
+                    <label class="flabel">Productos específicos (opcional)</label>
+                    <select name="product_scope"
+                            id="product_scope"
+                            class="fselect"
+                            onchange="toggleProductSelect()">
+                        <option value="none" {{ ($isEdit && $promo->products()->count() == 0) ? 'selected' : '' }}>No aplicar a ningún producto</option>
+                        <option value="all" {{ (!$isEdit) ? 'selected' : '' }}>Todos los productos</option>
+                        <option value="specific" {{ ($isEdit && $promo->products()->count() > 0) ? 'selected' : '' }}>Seleccionar productos específicos</option>
+                    </select>
+                    <div id="specific-products" style="margin-top:0.8rem;">
+                        <select name="product_ids[]"
+                                id="product_ids"
+                                class="fselect"
+                                multiple
+                                size="5"
+                                style="height:auto;">
+                            @php 
+                                $activeProducts = \App\Models\Product::where('is_active', true)->orderBy('name')->get();
+                                $selectedProducts = $isEdit ? $promo->products()->pluck('products.id')->toArray() : []; 
+                            @endphp
+                            
+                            @if($activeProducts->isEmpty())
+                                <option value="" disabled>No hay productos registrados o activos en la tienda.</option>
+                            @else
+                                <option value="" disabled>Seleccioná productos (Ctrl+click para varios)</option>
+                                @foreach($activeProducts as $prod)
+                                <option value="{{ $prod->id }}" {{ in_array($prod->id, old('product_ids', $selectedProducts)) ? 'selected' : '' }}>{{ $prod->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fgroup" style="margin-bottom:1.3rem;">
+                    <label class="flabel">Categoría específica (opcional)</label>
+                    <select name="categoria_id"
+                            id="categoria_id"
+                            class="fselect">
+                        <option value="none" selected>No aplicar a ninguna categoría</option>
+                        <option value="">Todas las categorías</option>
+                        @php $selectedCat = $isEdit && $promo->categories()->count() > 0 ? $promo->categories()->first()->id : ''; @endphp
+                        @foreach(\App\Models\Category::orderBy('name')->get() as $cat)
+                        <option value="{{ $cat->id }}" {{ old('categoria_id', $selectedCat) == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <script>
+                function toggleProductSelect() {
+                    const scope = document.getElementById('product_scope').value;
+                    if (scope === 'none') {
+                        document.getElementById('specific-products').style.display = 'none';
+                    } else {
+                        document.getElementById('specific-products').style.display = 'block';
+                    }
+                }
+
+                function toggleDiscountFields() {
+                    const isPercentage = document.getElementById('discount_percentage').checked;
+                    document.getElementById('percentage-field').style.display = isPercentage ? 'block' : 'none';
+                    document.getElementById('amount-field').style.display = isPercentage ? 'none' : 'block';
+                    
+                    // Update border colors
+                    document.getElementById('discount-percentage-label').style.borderColor = isPercentage ? 'var(--lime)' : 'var(--border-solid)';
+                    document.getElementById('discount-amount-label').style.borderColor = isPercentage ? 'var(--border-solid)' : 'var(--lime)';
+                }
+
+                // Initialize on load
+                document.addEventListener('DOMContentLoaded', function() {
+                    toggleDiscountFields();
+                    toggleProductSelect();
+                    
+                    // Set initial state based on existing values
+                    if ("{{ ($isEdit && $promo->discount_percentage) ? '1' : '0' }}" === "1") {
+                        document.getElementById('discount_percentage').checked = true;
+                        toggleDiscountFields();
+                    } else if ("{{ ($isEdit && $promo->discount_amount) ? '1' : '0' }}" === "1") {
+                        document.getElementById('discount_amount').checked = true;
+                        toggleDiscountFields();
+                    }
+                });
+                </script>
+            </div>
+        </div>
+
+        {{-- ── PANEL LATERAL ───────────────────────────── --}}
+        <div style="display:flex;flex-direction:column;gap:1.2rem;position:sticky;top:76px;">
+
+            {{-- Acciones --}}
+            <div class="acard">
+                <div class="acard-header">
+                    <span class="acard-title">Publicar</span>
+                </div>
+                <div class="acard-body" style="display:flex;flex-direction:column;gap:0.7rem;">
+                    <button type="submit" class="abtn abtn-lime" style="justify-content:center;width:100%;padding:11px;">
+                        {{ $isEdit ? 'Guardar cambios' : '+ Crear promoción' }}
+                    </button>
+                    <a href="{{ route('admin.promociones.index') }}" class="abtn abtn-outline" style="justify-content:center;">
+                        Cancelar
+                    </a>
+                </div>
+            </div>
+
+            {{-- Vista previa --}}
+            <div>
+                <p style="font-family:var(--font-mono);font-size:0.62rem;text-transform:uppercase;letter-spacing:0.15em;color:var(--text-3);margin-bottom:0.6rem;">
+                    Vista previa
+                </p>
+                <div class="promo-preview">
+                    <span class="promo-preview__label">Preview</span>
+                    <span class="promo-preview__tag">Promo</span>
+                    <div class="promo-preview__title" id="preview-titulo">
+                        {{ $promo->titulo ?? 'Título de la promoción' }}
+                    </div>
+                    <div class="promo-preview__desc" id="preview-desc">
+                        {{ Str::limit($promo->descripcion ?? 'La descripción aparecerá aquí...', 80) }}
+                    </div>
+                    <span style="display:inline-block;padding:6px 14px;background:var(--lime);color:var(--bg);border-radius:var(--radius);font-size:0.75rem;font-weight:700;font-family:var(--font-body);letter-spacing:0.05em;">
+                        Ver promoción →
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{{-- Botones de acción fuera del formulario principal (para evitar anidamiento de forms) --}}
+@if($isEdit)
+<div style="margin-top:1rem;">
+    <div style="border-top:1px solid var(--border-solid);padding-top:1rem;margin-bottom:1rem;">
+        {{-- Toggle rápido --}}
+        @php
+            $isExpired = $promo->end_date && \Carbon\Carbon::parse($promo->end_date)->isPast();
+            $canToggle = !$isExpired;
+        @endphp
+        <form action="{{ route('admin.promociones.toggle', $promo) }}"
+              method="POST"
+              style="margin-bottom:0.5rem; display:block;">
+            @csrf @method('POST')
+            <button type="submit"
+                    class="abtn abtn-outline {{ $promo->activa ? 'btn-toggle-off' : 'btn-toggle-on' }}"
+                    style="width:100%;justify-content:center;"
+                    @if(!$canToggle) disabled @endif>
+                @if($canToggle)
+                    {{ $promo->activa ? '⏸ Desactivar' : '▶ Activar' }}
+                @else
+                    ⏸ Desactivada (vencida)
+                @endif
+            </button>
+        </form>
+        @if(!$canToggle)
+        <p style="font-size:0.75rem;color:var(--warning);margin-top:0.5rem;text-align:center;">
+            Esta promoción está vencida y no se puede activar.
+        </p>
+        @endif
+
+        {{-- Eliminar --}}
+        <form action="{{ route('admin.promociones.destroy', $promo) }}"
+              method="POST"
+              id="delete-form-{{ $promo->id }}"
+              style="margin-bottom:0.5rem;">
+            @csrf @method('DELETE')
+            <button type="button" 
+                    class="abtn abtn-danger" 
+                    style="width:100%;justify-content:center;"
+                    data-confirm="¿Eliminar esta promoción permanentemente?"
+                    onclick="confirmDelete(this)">
+                Eliminar
+            </button>
+        </form>
+    </div>
+</div>
+@endif
+
+@push('scripts')
+<script>
+// Live preview
+function updatePreview() {
+    const titulo = document.getElementById('titulo').value || 'Título de la promoción';
+    const desc   = document.getElementById('descripcion').value || 'La descripción aparecerá aquí...';
+
+    document.getElementById('preview-titulo').textContent = titulo;
+    document.getElementById('preview-desc').textContent   = desc.length > 80 ? desc.slice(0, 80) + '...' : desc;
+}
+
+// Checkbox color inicial
+document.addEventListener('DOMContentLoaded', function() {
+    const activaCheck = document.getElementById('activa');
+    const activaLabel = document.getElementById('activa-label');
+    if (activaCheck && activaCheck.checked) {
+        activaLabel.style.borderColor = 'var(--lime)';
+    }
+});
+</script>
+@endpush

@@ -35,17 +35,18 @@
         <div class="gallery__main">
             @php
                 // Combinar imagen principal + gallery images
+                // Usamos URLs completas para evitar problemas con el JSON de imagen principal
                 $allImages = collect();
-                if($producto->image) {
-                    $allImages->push(['path' => $producto->image, 'is_primary' => true]);
+                if($producto->large_image_url) {
+                    $allImages->push(['url' => $producto->large_image_url, 'is_primary' => true]);
                 }
                 foreach($producto->images as $img) {
-                    $allImages->push(['path' => $img->image_path, 'is_primary' => false]);
+                    $allImages->push(['url' => asset($img->image_path), 'is_primary' => false]);
                 }
             @endphp
             
             @if($allImages->count() > 0)
-                <img src="{{ asset('storage/' . $allImages[0]['path']) }}"
+                <img src="{{ $allImages[0]['url'] }}"
                      alt="{{ $producto->name }}" id="main-img">
                 
                 @if($allImages->count() > 1)
@@ -79,7 +80,7 @@
             <button class="gallery__thumb {{ $index === 0 ? 'active' : '' }}" 
                     onclick="selectImage({{ $index }})" 
                     aria-label="Ver imagen {{ $index + 1 }}">
-                <img src="{{ asset('storage/' . $img['path']) }}" alt="Miniatura {{ $index + 1 }}">
+                <img src="{{ $img['url'] }}" alt="Miniatura {{ $index + 1 }}">
             </button>
             @endforeach
         </div>
@@ -191,7 +192,7 @@
 // Image gallery data
 const imageUrls = [
     @foreach($allImages as $img)
-    '{{ asset('storage/' . $img['path']) }}',
+    '{{ $img['url'] }}',
     @endforeach
 ];
 

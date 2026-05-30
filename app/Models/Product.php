@@ -459,14 +459,15 @@ class Product extends Model
 
         // Verificar si es el nuevo formato JSON con multiple tamanios
         $imageData = json_decode($this->image, true);
-        
+
         if ($imageData && isset($imageData['medium'])) {
             // Nuevo formato: devuelve la version medium por defecto
-            return asset('storage/' . $imageData['medium']);
+            // Las imágenes están en public/products/ → URL /products/...
+            return asset($imageData['medium']);
         }
 
         // Formato legacy: ruta directa
-        return asset('storage/' . $this->image);
+        return asset($this->image);
     }
 
     /**
@@ -479,13 +480,13 @@ class Product extends Model
         }
 
         $imageData = json_decode($this->image, true);
-        
+
         if ($imageData && isset($imageData['thumb'])) {
-            return asset('storage/' . $imageData['thumb']);
+            return asset($imageData['thumb']);
         }
 
         // Legacy: usar la imagen original
-        return asset('storage/' . $this->image);
+        return asset($this->image);
     }
 
     /**
@@ -498,13 +499,13 @@ class Product extends Model
         }
 
         $imageData = json_decode($this->image, true);
-        
+
         if ($imageData && isset($imageData['large'])) {
-            return asset('storage/' . $imageData['large']);
+            return asset($imageData['large']);
         }
 
         // Legacy: usar la imagen original
-        return asset('storage/' . $this->image);
+        return asset($this->image);
     }
 
     /**

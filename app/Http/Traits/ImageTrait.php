@@ -109,17 +109,24 @@ trait ImageTrait
         // Redimensionar manteniendo aspect ratio
         $image->scaleDown($maxWidth, $maxHeight);
 
-        // Convertir a WebP y guardar
+        // Convertir a WebP y guardar directamente en public/
         $filename = $baseName . $suffix . '.webp';
-        $path = $folder . '/' . $filename;
-        
-        $image->toWebp(85)->save(storage_path('app/public/' . $path));
+        $path = $folder . '/' . $filename;  // ej: products/uuid_large.webp
+
+        // Crear directorio si no existe
+        $dir = public_path(dirname($path));
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $image->toWebp(85)->save(public_path($path));
 
         return $path;
     }
 
     /**
      * Eliminar imagenes anteriores (todas las versiones)
+     * Los archivos viven en public/products/...
      */
     protected function deleteImage(?string $imageData): void
     {
@@ -129,9 +136,9 @@ trait ImageTrait
 
         // Si es JSON, decode para obtener todas las rutas
         $paths = json_decode($imageData, true);
-        
+
         if ($paths && isset($paths['large'])) {
-            // Eliminar todas las versiones
+            // Nuevo formato: eliminar todas las versiones
             $pathsToDelete = [
                 $paths['large'] ?? null,
                 $paths['medium'] ?? null,
@@ -143,8 +150,11 @@ trait ImageTrait
         }
 
         foreach ($pathsToDelete as $path) {
-            if ($path && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
+            if ($path) {
+                $fullPath = public_path($path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
+                }
             }
         }
     }

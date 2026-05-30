@@ -155,9 +155,9 @@
                         </div>
 
                         {{-- Preview --}}
-                        @if($isEdit && $producto->image)
+                        @if($isEdit && $producto->image_url)
                         <div id="producto-img-preview" style="margin-top:0.8rem;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--border-solid);position:relative;">
-                            <img src="{{ asset('storage/' . $producto->image) }}"
+                            <img src="{{ $producto->image_url }}"
                                  alt="Imagen actual"
                                  style="width:100%;max-height:200px;object-fit:cover;display:block;">
                             <button type="button"
